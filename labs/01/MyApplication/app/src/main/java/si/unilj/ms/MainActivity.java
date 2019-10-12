@@ -5,17 +5,17 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import android.content.ContentValues;
+//import android.content.ContentValues;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
+//import android.util.Log;
+//import android.widget.TextView;
 
-import com.aware.Accelerometer;
+//import com.aware.Accelerometer;
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
-import com.aware.Temperature;
-import com.aware.providers.Accelerometer_Provider;
-import com.aware.providers.Temperature_Provider;
+//import com.aware.Temperature;
+//import com.aware.providers.Accelerometer_Provider;
+//import com.aware.providers.Temperature_Provider;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,13 +28,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-//        Aware.startAWARE(this);
-//
-//        //sampling frequency in microseconds
-//        Aware.setSetting(this, Aware_Preferences.FREQUENCY_ACCELEROMETER, 200000);
-//
-//        // intensity threshold to report the reading
-//        Aware.setSetting(this, Aware_Preferences.THRESHOLD_ACCELEROMETER, 0.02f);
+        Aware.startAWARE(this);
+
+        //sampling frequency in microseconds
+        Aware.setSetting(this, Aware_Preferences.FREQUENCY_ACCELEROMETER, 200000);
+
+        // intensity threshold to report the reading
+        Aware.setSetting(this, Aware_Preferences.THRESHOLD_ACCELEROMETER, 0.02f);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         WorkManager mWorkManager =
                 WorkManager.getInstance(getApplicationContext());
         PeriodicWorkRequest.Builder myWorkBuilder =
-                new PeriodicWorkRequest.Builder(SensingWorker.class, 1, TimeUnit.SECONDS);
+                new PeriodicWorkRequest.Builder(SensingWorker.class, 6, TimeUnit.MINUTES);
         PeriodicWorkRequest myWork = myWorkBuilder.build();
         mWorkManager.enqueueUniquePeriodicWork("sensingJob",
                 ExistingPeriodicWorkPolicy.KEEP, myWork);

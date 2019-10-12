@@ -10,7 +10,7 @@ import androidx.work.WorkerParameters;
 
 import com.aware.Accelerometer;
 import com.aware.Aware;
-import com.aware.Aware_Preferences;
+//import com.aware.Aware_Preferences;
 import com.aware.providers.Accelerometer_Provider;
 
 public class SensingWorker extends Worker {
@@ -21,13 +21,13 @@ public class SensingWorker extends Worker {
         super(context, workerParams);
         this.context = context;
 
-        Aware.startAWARE(context);
-
-        //sampling frequency in microseconds
-        Aware.setSetting(context, Aware_Preferences.FREQUENCY_ACCELEROMETER, 200000);
-
-        // intensity threshold to report the reading
-        Aware.setSetting(context, Aware_Preferences.THRESHOLD_ACCELEROMETER, 0.02f);
+//        Aware.startAWARE(context);
+//
+//        //sampling frequency in microseconds
+//        Aware.setSetting(context, Aware_Preferences.FREQUENCY_ACCELEROMETER, 200000);
+//
+//        // intensity threshold to report the reading
+//        Aware.setSetting(context, Aware_Preferences.THRESHOLD_ACCELEROMETER, 0.02f);
     }
 
     @NonNull
@@ -36,6 +36,7 @@ public class SensingWorker extends Worker {
         Log.d(TAG, "I am here");
 
         Aware.startAccelerometer(context);
+
         Accelerometer.setSensorObserver(new Accelerometer.AWARESensorObserver() {
             @Override
             public void onAccelerometerChanged(ContentValues data) {
