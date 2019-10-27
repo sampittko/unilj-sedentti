@@ -8,12 +8,18 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="sk.tuke.ms.sedentti.ui.home.HomeFragment"
-        android:label="@string/title_home"
+        android:label="@string/menu_title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_statistics"
         android:name="sk.tuke.ms.sedentti.ui.statistics.StatisticsFragment"
-        android:label="@string/title_statistics"
+        android:label="@string/menu_title_statistics"
         tools:layout="@layout/fragment_statistics" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="sk.tuke.ms.sedentti.ui.profile.ProfileFragment"
+        android:label="@string/menu_title_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
