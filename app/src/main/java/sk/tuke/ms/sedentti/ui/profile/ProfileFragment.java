@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.MotivateMeActivity;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.StatusActivity;
 
 public class ProfileFragment extends Fragment {
 
@@ -32,6 +33,20 @@ public class ProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        View statusLayout = getActivity().findViewById(R.id.temp_strikes);
+        statusLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), StatusActivity.class));
+            }
+        });
     }
 
     @Override

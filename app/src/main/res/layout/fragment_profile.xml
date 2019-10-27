@@ -63,7 +63,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tw_f_profile_label_activity_status" />
 
-        <LinearLayout
+        <GridLayout
             android:id="@+id/temp_strikes"
             android:layout_width="match_parent"
             android:layout_height="160dp"
