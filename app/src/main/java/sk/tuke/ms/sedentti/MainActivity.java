@@ -9,8 +9,11 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import sk.tuke.ms.sedentti.activity.recognition.ActivityRecognitionHandler;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ActivityRecognitionHandler activityRecognitionHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,21 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+
+        activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        activityRecognitionHandler.startTracking();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        activityRecognitionHandler.stopTracking();
+    }
 }
