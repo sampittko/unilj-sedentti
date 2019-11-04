@@ -1,0 +1,83 @@
+#
+# generated on 2019/11/04 09:16:45
+#
+# --table-start--
+dataClass=sk.tuke.ms.sedentti.model.PersonalityTest
+tableName=personalitytest
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+unique=true
+# --field-end--
+# --field-start--
+fieldName=openness
+# --field-end--
+# --field-start--
+fieldName=conscientiousness
+# --field-end--
+# --field-start--
+fieldName=extraversion
+# --field-end--
+# --field-start--
+fieldName=agreeableness
+# --field-end--
+# --field-start--
+fieldName=neuroticism
+# --field-end--
+# --field-start--
+fieldName=answeredDate
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=sk.tuke.ms.sedentti.model.Profile
+tableName=profile
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+unique=true
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=registeredDate
+# --field-end--
+# --field-start--
+fieldName=personalityTest
+foreign=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=sk.tuke.ms.sedentti.model.Session
+tableName=session
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+unique=true
+# --field-end--
+# --field-start--
+fieldName=sedentary
+# --field-end--
+# --field-start--
+fieldName=date
+# --field-end--
+# --field-start--
+fieldName=startTimestamp
+# --field-end--
+# --field-start--
+fieldName=endTimestamp
+# --field-end--
+# --field-start--
+fieldName=profile
+foreign=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
