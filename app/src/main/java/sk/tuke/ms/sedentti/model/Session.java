@@ -8,7 +8,7 @@ import java.util.Date;
 @DatabaseTable
 public class Session {
     public static String COLUMN_ID = "id";
-    public static String COLUMN_STATIONARY = "stationary";
+    public static String COLUMN_STATIONARY = "sedentary";
     public static String COLUMN_DATE = "date";
     public static String COLUMN_START_TIMESTAMP = "startTimesamp";
     public static String COLUMN_END_TIMESAMP = "endTimestamp";
@@ -17,7 +17,7 @@ public class Session {
     @DatabaseField(generatedId = true, unique = true)
     private long id;
     @DatabaseField
-    private boolean stationary;
+    private boolean sedentary;
     @DatabaseField
     private Date date;
     @DatabaseField
@@ -39,12 +39,12 @@ public class Session {
         this.id = id;
     }
 
-    public boolean isStationary() {
-        return stationary;
+    public boolean isSedentary() {
+        return sedentary;
     }
 
-    public void setStationary(boolean stationary) {
-        this.stationary = stationary;
+    public void setSedentary(boolean sedentary) {
+        this.sedentary = sedentary;
     }
 
     public Date getDate() {
