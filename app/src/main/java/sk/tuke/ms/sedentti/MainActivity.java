@@ -36,10 +36,20 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
-
         Stetho.initializeWithDefaults(this);
 
+//        Intent intent = new Intent(this, ActivityRecognitionService.class);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startForegroundService(intent);
+//        } else {
+//            startService(intent);
+//        }
+
+
+        addToDb();
+    }
+
+    private void addToDb() {
         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
 
         Dao<Activity, Long> activityDao = null;
@@ -66,14 +76,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        activityRecognitionHandler.startTracking();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-//        activityRecognitionHandler.stopTracking();
     }
 }

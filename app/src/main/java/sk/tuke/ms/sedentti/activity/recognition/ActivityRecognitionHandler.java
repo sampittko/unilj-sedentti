@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import sk.tuke.ms.sedentti.helper.CommonStrings;
+
 public class ActivityRecognitionHandler {
 
     private final String TAG = ActivityRecognitionHandler.class.getSimpleName();
@@ -38,6 +40,7 @@ public class ActivityRecognitionHandler {
         ActivityTransitionRequest request = new ActivityTransitionRequest(transitions);
 
         Intent intent = new Intent(context, ActivityRecognitionBroadcastReceiver.class);
+        intent.setAction(CommonStrings.ACTIVITY_RECOGNITION_COMMAND);
         pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         Task<Void> task = ActivityRecognition.getClient(this.context)

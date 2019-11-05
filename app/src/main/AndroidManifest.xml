@@ -11,7 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".StatusActivity"></activity>
+        <service
+            android:name=".ActivityRecognitionService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity android:name=".StatusActivity" />
         <activity android:name=".SessionHistoryActivity" />
         <activity android:name=".MotivateMeActivity" />
         <activity
@@ -24,15 +29,14 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".activity.recognition.ActivityRecognitionBroadcastReceiver"
-            android:exported="false"
-            android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
-            <intent-filter>
-                <action android:name="sk.tuke.ms.sedentti.activity.recognition.ACTION_PROCESS_ACTIVITY_TRANSITION" />
-            </intent-filter>
-        </receiver>
-
+        <!--        <receiver-->
+        <!--            android:name=".activity.recognition.ActivityRecognitionBroadcastReceiver"-->
+        <!--            android:exported="false"-->
+        <!--            android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="sk.tuke.ms.sedentti.activity.recognition.ACTION_PROCESS_ACTIVITY_TRANSITION" />-->
+        <!--            </intent-filter>-->
+        <!--        </receiver>-->
     </application>
 
 </manifest>

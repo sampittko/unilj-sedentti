@@ -11,7 +11,6 @@ import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 
-import sk.tuke.ms.sedentti.helper.CommonStrings;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
@@ -19,7 +18,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent != null && CommonStrings.ACTIVITY_RECOGNITION_COMMAND.equals(intent.getAction())) {
+        if (intent != null) {
             if (ActivityTransitionResult.hasResult(intent)) {
                 ActivityTransitionResult intentResult = ActivityTransitionResult
                         .extractResult(intent);
