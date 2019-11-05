@@ -11,6 +11,7 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.PersonalityTest;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
@@ -23,6 +24,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<PersonalityTest, Long> personalityTestDao;
     private Dao<Profile, Long> profileDao;
     private Dao<Session, Long> sessionDao;
+    private Dao<Activity, Long> activityDao;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION,
@@ -35,6 +37,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, PersonalityTest.class);
             TableUtils.createTable(connectionSource, Profile.class);
             TableUtils.createTable(connectionSource, Session.class);
+            TableUtils.createTable(connectionSource, Activity.class);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -48,6 +51,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, PersonalityTest.class, true);
             TableUtils.dropTable(connectionSource, Profile.class, true);
             TableUtils.dropTable(connectionSource, Session.class, true);
+            TableUtils.dropTable(connectionSource, Activity.class, true);
             onCreate(database, connectionSource);
 
         } catch (SQLException e) {
@@ -89,5 +93,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             sessionDao = getDao(Session.class);
         }
         return sessionDao;
+    }
+
+    /**
+     * Returns an instance of the data access object
+     *
+     * @return
+     * @throws SQLException
+     */
+    public Dao<Activity, Long> activityDao() throws SQLException {
+        if (activityDao == null) {
+            activityDao = getDao(Activity.class);
+        }
+        return activityDao;
     }
 }

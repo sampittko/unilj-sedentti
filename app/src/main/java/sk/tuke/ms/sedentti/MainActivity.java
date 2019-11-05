@@ -2,7 +2,12 @@ package sk.tuke.ms.sedentti;
 
 import android.os.Bundle;
 
+import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+
+import java.sql.SQLException;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -10,6 +15,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import sk.tuke.ms.sedentti.activity.recognition.ActivityRecognitionHandler;
+import sk.tuke.ms.sedentti.model.Activity;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +37,30 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
+
+        Stetho.initializeWithDefaults(this);
+
+        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+
+        Dao<Activity, Long> activityDao = null;
+
+        try {
+            activityDao = databaseHelper.activityDao();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Activity activity = new Activity();
+
+        activity.setActivityType(1);
+        activity.setTransitionType(1);
+        activity.setElapsedRealTimeNanos(1);
+
+        try {
+            activityDao.create(activity);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -43,6 +74,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        activityRecognitionHandler.stopTracking();
+//        activityRecognitionHandler.stopTracking();
     }
 }
