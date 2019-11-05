@@ -14,6 +14,7 @@ import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
@@ -23,10 +24,8 @@ public class StatisticsFragment extends Fragment {
 
     private StatisticsViewModel statisticsViewModel;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        statisticsViewModel =
-                ViewModelProviders.of(this).get(StatisticsViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        statisticsViewModel = ViewModelProviders.of(this).get(StatisticsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_statistics, container, false);
         return root;
     }
@@ -47,25 +46,19 @@ public class StatisticsFragment extends Fragment {
 
                 TextView status = getActivity().findViewById(R.id.status_info);
                 status.setText(sb.toString());
-
             }
         }
     };
 
-
     @Override
-    public void onResume() {
-        super.onResume();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(CommonStrings.ACTIVITY_RECOGNITION_COMMAND);
-
-        getActivity().registerReceiver(activityReceiver, intentFilter);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getActivity().registerReceiver(activityReceiver, new IntentFilter(CommonStrings.ACTIVITY_RECOGNITION_COMMAND));
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
+    public void onStop() {
+        super.onStop();
         getActivity().unregisterReceiver(activityReceiver);
     }
 }

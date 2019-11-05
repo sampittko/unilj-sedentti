@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti;
+package sk.tuke.ms.sedentti.recognition;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,13 +9,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import sk.tuke.ms.sedentti.activity.recognition.ActivityRecognitionBroadcastReceiver;
-import sk.tuke.ms.sedentti.activity.recognition.ActivityRecognitionHandler;
+import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.helper.CommonStrings;
 
 public class ActivityRecognitionService extends Service {
@@ -38,10 +40,7 @@ public class ActivityRecognitionService extends Service {
     }
 
     private void registerBroadcast() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(CommonStrings.ACTIVITY_RECOGNITION_COMMAND);
-
-        registerReceiver(receiver, intentFilter);
+        registerReceiver(receiver, new IntentFilter(CommonStrings.ACTIVITY_RECOGNITION_COMMAND));
     }
 
     @Override
@@ -59,6 +58,7 @@ public class ActivityRecognitionService extends Service {
         unregisterReceiver(receiver);
         super.onDestroy();
     }
+
 
     private Notification createNotification() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -88,10 +88,22 @@ public class ActivityRecognitionService extends Service {
         return builder.build();
     }
 
-
+    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class LocalBinder extends Binder {
+        public ActivityRecognitionService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return ActivityRecognitionService.this;
+        }
+
+    }
+
 }

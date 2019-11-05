@@ -3,17 +3,25 @@ package sk.tuke.ms.sedentti.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.Date;
+
 @DatabaseTable
 public class Activity {
 
     @DatabaseField(generatedId = true, unique = true)
-    private long id;
+    long id;
+
     @DatabaseField
-    private int activityType;
+    int activityType;
+
     @DatabaseField
-    private long elapsedRealTimeNanos;
+    long elapsedRealTimeNanos;
+
     @DatabaseField
-    private int transitionType;
+    int transitionType;
+
+    @DatabaseField
+    Date timestamp;
 
     public Activity() {
     }
@@ -48,5 +56,13 @@ public class Activity {
 
     public void setTransitionType(int transitionType) {
         this.transitionType = transitionType;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 }

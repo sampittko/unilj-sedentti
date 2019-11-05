@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.activity.recognition;
+package sk.tuke.ms.sedentti.recognition;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +10,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
+import java.util.Date;
 
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -20,9 +21,8 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent != null) {
             if (ActivityTransitionResult.hasResult(intent)) {
-                ActivityTransitionResult intentResult = ActivityTransitionResult
-                        .extractResult(intent);
-                // handle activity transition result ...
+                ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
+
                 DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
 
                 Dao<Activity, Long> activityDao = null;
@@ -39,6 +39,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                     activity.setActivityType(event.getActivityType());
                     activity.setTransitionType(event.getTransitionType());
                     activity.setElapsedRealTimeNanos(event.getElapsedRealTimeNanos());
+                    activity.setTimestamp(new Date());
 
                     try {
                         activityDao.create(activity);

@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.activity.recognition;
+package sk.tuke.ms.sedentti.recognition;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,8 +9,6 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.jetbrains.annotations.NotNull;
@@ -39,29 +37,18 @@ public class ActivityRecognitionHandler {
 
         ActivityTransitionRequest request = new ActivityTransitionRequest(transitions);
 
-        Intent intent = new Intent(context, ActivityRecognitionBroadcastReceiver.class);
-        intent.setAction(CommonStrings.ACTIVITY_RECOGNITION_COMMAND);
+        Intent intent = new Intent(CommonStrings.ACTIVITY_RECOGNITION_COMMAND);
         pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         Task<Void> task = ActivityRecognition.getClient(this.context)
                 .requestActivityTransitionUpdates(request, pendingIntent);
 
         task.addOnSuccessListener(
-                new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        Log.i(TAG, "Activity tracking started");
-                    }
-                }
+                result -> Log.i(TAG, "Activity tracking started")
         );
 
         task.addOnFailureListener(
-                new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.i(TAG, "Activity tracking error starting" + e);
-                    }
-                }
+                e -> Log.i(TAG, "Activity tracking error starting" + e)
         );
 
     }
@@ -71,22 +58,14 @@ public class ActivityRecognitionHandler {
                 .removeActivityTransitionUpdates(pendingIntent);
 
         task.addOnSuccessListener(
-                new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        pendingIntent.cancel();
-                        Log.i(TAG, "Activity tracking stopped");
-                    }
+                result -> {
+                    pendingIntent.cancel();
+                    Log.i(TAG, "Activity tracking stopped");
                 }
         );
 
         task.addOnFailureListener(
-                new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.i(TAG, "Activity tracking error stop" + e);
-                    }
-                }
+                e -> Log.i(TAG, "Activity tracking error stop" + e)
         );
     }
 

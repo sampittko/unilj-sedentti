@@ -1,8 +1,9 @@
-package sk.tuke.ms.sedentti;
+package sk.tuke.ms.sedentti.activity;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import sk.tuke.ms.sedentti.R;
 
 public class MotivateMeActivity extends AppCompatActivity {
 
