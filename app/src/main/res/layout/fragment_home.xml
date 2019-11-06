@@ -239,20 +239,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/f_home_layout_timegraphs" />
 
-        <com.db.williamchart.view.LineChartView
-            android:id="@+id/wc_f_home_graph_timeline"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="16dp"
+        <LinearLayout
+            android:id="@+id/f_home_layout_timeline"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
             android:layout_marginLeft="32dp"
+            android:layout_marginTop="16dp"
             android:layout_marginRight="32dp"
-            app:chart_axis="none"
-            app:chart_lineColor="#ffffff"
-            app:chart_lineThickness="3dp"
-            app:chart_smoothLine="true"
+            android:orientation="vertical"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tw_f_home_text_timeline" />
+            app:layout_constraintTop_toBottomOf="@id/tw_f_home_text_timeline"></LinearLayout>
 
         <TextView
             android:id="@+id/end_padding_scrollview_element"
@@ -261,7 +258,7 @@
             android:layout_marginTop="32dp"
             android:text=""
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wc_f_home_graph_timeline" />
+            app:layout_constraintTop_toBottomOf="@+id/f_home_layout_timeline" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

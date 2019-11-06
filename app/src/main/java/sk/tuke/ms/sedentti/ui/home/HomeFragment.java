@@ -2,9 +2,11 @@ package sk.tuke.ms.sedentti.ui.home;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.hookedonplay.decoviewlib.DecoView;
 import com.hookedonplay.decoviewlib.charts.SeriesItem;
@@ -17,10 +19,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.model.Session;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
+    private final int TIMELINE_ITEM_HEIGHT = 50;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -37,9 +41,33 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    private void makeTimeline(ArrayList<Session> sessions) {
+        LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.f_home_layout_timeline);
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        for (int i = 0; i < sessions.size(); i++) {
+            View view = inflater.inflate(R.layout.item_timeline_home, linearLayout, false);
+            linearLayout.addView(view);
+        }
+        ViewGroup.LayoutParams layoutParams = linearLayout.getLayoutParams();
+        layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TIMELINE_ITEM_HEIGHT * sessions.size(), getResources().getDisplayMetrics());
+        linearLayout.setLayoutParams(layoutParams);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+
+
+        Session session1 = new Session();
+        Session session2 = new Session();
+        Session session3 = new Session();
+
+        ArrayList<Session> sessions = new ArrayList<>();
+        sessions.add(session1);
+        sessions.add(session2);
+        sessions.add(session3);
+
+        makeTimeline(sessions);
 
         List<DecoView> graphs = new ArrayList<>();
         graphs.add((DecoView) getView().findViewById(R.id.graph_f_home_active));
