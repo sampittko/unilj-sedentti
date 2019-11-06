@@ -7,21 +7,19 @@ import java.util.Date;
 
 @DatabaseTable
 public class Activity {
+    public static String COLUMN_ID = "id";
+    public static String COLUMN_ACTIVITY_TYPE = "activityType";
+    public static String COLUMN_TRANSITION_TYPE = "transitionType";
+    public static String COLUMN_TIMESTAMP = "timestamp";
 
     @DatabaseField(generatedId = true, unique = true)
-    long id;
-
+    private long id;
     @DatabaseField
-    int activityType;
-
+    private int activityType;
     @DatabaseField
-    long elapsedRealTimeNanos;
-
+    private int transitionType;
     @DatabaseField
-    int transitionType;
-
-    @DatabaseField
-    Date timestamp;
+    private Date timestamp;
 
     public Activity() {
     }
@@ -40,14 +38,6 @@ public class Activity {
 
     public void setActivityType(int activityType) {
         this.activityType = activityType;
-    }
-
-    public long getElapsedRealTimeNanos() {
-        return elapsedRealTimeNanos;
-    }
-
-    public void setElapsedRealTimeNanos(long elapsedRealTimeNanos) {
-        this.elapsedRealTimeNanos = elapsedRealTimeNanos;
     }
 
     public int getTransitionType() {

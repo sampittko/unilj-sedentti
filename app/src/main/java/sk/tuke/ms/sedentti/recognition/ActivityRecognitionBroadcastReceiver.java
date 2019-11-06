@@ -38,7 +38,6 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
 
                     activity.setActivityType(event.getActivityType());
                     activity.setTransitionType(event.getTransitionType());
-                    activity.setElapsedRealTimeNanos(event.getElapsedRealTimeNanos());
                     activity.setTimestamp(new Date());
 
                     try {
