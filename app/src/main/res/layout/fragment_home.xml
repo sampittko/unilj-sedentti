@@ -235,7 +235,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="32dp"
-            android:text="Timeline"
+            android:text="Recent activity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/f_home_layout_timegraphs" />
 
@@ -255,7 +255,6 @@
             android:id="@+id/end_padding_scrollview_element"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
             android:text=""
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/f_home_layout_timeline" />

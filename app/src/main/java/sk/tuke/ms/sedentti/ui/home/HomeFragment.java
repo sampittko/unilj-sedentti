@@ -24,7 +24,7 @@ import sk.tuke.ms.sedentti.model.Session;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    private final int TIMELINE_ITEM_HEIGHT = 50;
+    private final int TIMELINE_ITEM_HEIGHT = 60;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
