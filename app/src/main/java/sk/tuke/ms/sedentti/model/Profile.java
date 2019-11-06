@@ -16,9 +16,9 @@ public class Profile {
 
     @DatabaseField(generatedId = true, unique = true)
     private long id;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private String name;
-    @DatabaseField(persisterClass = DateStringSQLiteType.class)
+    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
     private Date registeredDate;
     @DatabaseField(foreign = true)
     private PersonalityTest personalityTest;

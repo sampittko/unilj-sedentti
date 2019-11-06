@@ -19,17 +19,17 @@ public class PersonalityTest {
 
     @DatabaseField(generatedId = true, unique = true)
     private long id;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private int openness;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private int conscientiousness;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private int extraversion;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private int agreeableness;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private int neuroticism;
-    @DatabaseField(persisterClass = DateStringSQLiteType.class)
+    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
     private Date answeredDate;
 
     public PersonalityTest() {

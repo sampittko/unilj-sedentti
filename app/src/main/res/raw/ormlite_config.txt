@@ -1,5 +1,5 @@
 #
-# generated on 2019/11/06 03:47:02
+# generated on 2019/11/06 07:13:21
 #
 # --table-start--
 dataClass=sk.tuke.ms.sedentti.model.PersonalityTest
@@ -12,21 +12,27 @@ unique=true
 # --field-end--
 # --field-start--
 fieldName=openness
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=conscientiousness
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=extraversion
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=agreeableness
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=neuroticism
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=answeredDate
+canBeNull=false
 persisterClass=sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType
 # --field-end--
 # --table-fields-end--
@@ -43,9 +49,11 @@ unique=true
 # --field-end--
 # --field-start--
 fieldName=name
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=registeredDate
+canBeNull=false
 persisterClass=sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType
 # --field-end--
 # --field-start--
@@ -66,19 +74,29 @@ unique=true
 # --field-end--
 # --field-start--
 fieldName=sedentary
-# --field-end--
-# --field-start--
-fieldName=date
-persisterClass=sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=startTimestamp
+canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=endTimestamp
 # --field-end--
 # --field-start--
+fieldName=duration
+# --field-end--
+# --field-start--
+fieldName=date
+canBeNull=false
+persisterClass=sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType
+# --field-end--
+# --field-start--
+fieldName=successful
+# --field-end--
+# --field-start--
 fieldName=profile
+canBeNull=false
 foreign=true
 # --field-end--
 # --table-fields-end--

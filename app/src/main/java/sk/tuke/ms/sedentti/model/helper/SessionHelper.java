@@ -56,13 +56,13 @@ public class SessionHelper {
         }
     }
 
+    // TODO Streaks
     public int getStreak() {
-
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
+    // TODO Success Rate
     public int getSuccessRate() {
-
-        return 0;
+        throw new UnsupportedOperationException();
     }
 }

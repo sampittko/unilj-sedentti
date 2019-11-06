@@ -14,11 +14,11 @@ public class Activity {
 
     @DatabaseField(generatedId = true, unique = true)
     private long id;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private int activityType;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private int transitionType;
-    @DatabaseField
+    @DatabaseField(canBeNull = false)
     private Date timestamp;
 
     public Activity() {
