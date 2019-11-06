@@ -2,10 +2,13 @@ package sk.tuke.ms.sedentti.ui.home;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hookedonplay.decoviewlib.DecoView;
 import com.hookedonplay.decoviewlib.charts.SeriesItem;
 import com.hookedonplay.decoviewlib.events.DecoEvent;
@@ -17,10 +20,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.model.Session;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
+    private final int TIMELINE_ITEM_HEIGHT = 60;
+    private LinearLayout timelineLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -34,12 +40,48 @@ public class HomeFragment extends Fragment {
 //                textView.setText(s);
 //            }
 //        });
+
+        this.timelineLayout = root.findViewById(R.id.f_home_layout_timeline);
+        this.timelineLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.nav_view);
+                View view = bottomNavigationView.findViewById(R.id.navigation_statistics);
+                view.performClick();
+//                FragmentManager manager = getActivity().getSupportFragmentManager();
+//                manager.beginTransaction().replace(R.id.nav_host_fragment, new StatisticsFragment()).commit();
+            }
+        });
+
         return root;
+    }
+
+    private void makeTimeline(ArrayList<Session> sessions) {
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        for (int i = 0; i < sessions.size(); i++) {
+            View view = inflater.inflate(R.layout.item_timeline_home, this.timelineLayout, false);
+            this.timelineLayout.addView(view);
+        }
+        ViewGroup.LayoutParams layoutParams = this.timelineLayout.getLayoutParams();
+        layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TIMELINE_ITEM_HEIGHT * sessions.size(), getResources().getDisplayMetrics());
+        this.timelineLayout.setLayoutParams(layoutParams);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+
+        Session session1 = new Session();
+        Session session2 = new Session();
+        Session session3 = new Session();
+
+        ArrayList<Session> sessions = new ArrayList<>();
+        sessions.add(session1);
+        sessions.add(session2);
+        sessions.add(session3);
+
+        makeTimeline(sessions);
 
         List<DecoView> graphs = new ArrayList<>();
         graphs.add((DecoView) getView().findViewById(R.id.graph_f_home_active));
