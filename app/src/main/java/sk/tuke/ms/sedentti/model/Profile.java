@@ -5,6 +5,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
+import sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType;
+
 @DatabaseTable
 public class Profile {
     public static String COLUMN_ID = "id";
@@ -16,7 +18,7 @@ public class Profile {
     private long id;
     @DatabaseField
     private String name;
-    @DatabaseField
+    @DatabaseField(persisterClass = DateStringSQLiteType.class)
     private Date registeredDate;
     @DatabaseField(foreign = true)
     private PersonalityTest personalityTest;

@@ -5,6 +5,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
+import sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType;
+
 @DatabaseTable
 public class Session {
     public static String COLUMN_ID = "id";
@@ -18,7 +20,7 @@ public class Session {
     private long id;
     @DatabaseField
     private boolean sedentary;
-    @DatabaseField
+    @DatabaseField(persisterClass = DateStringSQLiteType.class)
     private Date date;
     @DatabaseField
     private int startTimestamp;

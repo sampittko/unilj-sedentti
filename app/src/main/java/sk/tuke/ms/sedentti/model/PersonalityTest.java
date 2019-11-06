@@ -5,6 +5,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
+import sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType;
+
 @DatabaseTable
 public class PersonalityTest {
     public static String COLUMN_ID = "id";
@@ -27,7 +29,7 @@ public class PersonalityTest {
     private int agreeableness;
     @DatabaseField
     private int neuroticism;
-    @DatabaseField
+    @DatabaseField(persisterClass = DateStringSQLiteType.class)
     private Date answeredDate;
 
     public PersonalityTest() {
