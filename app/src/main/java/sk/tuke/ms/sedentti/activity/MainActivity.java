@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -13,6 +14,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setBottomMenu();
+
+        // line that needs to be run after database scheme upgrade (firstly change version FROM and version TO)
+        /* DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2); */
 
         Stetho.initializeWithDefaults(this);
 
