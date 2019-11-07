@@ -118,35 +118,28 @@ public class SessionHelper {
     public int getSuccessRate(Date date) throws SQLException {
         Date normalizedDate = DateHelper.getNormalizedDate(date);
 
-        PreparedQuery<Session> preparedQuery = sessionDaoQueryBuilder
+        PreparedQuery<Session> successfulSessionsPQ = sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
                 .gt(Session.COLUMN_END_TIMESTAMP, 0)
+                .and()
+                .eq(Session.COLUMN_SUCCESSFUL, true)
                 .prepare();
 
-        List<Session> sessions = sessionDao.query(preparedQuery);
+        PreparedQuery<Session> unsuccessfulSessionsPQ = sessionDaoQueryBuilder
+                .where()
+                .eq(Session.COLUMN_DATE, normalizedDate)
+                .and()
+                .gt(Session.COLUMN_END_TIMESTAMP, 0)
+                .and()
+                .eq(Session.COLUMN_SUCCESSFUL, false)
+                .prepare();
 
-        List<Session> successfulSessions = getSuccessfulSessions(sessions);
-        List<Session> unsuccessfulSessions = getUnsuccessfulSessions(sessions, successfulSessions);
+        List<Session> successfulSessions = sessionDao.query(successfulSessionsPQ);
+        List<Session> unsuccessfulSessions = sessionDao.query(unsuccessfulSessionsPQ);;
 
         return getSuccessRate(successfulSessions, unsuccessfulSessions);
-    }
-
-    @Contract("_ -> param1")
-    private List<Session> getSuccessfulSessions(@NotNull List<Session> sessions) {
-        for (Session session : sessions) {
-            if (!session.isSuccessful()) {
-                sessions.remove(session);
-            }
-        }
-        return sessions;
-    }
-
-    @Contract("_, _ -> param1")
-    private List<Session> getUnsuccessfulSessions(@NotNull List<Session> sessions, List<Session> successfulSessions) {
-        sessions.removeAll(successfulSessions);
-        return sessions;
     }
 
     private int getSuccessRate(@NotNull List<Session> successfulSessions, @NotNull List<Session> unsuccessfulSessions) {
