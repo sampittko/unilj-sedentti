@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
+import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
@@ -18,6 +20,7 @@ import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
+import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
@@ -27,6 +30,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
 
     private Profile activeProfile;
     private Session activeSession;
+    private Activity currentActivity;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -41,12 +45,15 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                     int transitionType = event.getTransitionType();
                     long timestamp = new Date().getTime();
 
-                    if (isNewSessionRequired(activityType, transitionType)) {
+                    if (isNewSessionRequired(activityType)) {
                         endActiveSession();
-                        activeSession = getNewActiveSession(activityType, timestamp);
+                        setNewActiveSession(activityType, timestamp);
                     }
 
-                    persistNewActivity(activityType, transitionType, timestamp, activeSession);
+                    if (isNewActivityRequired(transitionType)) {
+                        endCurrentActivity();
+                        setNewActivity(activityType, timestamp);
+                    }
                 }
             }
         }
@@ -75,53 +82,62 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
         return profileShPr.getLong(CommonStrings.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, Integer.valueOf("0"));
     }
 
-    // TODO new session requirement evaluation
-    private boolean isNewSessionRequired(int activityType, int transitionType) {
-        if (activeSession == null) {
+    private boolean isNewSessionRequired(int newActivityType) {
+        // the first broadcast received => values are not set yet
+        if (activeSession == null && currentActivity == null) {
             return true;
         }
 
-//        if (previousActivity.activityType == STILL);
-//        if (previousActivity.transitionType == ..);
-//
-//        ActivityTransition.ACTIVITY_TRANSITION_ENTER;
-//        ActivityTransition.ACTIVITY_TRANSITION_EXIT;
-//        DetectedActivity.STILL;
-
-        return false;
+        // the user remains active
+        return newActivityType == DetectedActivity.STILL || currentActivity.getActivityType() == DetectedActivity.STILL;
     }
-
     private void endActiveSession() {
-        try {
-            sessionDao.update(
-                    SessionHelper.updateAsEndedSession(activeSession)
-            );
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (activeSession != null) {
+            try {
+                sessionDao.update(
+                        SessionHelper.updateAsEndedSession(activeSession)
+                );
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private Session getNewActiveSession(int activityType, long timestamp) {
-        Session newSession = new Session(
+    private void setNewActiveSession(int activityType, long timestamp) {
+        activeSession = new Session(
                 SessionHelper.isSedentary(activityType),
                 timestamp,
                 activeProfile
         );
 
         try {
-            sessionDao.create(newSession);
+            sessionDao.create(activeSession);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return newSession;
     }
 
-    private void persistNewActivity(int activityType, int transitionType, long timestamp, Session activeSession) {
-        Activity activity = new Activity(activityType, transitionType, timestamp, activeSession);
+    private boolean isNewActivityRequired(int transitionType) {
+        return (transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) || (currentActivity == null);
+    }
+
+    private void endCurrentActivity() {
+        if (currentActivity != null) {
+            try {
+                activityDao.update(
+                        ActivityHelper.updateAsEndedActivity(currentActivity)
+                );
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void setNewActivity(int activityType, long timestamp) {
+        currentActivity = new Activity(activityType, timestamp, activeSession);
 
         try {
-            activityDao.create(activity);
+            activityDao.create(currentActivity);
         } catch (SQLException e) {
             e.printStackTrace();
         }

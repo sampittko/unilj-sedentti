@@ -14,8 +14,8 @@ public class Activity {
     private long id;
     @DatabaseField(canBeNull = false)
     private int activityType;
-    @DatabaseField(canBeNull = false)
-    private int transitionType;
+    @DatabaseField
+    private long duration;
     @DatabaseField(canBeNull = false)
     private long timestamp;
     @DatabaseField(canBeNull = false, foreign = true)
@@ -25,9 +25,8 @@ public class Activity {
 
     }
 
-    public Activity(int activityType, int transitionType, long timestamp, Session session) {
+    public Activity(int activityType, long timestamp, Session session) {
         this.activityType = activityType;
-        this.transitionType = transitionType;
         this.timestamp = timestamp;
         this.session = session;
     }
@@ -48,12 +47,12 @@ public class Activity {
         this.activityType = activityType;
     }
 
-    public int getTransitionType() {
-        return transitionType;
+    public long getDuration() {
+        return duration;
     }
 
-    public void setTransitionType(int transitionType) {
-        this.transitionType = transitionType;
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 
     public long getTimestamp() {
