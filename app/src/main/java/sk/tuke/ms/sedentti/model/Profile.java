@@ -5,7 +5,6 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
-import sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType;
 import sk.tuke.ms.sedentti.model.helper.DateHelper;
 
 @DatabaseTable
@@ -19,9 +18,6 @@ public class Profile {
     private long id;
     @DatabaseField(canBeNull = false)
     private String name;
-    // TMP solution
-//    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
-//    private Date registeredDate;
     @DatabaseField(canBeNull = false)
     private Date registeredDate;
     @DatabaseField(foreign = true)
