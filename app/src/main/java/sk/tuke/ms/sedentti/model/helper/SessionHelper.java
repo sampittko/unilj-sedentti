@@ -7,7 +7,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -48,7 +47,7 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public List<Session> getSessionsInInterval(SessionsInterval interval) throws SQLException {
-        Date end = new Date();
+        Date end = DateHelper.getNormalizedDate(new Date());
         Date start = getStartDate(interval);
 
         return sessionDaoQueryBuilder
@@ -137,7 +136,7 @@ public class SessionHelper {
                 .prepare();
 
         List<Session> successfulSessions = sessionDao.query(successfulSessionsPQ);
-        List<Session> unsuccessfulSessions = sessionDao.query(unsuccessfulSessionsPQ);;
+        List<Session> unsuccessfulSessions = sessionDao.query(unsuccessfulSessionsPQ);
 
         return getSuccessRate(successfulSessions, unsuccessfulSessions);
     }

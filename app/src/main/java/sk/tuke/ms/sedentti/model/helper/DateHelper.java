@@ -1,6 +1,5 @@
 package sk.tuke.ms.sedentti.model.helper;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
@@ -14,37 +13,49 @@ public class DateHelper {
     @NotNull
     public static Date getLastDay() {
         long todayTimestamp = new Date().getTime();
-        return new Date(todayTimestamp - daySeconds);
+        return DateHelper.getNormalizedDate(
+                new Date(todayTimestamp - daySeconds)
+        );
     }
 
     @NotNull
     public static Date getLastDay(@NotNull Date from) {
         long fromTimestamp = from.getTime();
-        return new Date(fromTimestamp - daySeconds);
+        return DateHelper.getNormalizedDate(
+                new Date(fromTimestamp - daySeconds)
+        );
     }
 
     @NotNull
     public static Date getLastWeek() {
         long todayTimestamp = new Date().getTime();
-        return new Date(todayTimestamp - weekSeconds);
+        return DateHelper.getNormalizedDate(
+                new Date(todayTimestamp - weekSeconds)
+        );
     }
 
     @NotNull
     public static Date getLastWeek(@NotNull Date from) {
         long fromTimestamp = from.getTime();
-        return new Date(fromTimestamp - weekSeconds);
+        return DateHelper.getNormalizedDate(
+                new Date(fromTimestamp - weekSeconds)
+        );
     }
 
     @NotNull
     public static Date getLastMonth() {
         long todayTimestamp = new Date().getTime();
-        return new Date(todayTimestamp - monthSeconds);
+        return DateHelper.getNormalizedDate(
+                new Date(todayTimestamp - monthSeconds)
+        );
     }
 
     @NotNull
     public static Date getLastMonth(@NotNull Date from) {
         long fromTimestamp = from.getTime();
-        return new Date(fromTimestamp - monthSeconds);
+        return DateHelper.getNormalizedDate(
+                new Date(fromTimestamp - monthSeconds)
+        );
     }
 
     public static Date getNormalizedDate(Date date) {
