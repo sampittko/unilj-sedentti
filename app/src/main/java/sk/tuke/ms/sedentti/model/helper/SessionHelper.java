@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import sk.tuke.ms.sedentti.config.DBCI;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -161,7 +162,6 @@ public class SessionHelper {
      * @param session Session to update as the ended one
      * @return Updated session object
      */
-    // TODO evaluate successfulness
     @Contract("_ -> param1")
     public static Session updateAsEndedSession(@NotNull Session session) {
         long endTimestamp = new Date().getTime();
@@ -170,7 +170,7 @@ public class SessionHelper {
                 getSessionDuration(session.getStartTimestamp(), endTimestamp)
         );
         session.setEndTimestamp(endTimestamp);
-        session.setSuccessful(false);
+        session.setSuccessful(isSuccessful(session));
 
         return session;
     }
@@ -178,5 +178,14 @@ public class SessionHelper {
     @Contract(pure = true)
     private static long getSessionDuration(long startTimestamp, long endTimestamp) {
         return endTimestamp - startTimestamp;
+    }
+
+    private static boolean isSuccessful(@NotNull Session session) {
+        if (session.isSedentary()) {
+            return session.getDuration() <= DBCI.SEDENTARY_SECONDS_LIMIT;
+        }
+        else {
+            return session.getDuration() >= DBCI.ACTIVE_SECONDS_LIMIT;
+        }
     }
 }
