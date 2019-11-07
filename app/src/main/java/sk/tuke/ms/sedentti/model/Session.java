@@ -27,7 +27,7 @@ public class Session {
     @DatabaseField
     private long endTimestamp;
     @DatabaseField
-    private int duration;
+    private long duration;
     @DatabaseField(canBeNull = false)
     private Date date;
     @DatabaseField
@@ -82,7 +82,7 @@ public class Session {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
     }
 

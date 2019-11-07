@@ -2,11 +2,13 @@ package sk.tuke.ms.sedentti.model.helper;
 
 import android.content.Context;
 
+import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -143,5 +145,38 @@ public class SessionHelper {
 
     private int getSuccessRate(@NotNull List<Session> successfulSessions, @NotNull List<Session> unsuccessfulSessions) {
         return (int) Math.ceil(successfulSessions.size() / unsuccessfulSessions.size());
+    }
+
+    /**
+     * @param activityType Google Activity Recognition value determining the activity
+     * @return Whether the user is sedentary or not
+     */
+    // TODO context-involved determination
+    @Contract(pure = true)
+    public static boolean isSedentary(int activityType) {
+        return activityType == DetectedActivity.STILL;
+    }
+
+    /**
+     * @param session Session to update as the ended one
+     * @return Updated session object
+     */
+    // TODO evaluate successfulness
+    @Contract("_ -> param1")
+    public static Session updateAsEndedSession(@NotNull Session session) {
+        long endTimestamp = new Date().getTime();
+
+        session.setDuration(
+                getSessionDuration(session.getStartTimestamp(), endTimestamp)
+        );
+        session.setEndTimestamp(endTimestamp);
+        session.setSuccessful(false);
+
+        return session;
+    }
+
+    @Contract(pure = true)
+    private static long getSessionDuration(long startTimestamp, long endTimestamp) {
+        return endTimestamp - startTimestamp;
     }
 }

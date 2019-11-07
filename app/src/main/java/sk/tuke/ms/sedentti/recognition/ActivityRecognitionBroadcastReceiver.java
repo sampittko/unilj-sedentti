@@ -18,6 +18,7 @@ import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
+import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private Dao<Profile, Long> profileDao;
@@ -25,6 +26,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private Dao<Session, Long> sessionDao;
 
     private Profile activeProfile;
+    private Session activeSession;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -37,19 +39,14 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                 for (ActivityTransitionEvent event : intentResult.getTransitionEvents()) {
                     int activityType = event.getActivityType();
                     int transitionType = event.getTransitionType();
-                    Date timestamp = new Date();
+                    long timestamp = new Date().getTime();
 
-                    // TODO handle session
-                    Session dummySession = new Session(false, timestamp.getTime(), activeProfile);
-                    Activity activity = new Activity(activityType, transitionType, timestamp.getTime(), dummySession);
-
-                    try {
-                        // TMP dummy session
-                        sessionDao.create(dummySession);
-                        activityDao.create(activity);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                    if (isNewSessionRequired(activityType, transitionType)) {
+                        endActiveSession();
+                        activeSession = getNewActiveSession(activityType, timestamp);
                     }
+
+                    persistNewActivity(activityType, transitionType, timestamp, activeSession);
                 }
             }
         }
@@ -76,5 +73,57 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private long getActiveProfileId(Context context) {
         SharedPreferences profileShPr = context.getSharedPreferences(CommonStrings.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         return profileShPr.getLong(CommonStrings.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, Integer.valueOf("0"));
+    }
+
+    // TODO new session requirement evaluation
+    private boolean isNewSessionRequired(int activityType, int transitionType) {
+        if (activeSession == null) {
+            return true;
+        }
+
+//        if (previousActivity.activityType == STILL);
+//        if (previousActivity.transitionType == ..);
+//
+//        ActivityTransition.ACTIVITY_TRANSITION_ENTER;
+//        ActivityTransition.ACTIVITY_TRANSITION_EXIT;
+//        DetectedActivity.STILL;
+
+        return false;
+    }
+
+    private void endActiveSession() {
+        try {
+            sessionDao.update(
+                    SessionHelper.updateAsEndedSession(activeSession)
+            );
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Session getNewActiveSession(int activityType, long timestamp) {
+        Session newSession = new Session(
+                SessionHelper.isSedentary(activityType),
+                timestamp,
+                activeProfile
+        );
+
+        try {
+            sessionDao.create(newSession);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return newSession;
+    }
+
+    private void persistNewActivity(int activityType, int transitionType, long timestamp, Session activeSession) {
+        Activity activity = new Activity(activityType, transitionType, timestamp, activeSession);
+
+        try {
+            activityDao.create(activity);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
