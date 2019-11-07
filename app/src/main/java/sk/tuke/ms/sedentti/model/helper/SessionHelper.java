@@ -180,6 +180,7 @@ public class SessionHelper {
         return endTimestamp - startTimestamp;
     }
 
+    // TODO calculate isSuccessful for the session based on other parameter than duration (which may not be present)
     private static boolean isSuccessful(@NotNull Session session) {
         if (session.isSedentary()) {
             return session.getDuration() <= DBCI.SEDENTARY_SECONDS_LIMIT;
