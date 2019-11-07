@@ -72,14 +72,15 @@ public class HomeFragment extends Fragment {
         super.onResume();
 
 
-        Session session1 = new Session();
-        Session session2 = new Session();
-        Session session3 = new Session();
+        // TODO handle sessions
+//        Session session1 = new Session();
+//        Session session2 = new Session();
+//        Session session3 = new Session();
 
         ArrayList<Session> sessions = new ArrayList<>();
-        sessions.add(session1);
-        sessions.add(session2);
-        sessions.add(session3);
+//        sessions.add(session1);
+//        sessions.add(session2);
+//        sessions.add(session3);
 
         makeTimeline(sessions);
 

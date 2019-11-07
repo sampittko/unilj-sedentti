@@ -12,7 +12,7 @@ public class Session {
     public static String COLUMN_ID = "id";
     public static String COLUMN_SEDENTARY = "sedentary";
     public static String COLUMN_START_TIMESTAMP = "startTimesamp";
-    public static String COLUMN_END_TIMESAMP = "endTimestamp";
+    public static String COLUMN_END_TIMESTAMP = "endTimestamp";
     public static String COLUMN_DATE = "date";
     public static String COLUMN_DURATION = "duration";
     public static String COLUMN_SUCCESSFUL = "successful";
@@ -23,12 +23,15 @@ public class Session {
     @DatabaseField(canBeNull = false)
     private boolean sedentary;
     @DatabaseField(canBeNull = false)
-    private int startTimestamp;
+    private long startTimestamp;
     @DatabaseField
-    private int endTimestamp;
+    private long endTimestamp;
     @DatabaseField
     private int duration;
-    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
+    // TMP solution
+//    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
+//    private Date date;
+    @DatabaseField(canBeNull = false)
     private Date date;
     @DatabaseField
     private boolean successful;
@@ -37,6 +40,13 @@ public class Session {
 
     public Session() {
 
+    }
+
+    public Session(boolean sedentary, long startTimestamp, Profile profile) {
+        this.sedentary = sedentary;
+        this.startTimestamp = startTimestamp;
+        this.date = new Date();
+        this.profile = profile;
     }
 
     public long getId() {
@@ -55,19 +65,19 @@ public class Session {
         this.sedentary = sedentary;
     }
 
-    public int getStartTimestamp() {
+    public long getStartTimestamp() {
         return startTimestamp;
     }
 
-    public void setStartTimestamp(int startTimestamp) {
+    public void setStartTimestamp(long startTimestamp) {
         this.startTimestamp = startTimestamp;
     }
 
-    public int getEndTimestamp() {
+    public long getEndTimestamp() {
         return endTimestamp;
     }
 
-    public void setEndTimestamp(int endTimestamp) {
+    public void setEndTimestamp(long endTimestamp) {
         this.endTimestamp = endTimestamp;
     }
 

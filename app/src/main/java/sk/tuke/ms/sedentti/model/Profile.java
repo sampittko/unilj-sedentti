@@ -18,13 +18,22 @@ public class Profile {
     private long id;
     @DatabaseField(canBeNull = false)
     private String name;
-    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
+    // TMP solution
+//    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
+//    private Date registeredDate;
+    @DatabaseField(canBeNull = false)
     private Date registeredDate;
     @DatabaseField(foreign = true)
     private PersonalityTest personalityTest;
 
     public Profile() {
 
+    }
+
+    public Profile(String name, PersonalityTest personalityTest) {
+        this.name = name;
+        this.registeredDate = new Date();
+        this.personalityTest = personalityTest;
     }
 
     public long getId() {

@@ -29,11 +29,23 @@ public class PersonalityTest {
     private int agreeableness;
     @DatabaseField(canBeNull = false)
     private int neuroticism;
-    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
+    // TMP solution
+//    @DatabaseField(canBeNull = false, persisterClass = DateStringSQLiteType.class)
+//    private Date answeredDate;
+    @DatabaseField(canBeNull = false)
     private Date answeredDate;
 
     public PersonalityTest() {
 
+    }
+
+    public PersonalityTest(int openness, int conscientiousness, int extraversion, int agreeableness, int neuroticism) {
+        this.openness = openness;
+        this.conscientiousness = conscientiousness;
+        this.extraversion = extraversion;
+        this.agreeableness = agreeableness;
+        this.neuroticism = neuroticism;
+        this.answeredDate = new Date();
     }
 
     public long getId() {

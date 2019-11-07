@@ -3,8 +3,6 @@ package sk.tuke.ms.sedentti.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import java.util.Date;
-
 @DatabaseTable
 public class Activity {
     public static String COLUMN_ID = "id";
@@ -19,9 +17,19 @@ public class Activity {
     @DatabaseField(canBeNull = false)
     private int transitionType;
     @DatabaseField(canBeNull = false)
-    private Date timestamp;
+    private long timestamp;
+    @DatabaseField(canBeNull = false, foreign = true)
+    private Session session;
 
     public Activity() {
+
+    }
+
+    public Activity(int activityType, int transitionType, long timestamp, Session session) {
+        this.activityType = activityType;
+        this.transitionType = transitionType;
+        this.timestamp = timestamp;
+        this.session = session;
     }
 
     public long getId() {
@@ -48,11 +56,19 @@ public class Activity {
         this.transitionType = transitionType;
     }
 
-    public Date getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 }

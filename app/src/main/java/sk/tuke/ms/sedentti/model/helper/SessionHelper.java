@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
@@ -25,7 +27,9 @@ public class SessionHelper {
     private Dao<Session, Long> sessionDao;
     private QueryBuilder<Session, Long> sessionDaoQueryBuilder;
 
-    public SessionHelper(Context context) {
+    private Profile activeProfile;
+
+    public SessionHelper(Context context, Profile activeProfile) {
         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
         try {
             sessionDao = databaseHelper.sessionDao();
@@ -33,6 +37,8 @@ public class SessionHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        this.activeProfile = activeProfile;
     }
 
     public List<Session> getSessionsInInterval(SessionsInterval interval) throws SQLException {
@@ -42,6 +48,8 @@ public class SessionHelper {
         return sessionDaoQueryBuilder
                 .where()
                 .between(Session.COLUMN_DATE, start, end)
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, activeProfile.getId())
                 .query();
     }
 
@@ -56,9 +64,32 @@ public class SessionHelper {
         }
     }
 
-    // TODO Streaks
-    public int getStreak() {
-        throw new UnsupportedOperationException();
+    public int getStreak() throws SQLException {
+        Session lastUnsuccessful = getLastUnsuccessful();
+        return getConsequentSuccessfulCount(lastUnsuccessful);
+    }
+
+    private Session getLastUnsuccessful() throws SQLException {
+        PreparedQuery<Session> preparedQuery = sessionDaoQueryBuilder
+                .orderBy(Session.COLUMN_START_TIMESTAMP, false)
+                .where()
+                .eq(Session.COLUMN_SUCCESSFUL, false)
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, activeProfile.getId())
+                .prepare();
+
+        return sessionDao.queryForFirst(preparedQuery);
+    }
+
+    private int getConsequentSuccessfulCount(Session lastUnsuccessful) throws SQLException {
+        PreparedQuery<Session> preparedQuery = sessionDaoQueryBuilder
+                .where()
+                .gt(Session.COLUMN_START_TIMESTAMP, lastUnsuccessful.getStartTimestamp())
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, activeProfile.getId())
+                .prepare();
+
+        return (int) sessionDao.countOf(preparedQuery);
     }
 
     // TODO Success Rate
