@@ -38,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
         setBottomMenu();
 
         // line that needs to be run after database scheme upgrade (firstly change version FROM and version TO)
-        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-        databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2);
+//        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+//        databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2);
 
         Stetho.initializeWithDefaults(this);
 

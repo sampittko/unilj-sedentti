@@ -6,6 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
 
 import sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType;
+import sk.tuke.ms.sedentti.model.helper.DateHelper;
 
 @DatabaseTable
 public class Session {
@@ -45,7 +46,7 @@ public class Session {
     public Session(boolean sedentary, long startTimestamp, Profile profile) {
         this.sedentary = sedentary;
         this.startTimestamp = startTimestamp;
-        this.date = new Date();
+        this.date = DateHelper.getNormalizedDate(new Date());
         this.profile = profile;
     }
 

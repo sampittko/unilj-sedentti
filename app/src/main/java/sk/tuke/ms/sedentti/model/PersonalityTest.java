@@ -6,6 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
 
 import sk.tuke.ms.sedentti.model.field.types.DateStringSQLiteType;
+import sk.tuke.ms.sedentti.model.helper.DateHelper;
 
 @DatabaseTable
 public class PersonalityTest {
@@ -45,7 +46,7 @@ public class PersonalityTest {
         this.extraversion = extraversion;
         this.agreeableness = agreeableness;
         this.neuroticism = neuroticism;
-        this.answeredDate = new Date();
+        this.answeredDate = DateHelper.getNormalizedDate(new Date());
     }
 
     public long getId() {
