@@ -29,9 +29,14 @@ public class MainActivity extends AppCompatActivity {
 
     private final String TAG = this.getClass().getSimpleName();
 
+    private SessionHelper sessionHelper;
+    private ProfileHelper profileHelper;
+    private SharedPreferencesHelper sharedPreferencesHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         setBottomMenu();
 
@@ -41,11 +46,13 @@ public class MainActivity extends AppCompatActivity {
 
         Stetho.initializeWithDefaults(this);
 
+        performInitialSetup();
+
         startForegroundService();
 
-        setActiveProfile();
+        sharedPreferencesHelper.setAppDefaultSettings();
 
-        verifyLastSession();
+        checkPendingSession();
     }
 
     private void setBottomMenu() {
@@ -58,18 +65,17 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
-    private void startForegroundService() {
-        Intent intent = new Intent(this, ActivityRecognitionService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
+    private void performInitialSetup() {
+        sharedPreferencesHelper = new SharedPreferencesHelper(this);
+        profileHelper = new ProfileHelper(this);
+        updateActiveProfile();
+        sessionHelper = new SessionHelper(this, activeProfile);
+
+        Log.i(TAG, "Initial setup performed");
     }
 
-    private void setActiveProfile() {
+    private void updateActiveProfile() {
         try {
-            ProfileHelper profileHelper = new ProfileHelper(this);
             if (profileHelper.getNumberOfExistingProfiles() == 0) {
                 activeProfile = profileHelper.createNewProfile("Jánošík");
             }
@@ -80,22 +86,32 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        new SharedPreferencesHelper(this).updateActiveProfile(activeProfile);
+        sharedPreferencesHelper.updateActiveProfile(activeProfile);
+
+        Log.i(TAG, "Profile updated");
     }
 
-    private void verifyLastSession() {
-        try {
-            SessionHelper sessionHelper = new SessionHelper(this, activeProfile);
-            Session lastSession = sessionHelper.getLastSession();
+    private void startForegroundService() {
+        Intent intent = new Intent(this, ActivityRecognitionService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
 
-            if (lastSession.getEndTimestamp() == 0L) {
-                sessionHelper.updateSession(
-                        SessionHelper.updateAsEndedSession(lastSession)
-                );
-                Log.i(TAG, "Last not-ended session ended.");
+        Log.i(TAG, "Activity recognition foreground service started");
+    }
+
+    private void checkPendingSession() {
+        try {
+            Session pendingSession = sessionHelper.getPendingSession();
+
+            if (pendingSession != null) {
+                sessionHelper.updateAsEndedSession(pendingSession);
+                Log.i(TAG, "Pending session set to ended");
             }
             else {
-                Log.i(TAG, "Last session is OK.");
+                Log.i(TAG, "Last session is not pending");
             }
         } catch (SQLException e) {
             e.printStackTrace();

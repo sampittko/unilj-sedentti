@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import sk.tuke.ms.sedentti.config.DBCI;
+import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -32,17 +32,20 @@ public class SessionHelper {
     private Dao<Session, Long> sessionDao;
     private QueryBuilder<Session, Long> sessionDaoQueryBuilder;
 
+    private SharedPreferencesHelper sharedPreferencesHelper;
+
     private Profile profile;
 
     public SessionHelper(Context context, Profile profile) {
         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
         try {
-            sessionDao = databaseHelper.sessionDao();
-            sessionDaoQueryBuilder = sessionDao.queryBuilder();
+            this.sessionDao = databaseHelper.sessionDao();
+            this.sessionDaoQueryBuilder = sessionDao.queryBuilder();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        this.sharedPreferencesHelper = new SharedPreferencesHelper(context);
         this.profile = profile;
     }
 
@@ -194,10 +197,9 @@ public class SessionHelper {
 
     /**
      * @param session Session to update as the ended one
-     * @return Updated session object
+     * @throws SQLException In case that communication with DB was not successful
      */
-    @Contract("_ -> param1")
-    public static Session updateAsEndedSession(@NotNull Session session) {
+    public void updateAsEndedSession(@NotNull Session session) throws SQLException {
         long endTimestamp = new Date().getTime();
 
         session.setDuration(
@@ -206,7 +208,7 @@ public class SessionHelper {
         session.setEndTimestamp(endTimestamp);
         session.setSuccessful(isSuccessful(session));
 
-        return session;
+        updateSession(session);
     }
 
     @Contract(pure = true)
@@ -214,28 +216,50 @@ public class SessionHelper {
         return endTimestamp - startTimestamp;
     }
 
-    private static boolean isSuccessful(@NotNull Session session) {
+    private boolean isSuccessful(@NotNull Session session) {
         if (session.isSedentary()) {
-            return session.getDuration() <= DBCI.SEDENTARY_SECONDS_LIMIT;
+            return session.getDuration() <= sharedPreferencesHelper.getSedentarySecondsLimit();
         }
         else {
-            return session.getDuration() >= DBCI.ACTIVE_SECONDS_LIMIT;
+            return session.getDuration() >= sharedPreferencesHelper.getActiveSecondsLimit();
         }
     }
 
-    public Session getLastSession() throws SQLException {
+    /**
+     * @return Pending session if any
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public Session getPendingSession() throws SQLException {
         return sessionDaoQueryBuilder
                 .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()
+                .eq(Session.COLUMN_END_TIMESTAMP, 0L)
+                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .queryForFirst();
     }
 
+    /**
+     * @param session Session to update
+     * @throws SQLException In case that communication with DB was not successful
+     */
     public void updateSession(Session session) throws SQLException {
         sessionDao.update(session);
     }
 
+    /**
+     * @param session Session to create
+     * @throws SQLException In case that communication with DB was not successful
+     */
     public void createSession(Session session) throws SQLException {
         sessionDao.create(session);
+    }
+
+    /**
+     * @return Duration of pending session
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public long getPendingSessionDuration() throws SQLException {
+        return System.currentTimeMillis() - getPendingSession().getStartTimestamp();
     }
 }
