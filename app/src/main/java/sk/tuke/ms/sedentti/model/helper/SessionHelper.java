@@ -55,14 +55,18 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getSessionsInInterval(SessionsInterval interval) throws SQLException {
-        Date end = DateHelper.getNormalizedDate(new Date());
-        Date start = getStartDate(interval);
+        Date normalizedEndDate = DateHelper.getNormalizedDate(
+                new Date()
+        );
+        Date normalizedStartDate = DateHelper.getNormalizedDate(
+                getStartDate(interval)
+        );
 
         return new ArrayList<>(
                 sessionDaoQueryBuilder
                         .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                         .where()
-                        .between(Session.COLUMN_DATE, start, end)
+                        .between(Session.COLUMN_DATE, normalizedStartDate, normalizedEndDate)
                         .and()
                         .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                         .query()
@@ -298,9 +302,11 @@ public class SessionHelper {
     }
 
     private long getDailyDuration(Date date, boolean sedentary) throws SQLException {
+        Date normalizedDate = DateHelper.getNormalizedDate(date);
+
         List<Session> sessions = sessionDaoQueryBuilder
                 .where()
-                .eq(Session.COLUMN_DATE, date)
+                .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
                 .eq(Session.COLUMN_SEDENTARY, sedentary)
                 .and()
@@ -310,11 +316,7 @@ public class SessionHelper {
         return getTotalDuration(sessions);
     }
 
-    private long getTotalDuration(List<Session> sessions) {
-        if (sessions.size() == 0) {
-            return 0L;
-        }
-
+    private long getTotalDuration(@NotNull List<Session> sessions) {
         long totalDuration = 0L;
 
         for (Session session : sessions) {
