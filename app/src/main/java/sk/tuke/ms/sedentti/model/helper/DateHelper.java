@@ -13,49 +13,37 @@ public class DateHelper {
     @NotNull
     public static Date getLastDay() {
         long todayTimestamp = new Date().getTime();
-        return DateHelper.getNormalizedDate(
-                new Date(todayTimestamp - daySeconds)
-        );
+        return new Date(todayTimestamp - daySeconds);
     }
 
     @NotNull
     public static Date getLastDay(@NotNull Date from) {
         long fromTimestamp = from.getTime();
-        return DateHelper.getNormalizedDate(
-                new Date(fromTimestamp - daySeconds)
-        );
+        return new Date(fromTimestamp - daySeconds);
     }
 
     @NotNull
     public static Date getLastWeek() {
         long todayTimestamp = new Date().getTime();
-        return DateHelper.getNormalizedDate(
-                new Date(todayTimestamp - weekSeconds)
-        );
+        return new Date(todayTimestamp - weekSeconds);
     }
 
     @NotNull
     public static Date getLastWeek(@NotNull Date from) {
         long fromTimestamp = from.getTime();
-        return DateHelper.getNormalizedDate(
-                new Date(fromTimestamp - weekSeconds)
-        );
+        return new Date(fromTimestamp - weekSeconds);
     }
 
     @NotNull
     public static Date getLastMonth() {
         long todayTimestamp = new Date().getTime();
-        return DateHelper.getNormalizedDate(
-                new Date(todayTimestamp - monthSeconds)
-        );
+        return new Date(todayTimestamp - monthSeconds);
     }
 
     @NotNull
     public static Date getLastMonth(@NotNull Date from) {
         long fromTimestamp = from.getTime();
-        return DateHelper.getNormalizedDate(
-                new Date(fromTimestamp - monthSeconds)
-        );
+        return new Date(fromTimestamp - monthSeconds);
     }
 
     public static Date getNormalizedDate(Date date) {

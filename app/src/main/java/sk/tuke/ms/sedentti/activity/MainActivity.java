@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferencesHelper.setAppDefaultSettings();
 
-        checkPendingSession();
+        checkForPendingSession();
     }
 
     private void setBottomMenu() {
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "Activity recognition foreground service started");
     }
 
-    private void checkPendingSession() {
+    private void checkForPendingSession() {
         try {
             Session pendingSession = sessionHelper.getPendingSession();
 
