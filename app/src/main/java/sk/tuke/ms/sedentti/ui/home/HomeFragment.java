@@ -132,7 +132,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
 
         try {
-            makeTimeline((ArrayList<Session>) sessionHelper.getSessionsInInterval(SessionHelper.SessionsInterval.LAST_DAY));
+            makeTimeline(sessionHelper.getHomeTimelineSessions());
         } catch (SQLException e) {
             Log.w(TAG, "No sessions for today");
             e.printStackTrace();
