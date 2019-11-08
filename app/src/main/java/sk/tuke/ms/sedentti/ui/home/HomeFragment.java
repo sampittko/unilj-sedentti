@@ -2,34 +2,29 @@ package sk.tuke.ms.sedentti.ui.home;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hookedonplay.decoviewlib.DecoView;
 import com.hookedonplay.decoviewlib.charts.SeriesItem;
 import com.hookedonplay.decoviewlib.events.DecoEvent;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
-import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
-import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
-import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class HomeFragment extends Fragment {
 
@@ -38,20 +33,19 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private final int TIMELINE_ITEM_HEIGHT = 60;
     private LinearLayout timelineLayout;
-    private SessionHelper sessionHelper;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-//        final TextView textView = root.findViewById(R.id.text_home);
-//        homeViewModel.getText().observe(this, new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
+
+        homeViewModel.getHomeTimelineSessions().observe(this, new Observer<ArrayList<Session>>() {
+            @Override
+            public void onChanged(ArrayList<Session> sessions) {
+                makeTimeline(sessions);
+            }
+        });
 
         setOnClickOnViews(root);
         return root;
@@ -118,29 +112,11 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ProfileHelper profileHelper = new ProfileHelper(getActivity().getApplicationContext());
-
-        Profile activeProfile = null;
-        try {
-            activeProfile = profileHelper.getActiveProfile();
-        } catch (SQLException e) {
-            Toast.makeText(getContext(), "Error, no profile", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-        this.sessionHelper = new SessionHelper(getActivity().getApplicationContext(), activeProfile);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        try {
-            makeTimeline(sessionHelper.getHomeTimelineSessions());
-        } catch (SQLException e) {
-            Log.w(TAG, "No sessions for today");
-            e.printStackTrace();
-        }
 
         List<DecoView> graphs = new ArrayList<>();
         graphs.add((DecoView) getView().findViewById(R.id.graph_f_home_active));
