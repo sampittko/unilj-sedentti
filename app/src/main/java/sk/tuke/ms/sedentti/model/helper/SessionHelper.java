@@ -258,6 +258,6 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public long getPendingSessionDuration() throws SQLException {
-        return new Date().getTime() - getPendingSession().getStartTimestamp();
+        return System.currentTimeMillis() - getPendingSession().getStartTimestamp();
     }
 }
