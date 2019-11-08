@@ -19,6 +19,9 @@ import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 public class HomeViewModel extends AndroidViewModel {
 
     private MutableLiveData<ArrayList<Session>> sessions;
+    private MutableLiveData<Integer> success;
+    private MutableLiveData<Integer> streak;
+    private MutableLiveData<Long> activeSessionDuration;
     private SessionHelper sessionHelper;
 
     public HomeViewModel(@NonNull Application application) {
@@ -35,24 +38,59 @@ public class HomeViewModel extends AndroidViewModel {
         this.sessionHelper = new SessionHelper(this.getApplication(), activeProfile);
     }
 
+    public MutableLiveData<Integer> getStreak() {
+        if (this.streak == null) {
+            this.streak = new MutableLiveData<Integer>();
+            loadStreak();
+        }
+        return this.streak;
+    }
+
+    private void loadStreak() {
+        new loadStreakAsyncTask(this.sessionHelper).execute();
+    }
+
+    public MutableLiveData<Integer> getSuccess() {
+        if (this.success == null) {
+            this.success = new MutableLiveData<Integer>();
+            loadSuccess();
+        }
+        return this.success;
+    }
+
+    private void loadSuccess() {
+        new loadSuccessAsyncTask(this.sessionHelper).execute();
+    }
+
+    public MutableLiveData<Long> getActiveSessionDuration() {
+        if (this.activeSessionDuration == null) {
+            this.activeSessionDuration = new MutableLiveData<Long>();
+            loadActiveSessionDuration();
+        }
+        return this.activeSessionDuration;
+    }
+
+    private void loadActiveSessionDuration() {
+        new loadActiveSessionDurationAsyncTask(this.sessionHelper).execute();
+    }
 
     public LiveData<ArrayList<Session>> getHomeTimelineSessions() {
-        if (sessions == null) {
-            sessions = new MutableLiveData<ArrayList<Session>>();
+        if (this.sessions == null) {
+            this.sessions = new MutableLiveData<ArrayList<Session>>();
             loadSessions();
         }
-        return sessions;
+        return this.sessions;
     }
 
     private void loadSessions() {
-        new loadAsyncTask(this.sessionHelper).execute();
+        new loadSessionsAsyncTask(this.sessionHelper).execute();
     }
 
-    private class loadAsyncTask extends AsyncTask<Void, Void, ArrayList<Session>> {
+    private class loadSessionsAsyncTask extends AsyncTask<Void, Void, ArrayList<Session>> {
 
         private SessionHelper sessionHelper;
 
-        loadAsyncTask(SessionHelper sessionHelper) {
+        loadSessionsAsyncTask(SessionHelper sessionHelper) {
             this.sessionHelper = sessionHelper;
         }
 
@@ -72,4 +110,73 @@ public class HomeViewModel extends AndroidViewModel {
         }
     }
 
+    private class loadStreakAsyncTask extends AsyncTask<Void, Void, Integer> {
+        private SessionHelper sessionHelper;
+
+        loadStreakAsyncTask(SessionHelper sessionHelper) {
+            this.sessionHelper = sessionHelper;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            try {
+//                Log.i("haha", String.valueOf(this.sessionHelper.getLastUnsuccessful()));
+                return this.sessionHelper.getStreak();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            streak.postValue(result);
+        }
+    }
+
+    private class loadSuccessAsyncTask extends AsyncTask<Void, Void, Integer> {
+        private SessionHelper sessionHelper;
+
+        loadSuccessAsyncTask(SessionHelper sessionHelper) {
+            this.sessionHelper = sessionHelper;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            try {
+                return this.sessionHelper.getSuccessRate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            success.postValue(result);
+        }
+    }
+
+    private class loadActiveSessionDurationAsyncTask extends AsyncTask<Void, Void, Long> {
+        private SessionHelper sessionHelper;
+
+        loadActiveSessionDurationAsyncTask(SessionHelper sessionHelper) {
+            this.sessionHelper = sessionHelper;
+        }
+
+        @Override
+        protected Long doInBackground(Void... voids) {
+            try {
+                return this.sessionHelper.getPendingSessionDuration();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            activeSessionDuration.postValue(result);
+        }
+    }
 }
