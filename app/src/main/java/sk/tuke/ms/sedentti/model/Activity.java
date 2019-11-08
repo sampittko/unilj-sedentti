@@ -3,7 +3,6 @@ package sk.tuke.ms.sedentti.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-// TODO fix table generation - not working
 @DatabaseTable
 public class Activity {
     public static String COLUMN_ID = "id";

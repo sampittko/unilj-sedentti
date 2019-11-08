@@ -44,10 +44,6 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                     int transitionType = event.getTransitionType();
                     long timestamp = new Date().getTime();
 
-                    // TODO check for the previous session in case
-                    //  transitionType equals to
-                    //  ActivityTransition.ACTIVITY_TRANSITION_ENTER
-                    //  and set duration in case it does not have it set
                     if (isNewSessionRequired(activityType)) {
                         endActiveSession();
                         setNewActiveSession(activityType, timestamp);
@@ -81,7 +77,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
             return true;
         }
 
-        // the user remains active
+        // the user gets active from still or gets still from active
         return newActivityType == DetectedActivity.STILL || currentActivity.getActivityType() == DetectedActivity.STILL;
     }
     private void endActiveSession() {

@@ -1,14 +1,12 @@
 package sk.tuke.ms.sedentti.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,16 +18,18 @@ import androidx.navigation.ui.NavigationUI;
 import java.sql.SQLException;
 
 import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.helper.CommonValues;
-import sk.tuke.ms.sedentti.model.PersonalityTest;
+import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
-import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
+import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
+import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
 
 public class MainActivity extends AppCompatActivity {
     private Profile activeProfile;
     private Dao<Profile, Long> profileDao;
-    private Dao<PersonalityTest, Long> personalityTestDao;
+
+    private final String TAG = this.getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,21 +43,11 @@ public class MainActivity extends AppCompatActivity {
 
         Stetho.initializeWithDefaults(this);
 
-        databaseSetup();
-
         startForegroundService();
 
         setActiveProfile();
-    }
 
-    private void databaseSetup() {
-        try {
-            DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-            profileDao = databaseHelper.profileDao();
-            personalityTestDao = databaseHelper.personalityTestDao();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        verifyLastSession();
     }
 
     private void setBottomMenu() {
@@ -81,35 +71,38 @@ public class MainActivity extends AppCompatActivity {
 
     private void setActiveProfile() {
         try {
+            ProfileHelper profileHelper = new ProfileHelper(this);
             int numberOfProfiles = (int) profileDao.countOf();
             if (numberOfProfiles == 0) {
-                activeProfile = getNewProfile();
+                activeProfile = profileHelper.createNewProfile("Jánošík");
             }
             else {
-                activeProfile = getExistingProfile();
+                activeProfile = profileHelper.getExistingProfile();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        updateProfileSharedPreferences();
+        new SharedPreferencesHelper(this).updateActiveProfile(activeProfile);
     }
 
-    private Profile getNewProfile() throws SQLException {
-        Profile newProfile = new Profile("Janko Hrasko");
-        profileDao.create(newProfile);
-        return newProfile;
-    }
+    private void verifyLastSession() {
+        try {
+            SessionHelper sessionHelper = new SessionHelper(this, activeProfile);
+            Session lastSession = sessionHelper.getLastSession();
 
-    private Profile getExistingProfile() throws SQLException {
-        return profileDao.queryForAll().get(0);
-    }
-
-    private void updateProfileSharedPreferences() {
-        SharedPreferences profileShPr = getSharedPreferences(CommonValues.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor profileShPrEditor = profileShPr.edit();
-        profileShPrEditor.putLong(CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, activeProfile.getId());
-        profileShPrEditor.apply();
+            if (lastSession.getEndTimestamp() == 0L) {
+                sessionHelper.updateSession(
+                        SessionHelper.updateAsEndedSession(lastSession)
+                );
+                Log.i(TAG, "Last not-ended session ended.");
+            }
+            else {
+                Log.i(TAG, "Last session is OK.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

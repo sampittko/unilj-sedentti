@@ -5,7 +5,6 @@ import android.content.Context;
 import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 import org.jetbrains.annotations.Contract;
@@ -56,15 +55,15 @@ public class SessionHelper {
         Date end = DateHelper.getNormalizedDate(new Date());
         Date start = getStartDate(interval);
 
-        List<Session> sessions = sessionDaoQueryBuilder
-                .orderBy(Session.COLUMN_START_TIMESTAMP, false)
-                .where()
-                .between(Session.COLUMN_DATE, start, end)
-                .and()
-                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .query();
-
-        return new ArrayList<>(sessions);
+        return new ArrayList<>(
+                sessionDaoQueryBuilder
+                        .orderBy(Session.COLUMN_START_TIMESTAMP, false)
+                        .where()
+                        .between(Session.COLUMN_DATE, start, end)
+                        .and()
+                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                        .query()
+        );
     }
 
     /**
@@ -89,14 +88,14 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getLatestSessions(long limit) throws SQLException {
-        List<Session> sessions = sessionDaoQueryBuilder
-                .limit(limit == 0 ? null : limit)
-                .orderBy(Session.COLUMN_START_TIMESTAMP, false)
-                .where()
-                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .query();
-
-        return new ArrayList<>(sessions);
+        return new ArrayList<>(
+                sessionDaoQueryBuilder
+                        .limit(limit == 0 ? null : limit)
+                        .orderBy(Session.COLUMN_START_TIMESTAMP, false)
+                        .where()
+                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                        .query()
+        );
     }
 
     private Date getStartDate(@NotNull SessionsInterval interval) {
@@ -120,26 +119,22 @@ public class SessionHelper {
     }
 
     private Session getLastUnsuccessful() throws SQLException {
-        PreparedQuery<Session> preparedQuery = sessionDaoQueryBuilder
+        return sessionDaoQueryBuilder
                 .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()
                 .eq(Session.COLUMN_SUCCESSFUL, false)
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .prepare();
-
-        return sessionDao.queryForFirst(preparedQuery);
+                .queryForFirst();
     }
 
     private int getConsequentSuccessfulCount(@NotNull Session lastUnsuccessful) throws SQLException {
-        PreparedQuery<Session> preparedQuery = sessionDaoQueryBuilder
+        return (int) sessionDaoQueryBuilder
                 .where()
                 .gt(Session.COLUMN_START_TIMESTAMP, lastUnsuccessful.getStartTimestamp())
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .prepare();
-
-        return (int) sessionDao.countOf(preparedQuery);
+                .countOf();
     }
 
     /**
@@ -158,26 +153,27 @@ public class SessionHelper {
     public int getSuccessRate(Date date) throws SQLException {
         Date normalizedDate = DateHelper.getNormalizedDate(date);
 
-        PreparedQuery<Session> successfulSessionsPQ = sessionDaoQueryBuilder
+        List<Session> successfulSessions = sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
                 .gt(Session.COLUMN_END_TIMESTAMP, 0)
                 .and()
                 .eq(Session.COLUMN_SUCCESSFUL, true)
-                .prepare();
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                .query();
 
-        PreparedQuery<Session> unsuccessfulSessionsPQ = sessionDaoQueryBuilder
+        List<Session> unsuccessfulSessions = sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
                 .gt(Session.COLUMN_END_TIMESTAMP, 0)
                 .and()
                 .eq(Session.COLUMN_SUCCESSFUL, false)
-                .prepare();
-
-        List<Session> successfulSessions = sessionDao.query(successfulSessionsPQ);
-        List<Session> unsuccessfulSessions = sessionDao.query(unsuccessfulSessionsPQ);
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                .query();
 
         return getSuccessRate(successfulSessions, unsuccessfulSessions);
     }
@@ -218,7 +214,6 @@ public class SessionHelper {
         return endTimestamp - startTimestamp;
     }
 
-    // TODO calculate isSuccessful for the session based on other parameter than duration (which may not be present)
     private static boolean isSuccessful(@NotNull Session session) {
         if (session.isSedentary()) {
             return session.getDuration() <= DBCI.SEDENTARY_SECONDS_LIMIT;
@@ -226,5 +221,17 @@ public class SessionHelper {
         else {
             return session.getDuration() >= DBCI.ACTIVE_SECONDS_LIMIT;
         }
+    }
+
+    public Session getLastSession() throws SQLException {
+        return sessionDaoQueryBuilder
+                .orderBy(Session.COLUMN_START_TIMESTAMP, false)
+                .where()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                .queryForFirst();
+    }
+
+    public void updateSession(Session session) throws SQLException {
+        sessionDao.update(session);
     }
 }

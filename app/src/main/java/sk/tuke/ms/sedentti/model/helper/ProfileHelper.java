@@ -12,7 +12,7 @@ import sk.tuke.ms.sedentti.helper.CommonValues;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
-public class ProfileHelper {
+public class    ProfileHelper {
     private Dao<Profile, Long> profileDao;
 
     private Context context;
@@ -34,5 +34,15 @@ public class ProfileHelper {
     private long getActiveProfileId() {
         SharedPreferences profileShPr = context.getSharedPreferences(CommonValues.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         return profileShPr.getLong(CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT);
+    }
+
+    public Profile createNewProfile(String name) throws SQLException {
+        Profile profile = new Profile(name);
+        profileDao.create(profile);
+        return profile;
+    }
+
+    public Profile getExistingProfile() throws SQLException {
+        return profileDao.queryForAll().get(0);
     }
 }
