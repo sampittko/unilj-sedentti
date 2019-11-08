@@ -21,18 +21,21 @@ public class TimeHelper {
         int MM = (int) (timestamp / 60);
         timestamp = timestamp % 60; // v time su teraz zvysne sekundy
 
-        String duration = "for ";
+        String duration = "";
 
-        if (HH > 1) {
-            duration += HH + " hours ";
-        } else if (HH == 1) {
-            duration += HH + " hour ";
-        }
+        if (MM > 0 || HH > 0) {
+            duration = "lasted ";
+            if (HH > 1) {
+                duration += HH + " hours ";
+            } else if (HH == 1) {
+                duration += HH + " hour ";
+            }
 
-        if (MM > 1) {
-            duration += MM + " minutes";
-        } else if (MM == 1) {
-            duration += MM + " minute";
+            if (MM > 1) {
+                duration += MM + " minutes";
+            } else if (MM == 1) {
+                duration += MM + " minute";
+            }
         }
 
         return duration;
