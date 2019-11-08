@@ -83,13 +83,17 @@ public class HomeFragment extends Fragment {
         for (int i = 0; i < sessions.size(); i++) {
             Session session = sessions.get(i);
             View view = inflater.inflate(R.layout.item_timeline_home, this.timelineLayout, false);
+            TextView dot = view.findViewById(R.id.tw_f_home_timeline_dot);
             String sessionName;
+
             if (session.isSedentary()) {
                 sessionName = getResources().getString(R.string.home_timeline_name_sedentary) + " " + index_sedentary;
                 index_sedentary++;
+                dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_sedentarry));
             } else {
                 sessionName = getResources().getString(R.string.home_timeline_name_activity) + " " + index_active;
                 index_active++;
+                dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_active));
             }
             TextView activityName = view.findViewById(R.id.tw_f_home_timeline_activity_name);
             activityName.setText(sessionName);
