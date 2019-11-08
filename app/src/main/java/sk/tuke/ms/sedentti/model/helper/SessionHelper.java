@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import sk.tuke.ms.sedentti.config.DefaultSettings;
+import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -32,17 +32,20 @@ public class SessionHelper {
     private Dao<Session, Long> sessionDao;
     private QueryBuilder<Session, Long> sessionDaoQueryBuilder;
 
+    private SharedPreferencesHelper sharedPreferencesHelper;
+
     private Profile profile;
 
     public SessionHelper(Context context, Profile profile) {
         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
         try {
-            sessionDao = databaseHelper.sessionDao();
-            sessionDaoQueryBuilder = sessionDao.queryBuilder();
+            this.sessionDao = databaseHelper.sessionDao();
+            this.sessionDaoQueryBuilder = sessionDao.queryBuilder();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        this.sharedPreferencesHelper = new SharedPreferencesHelper(context);
         this.profile = profile;
     }
 
@@ -213,12 +216,12 @@ public class SessionHelper {
         return endTimestamp - startTimestamp;
     }
 
-    private static boolean isSuccessful(@NotNull Session session) {
+    private boolean isSuccessful(@NotNull Session session) {
         if (session.isSedentary()) {
-            return session.getDuration() <= DefaultSettings.SEDENTARY_SECONDS_LIMIT;
+            return session.getDuration() <= sharedPreferencesHelper.getSedentarySecondsLimit();
         }
         else {
-            return session.getDuration() >= DefaultSettings.ACTIVE_SECONDS_LIMIT;
+            return session.getDuration() >= sharedPreferencesHelper.getActiveSecondsLimit();
         }
     }
 

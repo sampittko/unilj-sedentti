@@ -50,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
         startForegroundService();
 
-        sharedPreferencesHelper.updateAppSettings();
+        sharedPreferencesHelper.setAppDefaultSettings();
 
-        verifyLastSession();
+        checkPendingSession();
     }
 
     private void setBottomMenu() {
@@ -66,15 +66,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void performInitialSetup() {
+        sharedPreferencesHelper = new SharedPreferencesHelper(this);
         profileHelper = new ProfileHelper(this);
         updateActiveProfile();
         sessionHelper = new SessionHelper(this, activeProfile);
-        sharedPreferencesHelper = new SharedPreferencesHelper(this);
+
+        Log.i(TAG, "Initial setup performed");
     }
 
     private void updateActiveProfile() {
         try {
-            profileHelper = new ProfileHelper(this);
             if (profileHelper.getNumberOfExistingProfiles() == 0) {
                 activeProfile = profileHelper.createNewProfile("Jánošík");
             }
@@ -86,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         sharedPreferencesHelper.updateActiveProfile(activeProfile);
+
+        Log.i(TAG, "Profile updated");
     }
 
     private void startForegroundService() {
@@ -95,18 +98,20 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startService(intent);
         }
+
+        Log.i(TAG, "Activity recognition foreground service started");
     }
 
-    private void verifyLastSession() {
+    private void checkPendingSession() {
         try {
             Session pendingSession = sessionHelper.getPendingSession();
 
             if (pendingSession != null) {
                 sessionHelper.updateAsEndedSession(pendingSession);
-                Log.i(TAG, "Pending session set to ended.");
+                Log.i(TAG, "Pending session set to ended");
             }
             else {
-                Log.i(TAG, "Last session is not pending.");
+                Log.i(TAG, "Last session is not pending");
             }
         } catch (SQLException e) {
             e.printStackTrace();
