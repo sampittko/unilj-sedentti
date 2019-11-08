@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.j256.ormlite.dao.Dao;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -27,7 +26,6 @@ import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
 
 public class MainActivity extends AppCompatActivity {
     private Profile activeProfile;
-    private Dao<Profile, Long> profileDao;
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -72,8 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private void setActiveProfile() {
         try {
             ProfileHelper profileHelper = new ProfileHelper(this);
-            int numberOfProfiles = (int) profileDao.countOf();
-            if (numberOfProfiles == 0) {
+            if (profileHelper.getNumberOfExistingProfiles() == 0) {
                 activeProfile = profileHelper.createNewProfile("Jánošík");
             }
             else {

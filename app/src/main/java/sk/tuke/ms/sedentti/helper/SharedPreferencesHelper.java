@@ -17,4 +17,8 @@ public class SharedPreferencesHelper {
         profileShPrEditor.putLong(CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, profile.getId());
         profileShPrEditor.apply();
     }
+
+    public long getActiveProfileId() {
+        return profileSharedPreferences.getLong(CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT);
+    }
 }

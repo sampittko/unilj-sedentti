@@ -8,8 +8,6 @@ import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -17,19 +15,17 @@ import java.util.Date;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
-import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
-    private Dao<Profile, Long> profileDao;
-    private Dao<Activity, Long> activityDao;
-    private Dao<Session, Long> sessionDao;
-
     private Profile activeProfile;
     private Session activeSession;
     private Activity currentActivity;
+
+    private SessionHelper sessionHelper;
+    private ActivityHelper activityHelper;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -37,7 +33,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
             if (ActivityTransitionResult.hasResult(intent)) {
                 ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
 
-                databaseSetup(context);
+                initialSetup(context);
 
                 for (ActivityTransitionEvent event : intentResult.getTransitionEvents()) {
                     int activityType = event.getActivityType();
@@ -58,14 +54,11 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private void databaseSetup(Context context) {
-        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
-
+    private void initialSetup(Context context) {
         try {
-            activityDao = databaseHelper.activityDao();
-            sessionDao = databaseHelper.sessionDao();
-            profileDao = databaseHelper.profileDao();
             activeProfile = new ProfileHelper(context).getActiveProfile();
+            activityHelper = new ActivityHelper(context);
+            sessionHelper = new SessionHelper(context, activeProfile);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -83,7 +76,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private void endActiveSession() {
         if (activeSession != null) {
             try {
-                sessionDao.update(
+                sessionHelper.updateSession(
                         SessionHelper.updateAsEndedSession(activeSession)
                 );
             } catch (SQLException e) {
@@ -100,7 +93,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
         );
 
         try {
-            sessionDao.create(activeSession);
+            sessionHelper.createSession(activeSession);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -113,7 +106,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private void endCurrentActivity() {
         if (currentActivity != null) {
             try {
-                activityDao.update(
+                activityHelper.updateActivity(
                         ActivityHelper.updateAsEndedActivity(currentActivity)
                 );
             } catch (SQLException e) {
@@ -126,7 +119,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
         currentActivity = new Activity(activityType, timestamp, activeSession);
 
         try {
-            activityDao.create(currentActivity);
+            activityHelper.createActivity(currentActivity);
         } catch (SQLException e) {
             e.printStackTrace();
         }

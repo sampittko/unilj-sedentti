@@ -234,4 +234,8 @@ public class SessionHelper {
     public void updateSession(Session session) throws SQLException {
         sessionDao.update(session);
     }
+
+    public void createSession(Session session) throws SQLException {
+        sessionDao.create(session);
+    }
 }
