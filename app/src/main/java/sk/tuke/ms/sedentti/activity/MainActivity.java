@@ -20,7 +20,7 @@ import androidx.navigation.ui.NavigationUI;
 import java.sql.SQLException;
 
 import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.helper.CommonStrings;
+import sk.tuke.ms.sedentti.helper.CommonValues;
 import sk.tuke.ms.sedentti.model.PersonalityTest;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -106,9 +106,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateProfileSharedPreferences() {
-        SharedPreferences profileShPr = getSharedPreferences(CommonStrings.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences profileShPr = getSharedPreferences(CommonValues.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor profileShPrEditor = profileShPr.edit();
-        profileShPrEditor.putLong(CommonStrings.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, activeProfile.getId());
+        profileShPrEditor.putLong(CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, activeProfile.getId());
         profileShPrEditor.apply();
     }
 

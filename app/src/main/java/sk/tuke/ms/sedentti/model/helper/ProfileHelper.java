@@ -8,7 +8,7 @@ import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 
-import sk.tuke.ms.sedentti.helper.CommonStrings;
+import sk.tuke.ms.sedentti.helper.CommonValues;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
@@ -32,7 +32,7 @@ public class ProfileHelper {
     }
 
     private long getActiveProfileId() {
-        SharedPreferences profileShPr = context.getSharedPreferences(CommonStrings.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        return profileShPr.getLong(CommonStrings.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, CommonStrings.PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT);
+        SharedPreferences profileShPr = context.getSharedPreferences(CommonValues.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        return profileShPr.getLong(CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT);
     }
 }

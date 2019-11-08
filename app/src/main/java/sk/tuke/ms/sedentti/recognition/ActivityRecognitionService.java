@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
-import sk.tuke.ms.sedentti.helper.CommonStrings;
+import sk.tuke.ms.sedentti.helper.CommonValues;
 
 public class ActivityRecognitionService extends Service {
 
@@ -40,7 +40,7 @@ public class ActivityRecognitionService extends Service {
     }
 
     private void registerBroadcast() {
-        registerReceiver(receiver, new IntentFilter(CommonStrings.ACTIVITY_RECOGNITION_COMMAND));
+        registerReceiver(receiver, new IntentFilter(CommonValues.ACTIVITY_RECOGNITION_COMMAND));
     }
 
     @Override

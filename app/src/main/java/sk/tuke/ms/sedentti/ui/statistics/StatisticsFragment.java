@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.helper.CommonStrings;
+import sk.tuke.ms.sedentti.helper.CommonValues;
 
 public class StatisticsFragment extends Fragment {
 
@@ -53,7 +53,7 @@ public class StatisticsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().registerReceiver(activityReceiver, new IntentFilter(CommonStrings.ACTIVITY_RECOGNITION_COMMAND));
+        getActivity().registerReceiver(activityReceiver, new IntentFilter(CommonValues.ACTIVITY_RECOGNITION_COMMAND));
     }
 
     @Override

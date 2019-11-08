@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import sk.tuke.ms.sedentti.helper.CommonStrings;
+import sk.tuke.ms.sedentti.helper.CommonValues;
 
 public class ActivityRecognitionHandler {
 
@@ -37,7 +37,7 @@ public class ActivityRecognitionHandler {
 
         ActivityTransitionRequest request = new ActivityTransitionRequest(transitions);
 
-        Intent intent = new Intent(CommonStrings.ACTIVITY_RECOGNITION_COMMAND);
+        Intent intent = new Intent(CommonValues.ACTIVITY_RECOGNITION_COMMAND);
         pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         Task<Void> task = ActivityRecognition.getClient(this.context)

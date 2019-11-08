@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,8 @@ import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class SessionHelper {
+    private static final Long HOME_TIMELINE_SESSIONS_LIMIT = 3L;
+
     public enum SessionsInterval {
         LAST_MONTH,
         LAST_WEEK,
@@ -49,16 +52,51 @@ public class SessionHelper {
      * @return List of sessions in specified interval
      * @throws SQLException In case that communication with DB was not successful
      */
-    public List<Session> getSessionsInInterval(SessionsInterval interval) throws SQLException {
+    public ArrayList<Session> getSessionsInInterval(SessionsInterval interval) throws SQLException {
         Date end = DateHelper.getNormalizedDate(new Date());
         Date start = getStartDate(interval);
 
-        return sessionDaoQueryBuilder
+        List<Session> sessions = sessionDaoQueryBuilder
+                .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()
                 .between(Session.COLUMN_DATE, start, end)
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .query();
+
+        return new ArrayList<>(sessions);
+    }
+
+    /**
+     * @return List of the last 3 sessions (potentioal pending session included)
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public ArrayList<Session> getHomeTimelineSessions() throws SQLException {
+        return getLatestSessions(HOME_TIMELINE_SESSIONS_LIMIT);
+    }
+
+    /**
+     * @return List of all the sessions from the latest to the oldest (potentioal pending session included)
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public ArrayList<Session> getLatestSessions() throws SQLException {
+        return getLatestSessions(0);
+    }
+
+    /**
+     * @param limit Specifies the maximum number of sessions to retrieve
+     * @return List of the latest sessions (potentioal pending session included)
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public ArrayList<Session> getLatestSessions(long limit) throws SQLException {
+        List<Session> sessions = sessionDaoQueryBuilder
+                .limit(limit == 0 ? null : limit)
+                .orderBy(Session.COLUMN_START_TIMESTAMP, false)
+                .where()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                .query();
+
+        return new ArrayList<>(sessions);
     }
 
     private Date getStartDate(@NotNull SessionsInterval interval) {

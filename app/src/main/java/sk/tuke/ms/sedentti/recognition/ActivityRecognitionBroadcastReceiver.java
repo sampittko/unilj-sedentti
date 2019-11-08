@@ -3,7 +3,6 @@ package sk.tuke.ms.sedentti.recognition;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
@@ -15,7 +14,6 @@ import com.j256.ormlite.dao.Dao;
 import java.sql.SQLException;
 import java.util.Date;
 
-import sk.tuke.ms.sedentti.helper.CommonStrings;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
