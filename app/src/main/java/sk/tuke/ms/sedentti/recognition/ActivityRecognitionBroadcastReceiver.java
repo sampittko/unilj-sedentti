@@ -71,15 +71,10 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
             activityDao = databaseHelper.activityDao();
             sessionDao = databaseHelper.sessionDao();
             profileDao = databaseHelper.profileDao();
-            activeProfile = getActiveProfile(context);
+            activeProfile = new ProfileHelper(context).getActiveProfile();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private Profile getActiveProfile(Context context) throws SQLException {
-        long activeProfileId = ProfileHelper.getActiveProfileId(context);
-        return profileDao.queryForId(activeProfileId);
     }
 
     private boolean isNewSessionRequired(int newActivityType) {
