@@ -11,7 +11,7 @@ import sk.tuke.ms.sedentti.model.helper.DateHelper;
 public class Session {
     public static String COLUMN_ID = "id";
     public static String COLUMN_SEDENTARY = "sedentary";
-    public static String COLUMN_START_TIMESTAMP = "startTimesamp";
+    public static String COLUMN_START_TIMESTAMP = "startTimestamp";
     public static String COLUMN_END_TIMESTAMP = "endTimestamp";
     public static String COLUMN_DATE = "date";
     public static String COLUMN_DURATION = "duration";
