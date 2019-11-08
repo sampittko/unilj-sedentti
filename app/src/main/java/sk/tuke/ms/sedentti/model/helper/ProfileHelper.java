@@ -3,12 +3,35 @@ package sk.tuke.ms.sedentti.model.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.jetbrains.annotations.NotNull;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+
+import java.sql.SQLException;
 
 import sk.tuke.ms.sedentti.helper.CommonStrings;
+import sk.tuke.ms.sedentti.model.Profile;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class ProfileHelper {
-    public static long getActiveProfileId(@NotNull Context context) {
+    private Dao<Profile, Long> profileDao;
+
+    private Context context;
+
+    public ProfileHelper(Context context) {
+        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+        try {
+            profileDao = databaseHelper.profileDao();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        this.context = context;
+    }
+
+    public Profile getActiveProfile() throws SQLException {
+        return profileDao.queryForId(getActiveProfileId());
+    }
+
+    private long getActiveProfileId() {
         SharedPreferences profileShPr = context.getSharedPreferences(CommonStrings.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         return profileShPr.getLong(CommonStrings.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, CommonStrings.PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT);
     }
