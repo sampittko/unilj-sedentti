@@ -262,4 +262,70 @@ public class SessionHelper {
     public long getPendingSessionDuration() throws SQLException {
         return System.currentTimeMillis() - getPendingSession().getStartTimestamp();
     }
+
+    /**
+     * @return Duration in milliseconds for todays sedentary time
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public long getDailySedentaryDuration() throws SQLException {
+        return getDailySedentaryDuration(new Date());
+    }
+
+    /**
+     * @param date Date for which to return sedentary duration
+     * @return Duration in milliseconds for sedentary time at specified date
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public long getDailySedentaryDuration(Date date) throws SQLException {
+        return getDailyDuration(date, true);
+    }
+
+    /**
+     * @return Duration in milliseconds for todays active time
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public long getDailyActiveDuration() throws SQLException {
+        return getDailyActiveDuration(new Date());
+    }
+
+    /**
+     * @param date Date for which to return active duration
+     * @return Duration in milliseconds for active time at specified date
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public long getDailyActiveDuration(Date date) throws SQLException {
+        return getDailyDuration(date, false);
+    }
+
+    private long getDailyDuration(Date date, boolean sedentary) throws SQLException {
+        List<Session> sessions = sessionDaoQueryBuilder
+                .where()
+                .eq(Session.COLUMN_DATE, date)
+                .and()
+                .eq(Session.COLUMN_SEDENTARY, sedentary)
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                .query();
+
+        return getTotalDuration(sessions);
+    }
+
+    private long getTotalDuration(List<Session> sessions) {
+        if (sessions.size() == 0) {
+            return 0L;
+        }
+
+        long totalDuration = 0L;
+
+        for (Session session : sessions) {
+            if (session.getEndTimestamp() != 0L) {
+                totalDuration += session.getDuration();
+            }
+            else {
+                totalDuration += new Date().getTime() - session.getStartTimestamp();
+            }
+        }
+
+        return totalDuration;
+    }
 }
