@@ -33,7 +33,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
             if (ActivityTransitionResult.hasResult(intent)) {
                 ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
 
-                initialSetup(context);
+                performInitialSetup(context);
 
                 for (ActivityTransitionEvent event : intentResult.getTransitionEvents()) {
                     int activityType = event.getActivityType();
@@ -54,7 +54,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private void initialSetup(Context context) {
+    private void performInitialSetup(Context context) {
         try {
             activeProfile = new ProfileHelper(context).getActiveProfile();
             activityHelper = new ActivityHelper(context);
@@ -76,9 +76,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private void endActiveSession() {
         if (activeSession != null) {
             try {
-                sessionHelper.updateSession(
-                        SessionHelper.updateAsEndedSession(activeSession)
-                );
+                sessionHelper.updateAsEndedSession(activeSession);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -106,9 +104,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private void endCurrentActivity() {
         if (currentActivity != null) {
             try {
-                activityHelper.updateActivity(
-                        ActivityHelper.updateAsEndedActivity(currentActivity)
-                );
+                activityHelper.updateAsEndedActivity(currentActivity);
             } catch (SQLException e) {
                 e.printStackTrace();
             }

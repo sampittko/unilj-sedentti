@@ -26,15 +26,18 @@ public class ActivityHelper {
         }
     }
 
-    @Contract("_ -> param1")
-    public static Activity updateAsEndedActivity(@NotNull Activity activity) {
+    /**
+     * @param activity Activity to update as the ended one
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public void updateAsEndedActivity(@NotNull Activity activity) throws SQLException {
         long endTimestamp = new Date().getTime();
 
         activity.setDuration(
                 getActivityDuration(activity.getTimestamp(), endTimestamp)
         );
 
-        return activity;
+        updateActivity(activity);
     }
 
     @Contract(pure = true)
@@ -42,10 +45,18 @@ public class ActivityHelper {
         return endTimestamp - timestamp;
     }
 
+    /**
+     * @param activity Activity to update
+     * @throws SQLException In case that communication with DB was not successful
+     */
     public void updateActivity(Activity activity) throws SQLException {
         activityDao.update(activity);
     }
 
+    /**
+     * @param activity Activity to create
+     * @throws SQLException In case that communication with DB was not successful
+     */
     public void createActivity(Activity activity) throws SQLException {
         activityDao.create(activity);
     }
