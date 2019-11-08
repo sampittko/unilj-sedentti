@@ -86,16 +86,16 @@ public class MainActivity extends AppCompatActivity {
     private void verifyLastSession() {
         try {
             SessionHelper sessionHelper = new SessionHelper(this, activeProfile);
-            Session lastSession = sessionHelper.getLastSession();
+            Session pendingSession = sessionHelper.getPendingSession();
 
-            if (lastSession.getEndTimestamp() == 0L) {
+            if (pendingSession != null) {
                 sessionHelper.updateSession(
-                        SessionHelper.updateAsEndedSession(lastSession)
+                        SessionHelper.updateAsEndedSession(pendingSession)
                 );
-                Log.i(TAG, "Last not-ended session ended.");
+                Log.i(TAG, "Pending session set to ended.");
             }
             else {
-                Log.i(TAG, "Last session is OK.");
+                Log.i(TAG, "Last session is not pending.");
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -223,19 +223,41 @@ public class SessionHelper {
         }
     }
 
-    public Session getLastSession() throws SQLException {
+    /**
+     * @return Pending session if any
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public Session getPendingSession() throws SQLException {
         return sessionDaoQueryBuilder
                 .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()
+                .eq(Session.COLUMN_END_TIMESTAMP, 0L)
+                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .queryForFirst();
     }
 
+    /**
+     * @param session Session to update
+     * @throws SQLException In case that communication with DB was not successful
+     */
     public void updateSession(Session session) throws SQLException {
         sessionDao.update(session);
     }
 
+    /**
+     * @param session Session to create
+     * @throws SQLException In case that communication with DB was not successful
+     */
     public void createSession(Session session) throws SQLException {
         sessionDao.create(session);
+    }
+
+    /**
+     * @return Duration of pending session
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public long getPendingSessionDuration() throws SQLException {
+        return new Date().getTime() - getPendingSession().getStartTimestamp();
     }
 }
