@@ -17,7 +17,7 @@ public class PersonalityTest {
     public static String COLUMN_NEUROTICISM = "neuroticism";
     public static String COLUMN_ANSWERED_DATE = "answeredDate";
 
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(generatedId = true)
     private long id;
     @DatabaseField(canBeNull = false)
     private int openness;

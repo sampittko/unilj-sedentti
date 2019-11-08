@@ -8,4 +8,5 @@ public class CommonStrings {
     public static final String APP_SHARED_PREFERENCES = "app_settings";
     public static final String PROFILE_SHARED_PREFERENCES = "profile";
     public static final String PROFILE_SHARED_PREFERENCES_ACTIVE_ID = "active_id";
+    public static final long PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT = Integer.valueOf("0");
 }

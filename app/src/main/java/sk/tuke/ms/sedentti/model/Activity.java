@@ -11,7 +11,7 @@ public class Activity {
     public static String COLUMN_TRANSITION_TYPE = "transitionType";
     public static String COLUMN_TIMESTAMP = "timestamp";
 
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(generatedId = true)
     private long id;
     @DatabaseField(canBeNull = false)
     private int activityType;

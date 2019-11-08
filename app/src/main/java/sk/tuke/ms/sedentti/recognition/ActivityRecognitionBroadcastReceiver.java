@@ -21,6 +21,7 @@ import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
+import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
@@ -77,13 +78,8 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     }
 
     private Profile getActiveProfile(Context context) throws SQLException {
-        long activeProfileId = getActiveProfileId(context);
+        long activeProfileId = ProfileHelper.getActiveProfileId(context);
         return profileDao.queryForId(activeProfileId);
-    }
-
-    private long getActiveProfileId(Context context) {
-        SharedPreferences profileShPr = context.getSharedPreferences(CommonStrings.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        return profileShPr.getLong(CommonStrings.PROFILE_SHARED_PREFERENCES_ACTIVE_ID, Integer.valueOf("0"));
     }
 
     private boolean isNewSessionRequired(int newActivityType) {

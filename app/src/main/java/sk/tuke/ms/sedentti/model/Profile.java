@@ -14,7 +14,7 @@ public class Profile {
     public static String COLUMN_REGISTERED_DATE = "registeredDate";
     public static String COLUMN_PERSONALITY_TEST_ID = "personalityTestId";
 
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(generatedId = true)
     private long id;
     @DatabaseField(canBeNull = false)
     private String name;

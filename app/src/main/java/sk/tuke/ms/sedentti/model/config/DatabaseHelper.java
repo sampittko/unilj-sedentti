@@ -19,7 +19,7 @@ import sk.tuke.ms.sedentti.model.Session;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "sedentti";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 5;
 
     private Dao<PersonalityTest, Long> personalityTestDao;
     private Dao<Profile, Long> profileDao;

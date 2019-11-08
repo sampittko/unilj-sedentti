@@ -18,7 +18,7 @@ public class Session {
     public static String COLUMN_SUCCESSFUL = "successful";
     public static String COLUMN_PROFILE_ID = "profileId";
 
-    @DatabaseField(generatedId = true, unique = true)
+    @DatabaseField(generatedId = true)
     private long id;
     @DatabaseField(canBeNull = false)
     private boolean sedentary;
