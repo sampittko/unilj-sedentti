@@ -16,7 +16,7 @@ public class Session {
     public static String COLUMN_DATE = "date";
     public static String COLUMN_DURATION = "duration";
     public static String COLUMN_SUCCESSFUL = "successful";
-    public static String COLUMN_PROFILE_ID = "profileId";
+    public static String COLUMN_PROFILE_ID = "profile_id";
 
     @DatabaseField(generatedId = true)
     private long id;

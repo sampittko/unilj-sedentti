@@ -12,7 +12,7 @@ public class Profile {
     public static String COLUMN_ID = "id";
     public static String COLUMN_NAME = "name";
     public static String COLUMN_REGISTERED_DATE = "registeredDate";
-    public static String COLUMN_PERSONALITY_TEST_ID = "personalityTestId";
+    public static String COLUMN_PERSONALITY_TEST_ID = "personalityTest_id";
 
     @DatabaseField(generatedId = true)
     private long id;
@@ -27,10 +27,9 @@ public class Profile {
 
     }
 
-    public Profile(String name, PersonalityTest personalityTest) {
+    public Profile(String name) {
         this.name = name;
         this.registeredDate = DateHelper.getNormalizedDate(new Date());
-        this.personalityTest = personalityTest;
     }
 
     public long getId() {

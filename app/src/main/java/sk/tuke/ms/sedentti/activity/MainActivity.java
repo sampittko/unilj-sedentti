@@ -96,10 +96,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Profile getNewProfile() throws SQLException {
-        PersonalityTest dummyPT = new PersonalityTest(0, 0, 0, 0, 0);
-        Profile newProfile = new Profile("Janko Hrasko", dummyPT);
-
-        personalityTestDao.create(dummyPT);
+        Profile newProfile = new Profile("Janko Hrasko");
         profileDao.create(newProfile);
         return newProfile;
     }
