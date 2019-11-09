@@ -9,18 +9,18 @@ import sk.tuke.ms.sedentti.model.helper.DateHelper;
 
 @DatabaseTable
 public class Profile {
-    public static String COLUMN_ID = "id";
-    public static String COLUMN_NAME = "name";
-    public static String COLUMN_REGISTERED_DATE = "registeredDate";
-    public static String COLUMN_PERSONALITY_TEST_ID = "personalityTest_id";
+    public final static String COLUMN_ID = "id";
+    public final static String COLUMN_NAME = "name";
+    public final static String COLUMN_REGISTERED_DATE = "registeredDate";
+    public final static String COLUMN_PERSONALITY_TEST_ID = "personalityTest_id";
 
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true, columnName = COLUMN_ID)
     private long id;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_NAME)
     private String name;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_REGISTERED_DATE)
     private Date registeredDate;
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, columnName = COLUMN_PERSONALITY_TEST_ID)
     private PersonalityTest personalityTest;
 
     public Profile() {

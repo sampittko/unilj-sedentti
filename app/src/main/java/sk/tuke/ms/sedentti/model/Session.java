@@ -9,30 +9,30 @@ import sk.tuke.ms.sedentti.model.helper.DateHelper;
 
 @DatabaseTable
 public class Session {
-    public static String COLUMN_ID = "id";
-    public static String COLUMN_SEDENTARY = "sedentary";
-    public static String COLUMN_START_TIMESTAMP = "startTimestamp";
-    public static String COLUMN_END_TIMESTAMP = "endTimestamp";
-    public static String COLUMN_DATE = "date";
-    public static String COLUMN_DURATION = "duration";
-    public static String COLUMN_SUCCESSFUL = "successful";
-    public static String COLUMN_PROFILE_ID = "profile_id";
+    public final static String COLUMN_ID = "id";
+    public final static String COLUMN_SEDENTARY = "sedentary";
+    public final static String COLUMN_START_TIMESTAMP = "startTimestamp";
+    public final static String COLUMN_END_TIMESTAMP = "endTimestamp";
+    public final static String COLUMN_DATE = "date";
+    public final static String COLUMN_DURATION = "duration";
+    public final static String COLUMN_SUCCESSFUL = "successful";
+    public final static String COLUMN_PROFILE_ID = "profile_id";
 
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true, columnName = COLUMN_ID)
     private long id;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_SEDENTARY)
     private boolean sedentary;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_START_TIMESTAMP)
     private long startTimestamp;
-    @DatabaseField
+    @DatabaseField(columnName = COLUMN_END_TIMESTAMP)
     private long endTimestamp;
-    @DatabaseField
+    @DatabaseField(columnName = COLUMN_DURATION)
     private long duration;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_DATE)
     private Date date;
-    @DatabaseField
+    @DatabaseField(columnName = COLUMN_SUCCESSFUL)
     private boolean successful;
-    @DatabaseField(canBeNull = false, foreign = true)
+    @DatabaseField(canBeNull = false, foreign = true, columnName = COLUMN_PROFILE_ID)
     private Profile profile;
 
     public Session() {

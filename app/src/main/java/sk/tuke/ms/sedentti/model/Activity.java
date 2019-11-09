@@ -5,20 +5,21 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class Activity {
-    public static String COLUMN_ID = "id";
-    public static String COLUMN_ACTIVITY_TYPE = "activityType";
-    public static String COLUMN_TRANSITION_TYPE = "transitionType";
-    public static String COLUMN_TIMESTAMP = "timestamp";
+    public final static String COLUMN_ID = "id";
+    public final static String COLUMN_ACTIVITY_TYPE = "activityType";
+    public final static String COLUMN_DURATION = "duration";
+    public final static String COLUMN_TIMESTAMP = "timestamp";
+    public final static String COLUMN_SESSION_ID = "session_id";
 
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true, columnName = COLUMN_ID)
     private long id;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_ACTIVITY_TYPE)
     private int activityType;
-    @DatabaseField
+    @DatabaseField(columnName = COLUMN_DURATION)
     private long duration;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_TIMESTAMP)
     private long timestamp;
-    @DatabaseField(canBeNull = false, foreign = true)
+    @DatabaseField(canBeNull = false, foreign = true, columnName = COLUMN_SESSION_ID)
     private Session session;
 
     public Activity() {

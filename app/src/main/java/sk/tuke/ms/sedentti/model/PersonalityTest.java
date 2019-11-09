@@ -9,27 +9,27 @@ import sk.tuke.ms.sedentti.model.helper.DateHelper;
 
 @DatabaseTable
 public class PersonalityTest {
-    public static String COLUMN_ID = "id";
-    public static String COLUMN_OPENNESS = "openness";
-    public static String COLUMN_CONSCIENTIOUSNESS = "conscientiousness";
-    public static String COLUMN_EXTRAVERSION = "extraversion";
-    public static String COLUMN_AGREEABLENESS = "agreeableness";
-    public static String COLUMN_NEUROTICISM = "neuroticism";
-    public static String COLUMN_ANSWERED_DATE = "answeredDate";
+    public final static String COLUMN_ID = "id";
+    public final static String COLUMN_OPENNESS = "openness";
+    public final static String COLUMN_CONSCIENTIOUSNESS = "conscientiousness";
+    public final static String COLUMN_EXTRAVERSION = "extraversion";
+    public final static String COLUMN_AGREEABLENESS = "agreeableness";
+    public final static String COLUMN_NEUROTICISM = "neuroticism";
+    public final static String COLUMN_ANSWERED_DATE = "answeredDate";
 
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true, columnName = COLUMN_ID)
     private long id;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_OPENNESS)
     private int openness;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_CONSCIENTIOUSNESS)
     private int conscientiousness;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_EXTRAVERSION)
     private int extraversion;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_AGREEABLENESS)
     private int agreeableness;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_NEUROTICISM)
     private int neuroticism;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_ANSWERED_DATE)
     private Date answeredDate;
 
     public PersonalityTest() {

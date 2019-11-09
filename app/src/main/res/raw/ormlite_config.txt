@@ -1,5 +1,5 @@
 #
-# generated on 2019/11/08 04:03:59
+# generated on 2019/11/09 09:36:42
 #
 # --table-start--
 dataClass=sk.tuke.ms.sedentti.model.PersonalityTest
@@ -7,30 +7,37 @@ tableName=personalitytest
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=id
 generatedId=true
 # --field-end--
 # --field-start--
 fieldName=openness
+columnName=openness
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=conscientiousness
+columnName=conscientiousness
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=extraversion
+columnName=extraversion
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=agreeableness
+columnName=agreeableness
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=neuroticism
+columnName=neuroticism
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=answeredDate
+columnName=answeredDate
 canBeNull=false
 # --field-end--
 # --table-fields-end--
@@ -42,18 +49,22 @@ tableName=profile
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=id
 generatedId=true
 # --field-end--
 # --field-start--
 fieldName=name
+columnName=name
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=registeredDate
+columnName=registeredDate
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=personalityTest
+columnName=personalityTest_id
 foreign=true
 # --field-end--
 # --table-fields-end--
@@ -65,31 +76,39 @@ tableName=session
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=id
 generatedId=true
 # --field-end--
 # --field-start--
 fieldName=sedentary
+columnName=sedentary
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=startTimestamp
+columnName=startTimestamp
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=endTimestamp
+columnName=endTimestamp
 # --field-end--
 # --field-start--
 fieldName=duration
+columnName=duration
 # --field-end--
 # --field-start--
 fieldName=date
+columnName=date
 canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=successful
+columnName=successful
 # --field-end--
 # --field-start--
 fieldName=profile
+columnName=profile_id
 canBeNull=false
 foreign=true
 # --field-end--
