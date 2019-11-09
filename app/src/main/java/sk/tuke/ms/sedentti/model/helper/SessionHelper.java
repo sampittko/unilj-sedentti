@@ -22,6 +22,8 @@ import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class SessionHelper {
     private static final Long HOME_TIMELINE_SESSIONS_LIMIT = 3L;
+    private static final int HIGHEST_SUCCESS_RATE = 100;
+    private static final int LOWEST_SUCCESS_RATE = 0;
 
     public enum SessionsInterval {
         LAST_MONTH,
@@ -97,7 +99,7 @@ public class SessionHelper {
     public ArrayList<Session> getLatestSessions(long limit) throws SQLException {
         return new ArrayList<>(
                 sessionDaoQueryBuilder
-                        .limit(limit == 0 ? null : limit)
+                        .limit(limit == 0L ? null : limit)
                         .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                         .where()
                         .eq(Session.COLUMN_PROFILE_ID, profile.getId())
@@ -118,11 +120,16 @@ public class SessionHelper {
 
     /**
      * @return The number of consequent sessions which were successful
-     * @throws SQLException In case that communication with DB was not successful
      */
-    public int getStreak() throws SQLException {
-        Session lastUnsuccessful = getLastUnsuccessful();
-        return getConsequentSuccessfulCount(lastUnsuccessful);
+    public int getStreak() {
+        try {
+            Session lastUnsuccessful = getLastUnsuccessful();
+            return getConsequentSuccessfulCount(lastUnsuccessful);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     private Session getLastUnsuccessful() throws SQLException {
@@ -186,7 +193,15 @@ public class SessionHelper {
     }
 
     private int getSuccessRate(@NotNull List<Session> successfulSessions, @NotNull List<Session> unsuccessfulSessions) {
-        return (int) Math.ceil(successfulSessions.size() / unsuccessfulSessions.size());
+        if (unsuccessfulSessions.size() == 0 && successfulSessions.size() != 0) {
+            return HIGHEST_SUCCESS_RATE;
+        }
+        else if (successfulSessions.size() == 0) {
+            return LOWEST_SUCCESS_RATE;
+        }
+        else {
+            return (int) Math.ceil(successfulSessions.size() / unsuccessfulSessions.size());
+        }
     }
 
     /**
