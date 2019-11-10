@@ -165,6 +165,8 @@ public class SessionHelper {
                 .where()
                 .eq(Session.COLUMN_SUCCESSFUL, false)
                 .and()
+                .gt(Session.COLUMN_DURATION, 0L)
+                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .queryForFirst();
     }
@@ -178,6 +180,8 @@ public class SessionHelper {
         return (int) sessionDaoQueryBuilder
                 .where()
                 .gt(Session.COLUMN_START_TIMESTAMP, lastUnsuccessful.getStartTimestamp())
+                .and()
+                .gt(Session.COLUMN_DURATION, 0L)
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .countOf();
