@@ -125,15 +125,9 @@ public class SessionHelper {
     /**
      * @return The number of consequent sessions which were successful
      */
-    public int getStreak() {
-        try {
-            Session lastUnsuccessful = getLastUnsuccessful();
-            return getConsequentSuccessfulCount(lastUnsuccessful);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
-        }
+    public int getStreak() throws SQLException {
+        Session lastUnsuccessful = getLastUnsuccessful();
+        return getConsequentSuccessfulCount(lastUnsuccessful);
     }
 
     private Session getLastUnsuccessful() throws SQLException {
@@ -293,7 +287,7 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public long getPendingSessionDuration() throws SQLException {
-        return System.currentTimeMillis() - getPendingSession().getStartTimestamp();
+        return new Date().getTime() - getPendingSession().getStartTimestamp();
     }
 
     /**
