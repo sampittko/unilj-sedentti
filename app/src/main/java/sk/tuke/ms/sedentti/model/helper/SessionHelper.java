@@ -147,8 +147,14 @@ public class SessionHelper {
         Session lastUnsuccessful = getLastUnsuccessful();
 
         if (lastUnsuccessful == null) {
-            Log.d(TAG, "Last unsuccessful session not found, returning the amount of all sessions");
-            return getLatestSessions().size();
+            Log.d(TAG, "Last unsuccessful session not found, returning the amount of all sessions minus potential 1 (pending)");
+            int latestSessionsCount = getLatestSessions().size();
+            if (getPendingSession() == null) {
+                return latestSessionsCount;
+            }
+            else {
+                return latestSessionsCount - 1;
+            }
         }
 
         Log.d(TAG, "Last unsuccessful session found successfully");
