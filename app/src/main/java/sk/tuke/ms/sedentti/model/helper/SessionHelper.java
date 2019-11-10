@@ -1,6 +1,7 @@
 package sk.tuke.ms.sedentti.model.helper;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -25,6 +26,8 @@ public class SessionHelper {
     private static final int HIGHEST_SUCCESS_RATE = 100;
     private static final int LOWEST_SUCCESS_RATE = 0;
 
+    private static final String TAG = "SessionHelper";
+
     public enum SessionsInterval {
         LAST_MONTH,
         LAST_WEEK,
@@ -40,6 +43,7 @@ public class SessionHelper {
 
     public SessionHelper(Context context, Profile profile) {
         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+
         try {
             this.sessionDao = databaseHelper.sessionDao();
             this.sessionDaoQueryBuilder = sessionDao.queryBuilder();
@@ -57,12 +61,18 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getSessionsInInterval(SessionsInterval interval) throws SQLException {
+        Log.d(TAG, "Executing getSessionsInInterval");
+        Log.d(TAG, "@interval: " + interval);
+
         Date normalizedEndDate = DateHelper.getNormalizedDate(
                 new Date()
         );
         Date normalizedStartDate = DateHelper.getNormalizedDate(
                 getStartDate(interval)
         );
+
+        Log.d(TAG, "Start date: " + normalizedStartDate + "\n");
+        Log.d(TAG, "End date: " + normalizedEndDate);
 
         sessionDaoQueryBuilder.reset();
 
@@ -99,6 +109,9 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getLatestSessions(long limit) throws SQLException {
+        Log.d(TAG, "Executing getLatestSessions");
+        Log.d(TAG, "@limit: " + limit);
+
         sessionDaoQueryBuilder.reset();
 
         return new ArrayList<>(
@@ -112,6 +125,9 @@ public class SessionHelper {
     }
 
     private Date getStartDate(@NotNull SessionsInterval interval) {
+        Log.d(TAG, "Executing getStartDate");
+        Log.d(TAG, "@interval: " + interval);
+
         switch (interval) {
             case LAST_MONTH:
                 return DateHelper.getLastMonth();
@@ -126,11 +142,22 @@ public class SessionHelper {
      * @return The number of consequent sessions which were successful
      */
     public int getStreak() throws SQLException {
+        Log.d(TAG, "Executing getStreak");
+
         Session lastUnsuccessful = getLastUnsuccessful();
+
+        if (lastUnsuccessful == null) {
+            Log.d(TAG, "Last unsuccessful session not found, returning the amount of all sessions");
+            return getLatestSessions().size();
+        }
+
+        Log.d(TAG, "Last unsuccessful session found successfully");
         return getConsequentSuccessfulCount(lastUnsuccessful);
     }
 
     private Session getLastUnsuccessful() throws SQLException {
+        Log.d(TAG, "Executing getLastUnsuccessful");
+
         sessionDaoQueryBuilder.reset();
 
         return sessionDaoQueryBuilder
@@ -143,6 +170,9 @@ public class SessionHelper {
     }
 
     private int getConsequentSuccessfulCount(@NotNull Session lastUnsuccessful) throws SQLException {
+        Log.d(TAG, "Executing getConsequentSuccessfulCount");
+        Log.d(TAG, "@lastUnsuccessful ID: " + lastUnsuccessful.getId());
+
         sessionDaoQueryBuilder.reset();
 
         return (int) sessionDaoQueryBuilder
@@ -167,6 +197,9 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public int getSuccessRate(Date date) throws SQLException {
+        Log.d(TAG, "Executing getSuccessRate");
+        Log.d(TAG, "@date: " + date);
+
         Date normalizedDate = DateHelper.getNormalizedDate(date);
 
         sessionDaoQueryBuilder.reset();
@@ -195,10 +228,14 @@ public class SessionHelper {
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .query();
 
-        return getSuccessRate(successfulSessions, unsuccessfulSessions);
+        return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
     }
 
-    private int getSuccessRate(@NotNull List<Session> successfulSessions, @NotNull List<Session> unsuccessfulSessions) {
+    private int getCalculatedSuccessRate(@NotNull List<Session> successfulSessions, @NotNull List<Session> unsuccessfulSessions) {
+        Log.d(TAG, "Executing getCalculatedSuccessRate");
+        Log.d(TAG, "@successfulSessions SIZE: " + successfulSessions.size());
+        Log.d(TAG, "@unsuccessfulSessions SIZE: " + unsuccessfulSessions.size());
+
         if (unsuccessfulSessions.size() == 0 && successfulSessions.size() != 0) {
             return HIGHEST_SUCCESS_RATE;
         }
@@ -217,6 +254,9 @@ public class SessionHelper {
     // TODO context-involved determination
     @Contract(pure = true)
     public static boolean isSedentary(int activityType) {
+        Log.d(TAG, "Executing isSedentary");
+        Log.d(TAG, "@activityType: " + activityType);
+
         return activityType == DetectedActivity.STILL;
     }
 
@@ -225,6 +265,9 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public void updateAsEndedSession(@NotNull Session session) throws SQLException {
+        Log.d(TAG, "Executing updateAsEndedSession");
+        Log.d(TAG, "@session ID:" + session.getId());
+
         long endTimestamp = new Date().getTime();
 
         session.setDuration(
@@ -238,14 +281,23 @@ public class SessionHelper {
 
     @Contract(pure = true)
     private static long getSessionDuration(long startTimestamp, long endTimestamp) {
+        Log.d(TAG, "Executing getSessionDuration");
+        Log.d(TAG, "@startTimestamp: " + startTimestamp);
+        Log.d(TAG, "@endTimestamp: " + endTimestamp);
+
         return endTimestamp - startTimestamp;
     }
 
     private boolean isSuccessful(@NotNull Session session) {
+        Log.d(TAG, "Executing isSuccessful");
+        Log.d(TAG, "@session ID: " + session.getId());
+
         if (session.isSedentary()) {
+            Log.d(TAG, "Session is sedentary");
             return session.getDuration() <= sharedPreferencesHelper.getSedentarySecondsLimit();
         }
         else {
+            Log.d(TAG, "Session is not sedentary");
             return session.getDuration() >= sharedPreferencesHelper.getActiveSecondsLimit();
         }
     }
@@ -255,6 +307,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public Session getPendingSession() throws SQLException {
+        Log.d(TAG, "Executing getPendingSession");
+
         sessionDaoQueryBuilder.reset();
 
         return sessionDaoQueryBuilder
@@ -271,6 +325,9 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public void updateSession(Session session) throws SQLException {
+        Log.d(TAG, "Executing updateSession");
+        Log.d(TAG, "@session ID: " + session.getId());
+
         sessionDao.update(session);
     }
 
@@ -279,6 +336,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public void createSession(Session session) throws SQLException {
+        Log.d(TAG, "Executing createSession");
+
         sessionDao.create(session);
     }
 
@@ -287,7 +346,14 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public long getPendingSessionDuration() throws SQLException {
-        return new Date().getTime() - getPendingSession().getStartTimestamp();
+        Log.d(TAG, "Executing getPendingSessionDuration");
+
+        try {
+            return new Date().getTime() - getPendingSession().getStartTimestamp();
+        }
+        catch (NullPointerException e) {
+            return 0L;
+        }
     }
 
     /**
@@ -325,6 +391,10 @@ public class SessionHelper {
     }
 
     private long getDailyDuration(Date date, boolean sedentary) throws SQLException {
+        Log.d(TAG, "Executing getDailyDuration");
+        Log.d(TAG, "@date: " + date);
+        Log.d(TAG, "@sedentary: " + sedentary);
+
         Date normalizedDate = DateHelper.getNormalizedDate(date);
 
         sessionDaoQueryBuilder.reset();
@@ -342,6 +412,9 @@ public class SessionHelper {
     }
 
     private long getTotalDuration(@NotNull List<Session> sessions) {
+        Log.d(TAG, "Executing getTotalDuration");
+        Log.d(TAG, "@sessions SIZE: " + sessions.size());
+
         long totalDuration = 0L;
 
         for (Session session : sessions) {
