@@ -64,6 +64,8 @@ public class SessionHelper {
                 getStartDate(interval)
         );
 
+        sessionDaoQueryBuilder.reset();
+
         return new ArrayList<>(
                 sessionDaoQueryBuilder
                         .orderBy(Session.COLUMN_START_TIMESTAMP, false)
@@ -97,6 +99,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getLatestSessions(long limit) throws SQLException {
+        sessionDaoQueryBuilder.reset();
+
         return new ArrayList<>(
                 sessionDaoQueryBuilder
                         .limit(limit == 0L ? null : limit)
@@ -132,7 +136,9 @@ public class SessionHelper {
         }
     }
 
-    public Session getLastUnsuccessful() throws SQLException {
+    private Session getLastUnsuccessful() throws SQLException {
+        sessionDaoQueryBuilder.reset();
+
         return sessionDaoQueryBuilder
                 .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()
@@ -143,6 +149,8 @@ public class SessionHelper {
     }
 
     private int getConsequentSuccessfulCount(@NotNull Session lastUnsuccessful) throws SQLException {
+        sessionDaoQueryBuilder.reset();
+
         return (int) sessionDaoQueryBuilder
                 .where()
                 .gt(Session.COLUMN_START_TIMESTAMP, lastUnsuccessful.getStartTimestamp())
@@ -167,6 +175,8 @@ public class SessionHelper {
     public int getSuccessRate(Date date) throws SQLException {
         Date normalizedDate = DateHelper.getNormalizedDate(date);
 
+        sessionDaoQueryBuilder.reset();
+
         List<Session> successfulSessions = sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
@@ -177,6 +187,8 @@ public class SessionHelper {
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .query();
+
+        sessionDaoQueryBuilder.reset();
 
         List<Session> unsuccessfulSessions = sessionDaoQueryBuilder
                 .where()
@@ -249,6 +261,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public Session getPendingSession() throws SQLException {
+        sessionDaoQueryBuilder.reset();
+
         return sessionDaoQueryBuilder
                 .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()
@@ -318,6 +332,8 @@ public class SessionHelper {
 
     private long getDailyDuration(Date date, boolean sedentary) throws SQLException {
         Date normalizedDate = DateHelper.getNormalizedDate(date);
+
+        sessionDaoQueryBuilder.reset();
 
         List<Session> sessions = sessionDaoQueryBuilder
                 .where()
