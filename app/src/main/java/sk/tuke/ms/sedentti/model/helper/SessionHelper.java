@@ -418,11 +418,8 @@ public class SessionHelper {
         long totalDuration = 0L;
 
         for (Session session : sessions) {
-            if (session.getEndTimestamp() != 0L) {
+            if (session.getDuration() != 0L) {
                 totalDuration += session.getDuration();
-            }
-            else {
-                totalDuration += new Date().getTime() - session.getStartTimestamp();
             }
         }
 

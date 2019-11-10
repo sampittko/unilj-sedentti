@@ -76,6 +76,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
         return (newActivityType == DetectedActivity.STILL && currentActivity.getActivityType() != DetectedActivity.STILL)
                 || (currentActivity.getActivityType() != DetectedActivity.STILL && newActivityType == DetectedActivity.STILL);
     }
+
     private void endActiveSession() {
         if (activeSession != null) {
             try {
