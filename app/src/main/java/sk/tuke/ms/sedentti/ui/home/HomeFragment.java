@@ -15,6 +15,8 @@ import com.hookedonplay.decoviewlib.charts.SeriesItem;
 import com.hookedonplay.decoviewlib.events.DecoEvent;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -59,6 +61,8 @@ public class HomeFragment extends Fragment {
         });
 
         DecoView activeSessionGraph = root.findViewById(R.id.graph_f_home_session);
+        DecoView activeTime = root.findViewById(R.id.graph_f_home_active);
+        DecoView sedentaryTime = root.findViewById(R.id.graph_f_home_sedentary);
 
         // Create background track
         activeSessionGraph.addSeries(new SeriesItem.Builder(Color.argb(255, 218, 218, 218))
@@ -81,19 +85,31 @@ public class HomeFragment extends Fragment {
                 .setDuration(1000)
                 .build());
 
-
-        homeViewModel.getActiveSessionDuration().observe(this, value -> {
+        TextView graphTimeValue = root.findViewById(R.id.tw_f_home_graph_time);
+        homeViewModel.getPendingSessionDuration().observe(this, value -> {
             if (value != null) {
+                graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(value));
                 int limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit();
-                int minutesValue = (int) (value / 60);
-                int normalizedValue = minutesValue / limit * 100;
+                int normalizedValue = getNormalizedValue(value, limit);
                 activeSessionGraph.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series1Index).setDelay(4000).build());
             }
         });
 
+        TextView activeTimeValue = root.findViewById(R.id.tw_f_home_value_active);
+        TextView sedentaryTimeValue = root.findViewById(R.id.tw_f_home_value_sedentary);
+
+        homeViewModel.getDailySedentaryDuration().observe(this, value -> {
+            sedentaryTimeValue.setText(TimeHelper.formatTimeString(value));
+        });
+        homeViewModel.getDailyActiveDuration().observe(this, value -> activeTimeValue.setText(TimeHelper.formatTimeString(value)));
 
         setOnClickOnViews(root);
         return root;
+    }
+
+    private int getNormalizedValue(Long value, int limit) {
+        int minutesValue = (int) (value / 60);
+        return minutesValue / limit * 100;
     }
 
     private void setOnClickOnViews(View root) {
@@ -119,6 +135,8 @@ public class HomeFragment extends Fragment {
 
         int index_sedentary = 1;
         int index_active = 1;
+
+        // handles activity naming
         for (int i = 0; i < sessions.size(); i++) {
             Session session = sessions.get(i);
             View view = inflater.inflate(R.layout.item_timeline_home, this.timelineLayout, false);
@@ -137,9 +155,22 @@ public class HomeFragment extends Fragment {
             TextView activityName = view.findViewById(R.id.tw_f_home_timeline_activity_name);
             activityName.setText(sessionName);
 
+//            handles the time and adds date if needed
             String sessionTime;
-            sessionTime = TimeHelper.formatTime(session.getStartTimestamp());
+            Date sessionDate = new Date(session.getStartTimestamp());
+            Calendar currentCalendar = Calendar.getInstance();
+            currentCalendar.setTime(sessionDate);
+            int sessionDayNumber = currentCalendar.get(Calendar.DAY_OF_MONTH);
+            currentCalendar.setTime(new Date());
+            int currentDayNumber = currentCalendar.get(Calendar.DAY_OF_MONTH);
 
+            if (currentDayNumber != sessionDayNumber) {
+                sessionTime = TimeHelper.formatDateTime(sessionDate.getTime());
+            } else {
+                sessionTime = TimeHelper.formatTime(sessionDate.getTime());
+            }
+
+//            handles duration
             if (session.getDuration() > 0) {
                 sessionTime += " " + TimeHelper.formatDuration(session.getDuration());
             }

@@ -2,6 +2,8 @@ package sk.tuke.ms.sedentti.ui.home;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.sql.SQLException;
@@ -21,12 +23,25 @@ public class HomeViewModel extends AndroidViewModel {
     private MutableLiveData<ArrayList<Session>> sessions;
     private MutableLiveData<Integer> success;
     private MutableLiveData<Integer> streak;
-    private MutableLiveData<Long> activeSessionDuration;
+    private MutableLiveData<Long> pendingSessionDuration;
+
+    private MutableLiveData<Long> dailySedentaryDuration;
+    private MutableLiveData<Long> dailyActiveDuration;
     private SessionHelper sessionHelper;
+
+    private Handler tickHandler;
+    private Runnable timeUpdater = new Runnable() {
+        @Override
+        public void run() {
+            tickHandler.postDelayed(timeUpdater, 1000);
+            loadPendingSessionDuration();
+        }
+    };
 
     public HomeViewModel(@NonNull Application application) {
         super(application);
         ProfileHelper profileHelper = new ProfileHelper(this.getApplication());
+        this.tickHandler = new Handler();
 
         Profile activeProfile = null;
         try {
@@ -36,9 +51,26 @@ public class HomeViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
         this.sessionHelper = new SessionHelper(this.getApplication(), activeProfile);
+
+        startTicker();
     }
 
-    public MutableLiveData<Integer> getStreak() {
+    private void startTicker() {
+        this.tickHandler.removeCallbacks(timeUpdater);
+        this.tickHandler.postDelayed(timeUpdater, 1000);
+    }
+
+    private void stopTicker() {
+        this.tickHandler.removeCallbacks(timeUpdater);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        stopTicker();
+    }
+
+    public LiveData<Integer> getStreak() {
         if (this.streak == null) {
             this.streak = new MutableLiveData<Integer>();
             loadStreak();
@@ -46,11 +78,12 @@ public class HomeViewModel extends AndroidViewModel {
         return this.streak;
     }
 
+
     private void loadStreak() {
         new loadStreakAsyncTask(this.sessionHelper).execute();
     }
 
-    public MutableLiveData<Integer> getSuccess() {
+    public LiveData<Integer> getSuccess() {
         if (this.success == null) {
             this.success = new MutableLiveData<Integer>();
             loadSuccess();
@@ -62,16 +95,16 @@ public class HomeViewModel extends AndroidViewModel {
         new loadSuccessAsyncTask(this.sessionHelper).execute();
     }
 
-    public MutableLiveData<Long> getActiveSessionDuration() {
-        if (this.activeSessionDuration == null) {
-            this.activeSessionDuration = new MutableLiveData<Long>();
-            loadActiveSessionDuration();
+    public LiveData<Long> getPendingSessionDuration() {
+        if (this.pendingSessionDuration == null) {
+            this.pendingSessionDuration = new MutableLiveData<Long>();
+            loadPendingSessionDuration();
         }
-        return this.activeSessionDuration;
+        return this.pendingSessionDuration;
     }
 
-    private void loadActiveSessionDuration() {
-        new loadActiveSessionDurationAsyncTask(this.sessionHelper).execute();
+    private void loadPendingSessionDuration() {
+        new loadPendingSessionDurationAsyncTask(this.sessionHelper).execute();
     }
 
     public LiveData<ArrayList<Session>> getHomeTimelineSessions() {
@@ -80,6 +113,30 @@ public class HomeViewModel extends AndroidViewModel {
             loadSessions();
         }
         return this.sessions;
+    }
+
+    public LiveData<Long> getDailySedentaryDuration() {
+        if (this.dailySedentaryDuration == null) {
+            this.dailySedentaryDuration = new MutableLiveData<Long>();
+            loadDailySedentaryTime();
+        }
+        return this.dailySedentaryDuration;
+    }
+
+    private void loadDailySedentaryTime() {
+        new loadDailySedentaryTimeAsyncTask(this.sessionHelper).execute();
+    }
+
+    public LiveData<Long> getDailyActiveDuration() {
+        if (this.dailyActiveDuration == null) {
+            this.dailyActiveDuration = new MutableLiveData<Long>();
+            loadDailyActiveTime();
+        }
+        return this.dailyActiveDuration;
+    }
+
+    private void loadDailyActiveTime() {
+        new loadDailyActiveTimeAsyncTask(this.sessionHelper).execute();
     }
 
     private void loadSessions() {
@@ -151,10 +208,10 @@ public class HomeViewModel extends AndroidViewModel {
         }
     }
 
-    private class loadActiveSessionDurationAsyncTask extends AsyncTask<Void, Void, Long> {
+    private class loadPendingSessionDurationAsyncTask extends AsyncTask<Void, Void, Long> {
         private SessionHelper sessionHelper;
 
-        loadActiveSessionDurationAsyncTask(SessionHelper sessionHelper) {
+        loadPendingSessionDurationAsyncTask(SessionHelper sessionHelper) {
             this.sessionHelper = sessionHelper;
         }
 
@@ -170,7 +227,54 @@ public class HomeViewModel extends AndroidViewModel {
 
         @Override
         protected void onPostExecute(Long result) {
-            activeSessionDuration.postValue(result);
+            Log.i("haha", "cas bol takyto " + result);
+            pendingSessionDuration.postValue(result);
+        }
+    }
+
+    private class loadDailySedentaryTimeAsyncTask extends AsyncTask<Void, Void, Long> {
+        private SessionHelper sessionHelper;
+
+        public loadDailySedentaryTimeAsyncTask(SessionHelper sessionHelper) {
+            this.sessionHelper = sessionHelper;
+        }
+
+        @Override
+        protected Long doInBackground(Void... voids) {
+            try {
+                return this.sessionHelper.getDailySedentaryDuration();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            dailySedentaryDuration.postValue(result);
+        }
+    }
+
+    private class loadDailyActiveTimeAsyncTask extends AsyncTask<Void, Void, Long> {
+        private SessionHelper sessionHelper;
+
+        public loadDailyActiveTimeAsyncTask(SessionHelper sessionHelper) {
+            this.sessionHelper = sessionHelper;
+        }
+
+        @Override
+        protected Long doInBackground(Void... voids) {
+            try {
+                return this.sessionHelper.getDailyActiveDuration();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            dailyActiveDuration.postValue(result);
         }
     }
 }

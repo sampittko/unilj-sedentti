@@ -54,6 +54,7 @@
                     android:layout_height="match_parent" />
 
                 <TextView
+                    android:id="@+id/tw_f_home_graph_time"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"

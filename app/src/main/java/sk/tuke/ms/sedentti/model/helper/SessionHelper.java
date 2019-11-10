@@ -132,7 +132,7 @@ public class SessionHelper {
         }
     }
 
-    private Session getLastUnsuccessful() throws SQLException {
+    public Session getLastUnsuccessful() throws SQLException {
         return sessionDaoQueryBuilder
                 .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()

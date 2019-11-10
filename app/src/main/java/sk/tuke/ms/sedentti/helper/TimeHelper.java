@@ -1,5 +1,6 @@
 package sk.tuke.ms.sedentti.helper;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 public class TimeHelper {
@@ -10,6 +11,10 @@ public class TimeHelper {
 
     public static String formatTime(long timestamp) {
         return SimpleDateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(timestamp);
+    }
+
+    public static String formatTimeWithSeconds(long timestamp) {
+        return SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM).format(timestamp);
     }
 
 
@@ -38,6 +43,32 @@ public class TimeHelper {
             }
         }
 
+        return duration;
+    }
+
+    public static String formatTimeString(Long timestamp) {
+        timestamp = timestamp / 1000L;
+        int HH = (int) (timestamp / 3600);
+        timestamp = timestamp % 3600;
+
+        int MM = (int) (timestamp / 60);
+        timestamp = timestamp % 60; // v time su teraz zvysne sekundy
+
+        String duration = "0 minutes";
+
+        if (MM > 0 || HH > 0) {
+            if (HH > 1) {
+                duration += HH + " hours ";
+            } else if (HH == 1) {
+                duration += HH + " hour ";
+            }
+
+            if (MM > 1) {
+                duration += MM + " minutes";
+            } else if (MM == 1) {
+                duration += MM + " minute";
+            }
+        }
         return duration;
     }
 }
