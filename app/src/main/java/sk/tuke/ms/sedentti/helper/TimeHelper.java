@@ -54,7 +54,7 @@ public class TimeHelper {
         int MM = (int) (timestamp / 60);
         timestamp = timestamp % 60; // v time su teraz zvysne sekundy
 
-        String duration = "0 minutes";
+        String duration = "";
 
         if (MM > 0 || HH > 0) {
             if (HH > 1) {
@@ -68,6 +68,10 @@ public class TimeHelper {
             } else if (MM == 1) {
                 duration += MM + " minute";
             }
+        }
+
+        if (duration.equals("")) {
+            return "0 minutes";
         }
         return duration;
     }
