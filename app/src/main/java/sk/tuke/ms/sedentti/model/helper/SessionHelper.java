@@ -253,7 +253,7 @@ public class SessionHelper {
      */
     // TODO context-involved determination
     @Contract(pure = true)
-    public static boolean isSedentary(int activityType) {
+    private boolean isSedentary(int activityType) {
         Log.d(TAG, "Executing isSedentary");
         Log.d(TAG, "@activityType: " + activityType);
 
@@ -279,8 +279,7 @@ public class SessionHelper {
         updateSession(session);
     }
 
-    @Contract(pure = true)
-    private static long getSessionDuration(long startTimestamp, long endTimestamp) {
+    private long getSessionDuration(long startTimestamp, long endTimestamp) {
         Log.d(TAG, "Executing getSessionDuration");
         Log.d(TAG, "@startTimestamp: " + startTimestamp);
         Log.d(TAG, "@endTimestamp: " + endTimestamp);
@@ -332,13 +331,19 @@ public class SessionHelper {
     }
 
     /**
-     * @param session Session to create
+     * @param activityType Type of activity to create session for
      * @throws SQLException In case that communication with DB was not successful
      */
-    public void createSession(Session session) throws SQLException {
+    public void createSession(int activityType) throws SQLException {
         Log.d(TAG, "Executing createSession");
 
-        sessionDao.create(session);
+        Session newSession = new Session(
+                isSedentary(activityType),
+                new Date().getTime(),
+                profile
+        );
+
+        sessionDao.create(newSession);
     }
 
     /**
