@@ -243,7 +243,9 @@ public class SessionHelper {
             return LOWEST_SUCCESS_RATE;
         }
         else {
-            return (int) Math.ceil(successfulSessions.size() / unsuccessfulSessions.size());
+            float totalSessions = successfulSessions.size() + unsuccessfulSessions.size();
+            float successRate = successfulSessions.size() / totalSessions * 100F;
+            return (int) successRate;
         }
     }
 

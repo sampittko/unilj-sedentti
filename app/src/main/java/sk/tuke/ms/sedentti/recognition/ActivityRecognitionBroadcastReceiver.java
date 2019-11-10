@@ -27,7 +27,11 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
             if (ActivityTransitionResult.hasResult(intent)) {
                 ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
 
-                performInitialSetup(context);
+                try {
+                    performInitialSetup(context);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
                 for (ActivityTransitionEvent event : intentResult.getTransitionEvents()) {
                     int newActivityType = event.getActivityType();
@@ -71,17 +75,13 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private void performInitialSetup(Context context) {
+    private void performInitialSetup(Context context) throws SQLException {
         if (activityHelper == null || sessionHelper == null) {
-            try {
-                activityHelper = new ActivityHelper(context);
-                sessionHelper = new SessionHelper(
-                        context,
-                        new ProfileHelper(context).getActiveProfile()
-                );
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            activityHelper = new ActivityHelper(context);
+            sessionHelper = new SessionHelper(
+                    context,
+                    new ProfileHelper(context).getActiveProfile()
+            );
         }
     }
 
