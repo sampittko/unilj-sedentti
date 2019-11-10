@@ -17,10 +17,10 @@ import com.hookedonplay.decoviewlib.events.DecoEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
@@ -60,36 +60,59 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        makeGraphs(root);
+
+        setOnClickOnViews(root);
+        return root;
+    }
+
+    private void makeGraphs(View root) {
         DecoView activeSessionGraph = root.findViewById(R.id.graph_f_home_session);
         DecoView activeTime = root.findViewById(R.id.graph_f_home_active);
         DecoView sedentaryTime = root.findViewById(R.id.graph_f_home_sedentary);
 
-        // Create background track
         activeSessionGraph.addSeries(new SeriesItem.Builder(Color.argb(255, 218, 218, 218))
                 .setRange(0, 100, 100)
-                .setInitialVisibility(false)
-                .setLineWidth(32f)
+                .setInitialVisibility(true)
+                .setLineWidth(40f)
                 .build());
 
-        //Create data series track
-        // TODO oprav farbu grafu na novu sviezu
-        SeriesItem seriesItem1 = new SeriesItem.Builder(R.color.colorAccent)
+        activeTime.addSeries(new SeriesItem.Builder(Color.argb(255, 218, 218, 218))
+                .setRange(0, 100, 100)
+                .setInitialVisibility(true)
+                .setLineWidth(20f)
+                .build());
+
+        sedentaryTime.addSeries(new SeriesItem.Builder(Color.argb(255, 218, 218, 218))
+                .setRange(0, 100, 100)
+                .setInitialVisibility(true)
+                .setLineWidth(20f)
+                .build());
+
+        SeriesItem activeSessionItem = new SeriesItem.Builder(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null))
                 .setRange(0, 100, 0)
-                .setLineWidth(32f)
+                .setLineWidth(40f)
                 .build();
 
-        int series1Index = activeSessionGraph.addSeries(seriesItem1);
+        SeriesItem activeItem = new SeriesItem.Builder(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null))
+                .setRange(0, 100, 0)
+                .setLineWidth(20f)
+                .build();
 
-        activeSessionGraph.addEvent(new DecoEvent.Builder(DecoEvent.EventType.EVENT_SHOW, true)
-                .setDelay(0)
-                .setDuration(1000)
-                .build());
+        SeriesItem sedentaryItem = new SeriesItem.Builder(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null))
+                .setRange(0, 100, 0)
+                .setLineWidth(20f)
+                .build();
+
+        int series1Index = activeSessionGraph.addSeries(activeSessionItem);
+        int series2Index = activeTime.addSeries(activeItem);
+        int series3Index = sedentaryTime.addSeries(sedentaryItem);
 
         TextView graphTimeValue = root.findViewById(R.id.tw_f_home_graph_time);
         homeViewModel.getPendingSessionDuration().observe(this, value -> {
             if (value != null) {
                 graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(value));
-                int limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit();
+                int limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit() * 1000;
                 int normalizedValue = getNormalizedValue(value, limit);
                 activeSessionGraph.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series1Index).setDelay(4000).build());
             }
@@ -100,16 +123,25 @@ public class HomeFragment extends Fragment {
 
         homeViewModel.getDailySedentaryDuration().observe(this, value -> {
             sedentaryTimeValue.setText(TimeHelper.formatTimeString(value));
+            // TODO: 11/10/19 set sedentary time goal
+            int normalizedValue = getNormalizedValue(value, 8L * 3600L * 1000L);
+            sedentaryTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series2Index).setDelay(4000).build());
         });
-        homeViewModel.getDailyActiveDuration().observe(this, value -> activeTimeValue.setText(TimeHelper.formatTimeString(value)));
-
-        setOnClickOnViews(root);
-        return root;
+        homeViewModel.getDailyActiveDuration().observe(this, value -> {
+            activeTimeValue.setText(TimeHelper.formatTimeString(value));
+            // TODO: 11/10/19 set activity time goal
+            int normalizedValue = getNormalizedValue(value, 8 * 3600 * 1000);
+            activeTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series3Index).setDelay(4000).build());
+        });
     }
 
-    private int getNormalizedValue(Long value, int limit) {
-        int minutesValue = (int) (value / 60);
-        return minutesValue / limit * 100;
+    private int getNormalizedValue(Long milliseconds, long milliLimit) {
+        int result = (int) (((double) milliseconds / milliLimit) * 100L);
+
+        if (result > 100) {
+            return 100;
+        }
+        return result;
     }
 
     private void setOnClickOnViews(View root) {
@@ -188,40 +220,5 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        List<DecoView> graphs = new ArrayList<>();
-        graphs.add((DecoView) getView().findViewById(R.id.graph_f_home_active));
-        graphs.add((DecoView) getView().findViewById(R.id.graph_f_home_sedentary));
-
-        for (DecoView graph : graphs) {
-            // Create background track
-            graph.addSeries(new SeriesItem.Builder(Color.argb(255, 218, 218, 218))
-                    .setRange(0, 100, 100)
-                    .setInitialVisibility(false)
-                    .setLineWidth(32f)
-                    .build());
-
-//Create data series track
-            SeriesItem seriesItem1 = new SeriesItem.Builder(Color.argb(255, 64, 196, 200))
-                    .setRange(0, 100, 0)
-                    .setLineWidth(32f)
-                    .build();
-
-            int series1Index = graph.addSeries(seriesItem1);
-
-            graph.addEvent(new DecoEvent.Builder(DecoEvent.EventType.EVENT_SHOW, true)
-                    .setDelay(1000)
-                    .setDuration(2000)
-                    .build());
-
-            graph.addEvent(new DecoEvent.Builder(25).setIndex(series1Index).setDelay(4000).build());
-            graph.addEvent(new DecoEvent.Builder(100).setIndex(series1Index).setDelay(8000).build());
-            graph.addEvent(new DecoEvent.Builder(10).setIndex(series1Index).setDelay(12000).build());
-        }
     }
 }

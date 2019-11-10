@@ -1,6 +1,5 @@
 package sk.tuke.ms.sedentti.helper;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 public class TimeHelper {
@@ -14,7 +13,14 @@ public class TimeHelper {
     }
 
     public static String formatTimeWithSeconds(long timestamp) {
-        return SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM).format(timestamp);
+        timestamp = timestamp / 1000L;
+        int HH = (int) (timestamp / 3600);
+        timestamp = timestamp % 3600;
+
+        int MM = (int) (timestamp / 60);
+        timestamp = timestamp % 60; // v time su teraz zvysne sekundy
+
+        return (String.format("%d:%02d:%02d", HH, MM, timestamp));
     }
 
 

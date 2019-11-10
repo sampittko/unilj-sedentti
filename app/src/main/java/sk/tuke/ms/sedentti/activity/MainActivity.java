@@ -8,14 +8,13 @@ import android.util.Log;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.sql.SQLException;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
-import java.sql.SQLException;
-
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferencesHelper.setAppDefaultSettings();
 
-        checkForPendingSession();
+//        checkForPendingSession();
     }
 
     private void setBottomMenu() {

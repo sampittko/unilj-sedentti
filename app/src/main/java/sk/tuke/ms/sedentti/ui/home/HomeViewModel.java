@@ -176,7 +176,12 @@ public class HomeViewModel extends AndroidViewModel {
 
         @Override
         protected Integer doInBackground(Void... voids) {
-            return this.sessionHelper.getStreak();
+            try {
+                return this.sessionHelper.getStreak();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
         @Override
