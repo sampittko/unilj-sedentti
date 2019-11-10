@@ -55,12 +55,14 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void performInitialSetup(Context context) {
-        try {
-            activeProfile = new ProfileHelper(context).getActiveProfile();
-            activityHelper = new ActivityHelper(context);
-            sessionHelper = new SessionHelper(context, activeProfile);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (activeProfile == null  || activityHelper == null || sessionHelper == null) {
+            try {
+                activeProfile = new ProfileHelper(context).getActiveProfile();
+                activityHelper = new ActivityHelper(context);
+                sessionHelper = new SessionHelper(context, activeProfile);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -70,8 +72,9 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
             return true;
         }
 
-        // the user gets active from still or gets still from active
-        return newActivityType == DetectedActivity.STILL || currentActivity.getActivityType() == DetectedActivity.STILL;
+        // from still to active or from active to still
+        return (newActivityType == DetectedActivity.STILL && currentActivity.getActivityType() != DetectedActivity.STILL)
+                || (currentActivity.getActivityType() != DetectedActivity.STILL && newActivityType == DetectedActivity.STILL);
     }
     private void endActiveSession() {
         if (activeSession != null) {
