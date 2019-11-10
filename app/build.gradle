@@ -41,6 +41,8 @@ dependencies {
     implementation 'com.github.bmarrdev:android-DecoView-charting:v1.2'
 //    William Graphs
     implementation 'com.diogobernardino:williamchart:3.1.1'
+//    PhilJay Graph
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
 
     implementation 'androidx.preference:preference:1.1.0-alpha05'

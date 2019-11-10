@@ -203,7 +203,7 @@ public class HomeFragment extends Fragment {
             }
 
 //            handles duration
-            if (session.getDuration() > 0) {
+            if (session.getDuration() > 0L) {
                 sessionTime += " " + TimeHelper.formatDuration(session.getDuration());
             }
 

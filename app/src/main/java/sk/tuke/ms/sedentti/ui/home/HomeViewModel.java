@@ -3,7 +3,6 @@ package sk.tuke.ms.sedentti.ui.home;
 import android.app.Application;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.sql.SQLException;
@@ -232,7 +231,6 @@ public class HomeViewModel extends AndroidViewModel {
 
         @Override
         protected void onPostExecute(Long result) {
-            Log.i("haha", "cas bol takyto " + result);
             pendingSessionDuration.postValue(result);
         }
     }
