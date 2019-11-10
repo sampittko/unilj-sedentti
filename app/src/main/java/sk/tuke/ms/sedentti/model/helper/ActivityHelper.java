@@ -21,6 +21,7 @@ public class ActivityHelper {
         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
         try {
             activityDao = databaseHelper.activityDao();
+            activityDaoQueryBuilder = activityDao.queryBuilder();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -54,6 +55,8 @@ public class ActivityHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public Activity getLastActivity() throws SQLException {
+        activityDaoQueryBuilder.reset();
+
         return activityDaoQueryBuilder
                 .orderBy(Activity.COLUMN_TIMESTAMP, false)
                 .queryForFirst();

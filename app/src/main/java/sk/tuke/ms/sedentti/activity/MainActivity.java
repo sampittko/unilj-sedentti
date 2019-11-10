@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 
@@ -19,6 +20,7 @@ import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         // line that needs to be run after database scheme upgrade (firstly change version FROM and version TO)
 //        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-//        databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 4, 5);
+//        databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 6, 7);
 
         Stetho.initializeWithDefaults(this);
 
