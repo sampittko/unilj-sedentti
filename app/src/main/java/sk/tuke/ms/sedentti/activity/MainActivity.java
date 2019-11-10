@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         updateActiveProfile();
         sessionHelper = new SessionHelper(this, activeProfile);
 
-        Log.i(TAG, "Initial setup performed");
+        Log.d(TAG, "Initial setup performed");
     }
 
     private void updateActiveProfile() {
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferencesHelper.updateActiveProfile(activeProfile);
 
-        Log.i(TAG, "Profile updated");
+        Log.d(TAG, "Profile updated");
     }
 
     private void startForegroundService() {
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             startService(intent);
         }
 
-        Log.i(TAG, "Activity recognition foreground service started");
+        Log.d(TAG, "Activity recognition foreground service started");
     }
 
     private void checkForPendingSession() {
@@ -107,10 +107,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (pendingSession != null) {
                 sessionHelper.updateAsEndedSession(pendingSession);
-                Log.i(TAG, "Pending session set to ended");
+                Log.d(TAG, "Pending session set to ended");
             }
             else {
-                Log.i(TAG, "Last session is not pending");
+                Log.d(TAG, "Last session is not pending");
             }
         } catch (SQLException e) {
             e.printStackTrace();
