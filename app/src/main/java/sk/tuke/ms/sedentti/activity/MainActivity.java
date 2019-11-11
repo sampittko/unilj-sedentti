@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 
@@ -20,7 +19,6 @@ import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
-import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;

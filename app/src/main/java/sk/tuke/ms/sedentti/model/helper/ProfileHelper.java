@@ -11,7 +11,7 @@ import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
-public class    ProfileHelper {
+public class ProfileHelper {
     private Dao<Profile, Long> profileDao;
 
     private Context context;
