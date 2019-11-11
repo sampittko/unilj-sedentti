@@ -58,7 +58,7 @@ public class TimelineAdapter27 extends RecyclerView.Adapter<RecyclerView.ViewHol
             Day day = (Day) dayModelsList.get(position);
 
             dayHolder.date.setText(TimeHelper.formatDate(day.getDate()));
-            dayHolder.completed.setText(day.getNumberOfSessions());
+            dayHolder.completed.setText(String.valueOf(day.getNumberOfSessions()));
 
             dayHolder.activeTime.setText(TimeHelper.formatTimeString(day.getActiveTime()));
             dayHolder.sedentaryTime.setText(TimeHelper.formatTimeString(day.getSedentaryTime()));
