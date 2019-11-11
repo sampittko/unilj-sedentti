@@ -1,15 +1,16 @@
 package sk.tuke.ms.sedentti.model.day;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import sk.tuke.ms.sedentti.model.Session;
 
 public class DayOverview {
-
     private Day day;
-    private List<Session> sessionsOfDay;
+    private ArrayList<Session> sessionsOfDay;
 
-    public DayOverview() {
+    public DayOverview(Day day, ArrayList<Session> sessionsOfDay) {
+        this.day = day;
+        this.sessionsOfDay = sessionsOfDay;
     }
 
     public Day getDay() {
@@ -20,11 +21,11 @@ public class DayOverview {
         this.day = day;
     }
 
-    public List<Session> getSessionsOfDay() {
+    public ArrayList<Session> getSessionsOfDay() {
         return sessionsOfDay;
     }
 
-    public void setSessionsOfDay(List<Session> sessionsOfDay) {
+    public void setSessionsOfDay(ArrayList<Session> sessionsOfDay) {
         this.sessionsOfDay = sessionsOfDay;
     }
 }

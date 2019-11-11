@@ -3,10 +3,6 @@ package sk.tuke.ms.sedentti.model.day;
 import java.util.Date;
 
 public class Day extends DayModel {
-
-    /*
-     * each field is for the specified date
-     * */
     private Date date;
     private int streak;
     private int successRate;
@@ -14,7 +10,13 @@ public class Day extends DayModel {
     private long sedentaryTime;
     private long activeTime;
 
-    public Day() {
+    public Day(Date date, int streak, int successRate, int numberOfSessions, long sedentaryTime, long activeTime) {
+        this.date = date;
+        this.streak = streak;
+        this.successRate = successRate;
+        this.numberOfSessions = numberOfSessions;
+        this.sedentaryTime = sedentaryTime;
+        this.activeTime = activeTime;
     }
 
     public Date getDate() {

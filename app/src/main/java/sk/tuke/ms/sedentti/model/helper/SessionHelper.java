@@ -442,4 +442,91 @@ public class SessionHelper {
 
         return totalDuration;
     }
+
+    /**
+     * @return The number of consequent sessions which were successful
+     */
+    public int getDayStreak(ArrayList<Session> sessionsOfDay) {
+        Log.d(TAG, "Executing getDayStreak");
+
+        return 0;
+
+//        Session lastUnsuccessful = getLastUnsuccessful();
+//
+//        if (lastUnsuccessful == null) {
+//            Log.d(TAG, "Last unsuccessful session not found, returning the amount of all sessions minus potential 1 (pending)");
+//            int latestSessionsCount = getLatestSessions().size();
+//            if (getPendingSession() == null) {
+//                return latestSessionsCount;
+//            }
+//            else {
+//                return latestSessionsCount - 1;
+//            }
+//        }
+//
+//        Log.d(TAG, "Last unsuccessful session found successfully");
+//        return getConsequentSuccessfulCount(lastUnsuccessful);
+    }
+
+    /**
+     * @param sessionsOfDay List of all the sessions on certain date
+     * @return Integer value representing the sessions success ratio in the spectified day
+     */
+    public int getDaySuccessRate(ArrayList<Session> sessionsOfDay) {
+        Log.d(TAG, "Executing getDaySuccessRate");
+
+        ArrayList<Session> successfulSessions = getSuccessfulSessions(sessionsOfDay);
+
+        ArrayList<Session> unsuccessfulSessions = getUnsuccessfulSessions(sessionsOfDay, successfulSessions);
+
+        return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
+    }
+
+    @Contract("_ -> param1")
+    private ArrayList<Session> getSuccessfulSessions(@NotNull ArrayList<Session> sessionsOfDay) {
+        for (Session session : sessionsOfDay) {
+            if (!session.isSuccessful()) {
+                sessionsOfDay.remove(session);
+            }
+        }
+        return sessionsOfDay;
+    }
+
+    @Contract("_, _ -> param1")
+    private ArrayList<Session> getUnsuccessfulSessions(@NotNull ArrayList<Session> sessionsOfDay, ArrayList<Session> successfulSessions) {
+        sessionsOfDay.removeAll(successfulSessions);
+        return sessionsOfDay;
+    }
+
+    /**
+     * @param sessionsOfDay
+     * @return
+     */
+    public long getDaySedentaryTime(ArrayList<Session> sessionsOfDay) {
+        return getDayTotalDuration(sessionsOfDay, true);
+    }
+
+    /**
+     * @param sessionsOfDay
+     * @return
+     */
+    public long getDayActiveTime(ArrayList<Session> sessionsOfDay) {
+        return getDayTotalDuration(sessionsOfDay, false);
+    }
+
+    private long getDayTotalDuration(@NotNull List<Session> sessionsOfDay, boolean sedentary) {
+        Log.d(TAG, "Executing getDayTotalDuration");
+        Log.d(TAG, "@sessions SIZE: " + sessionsOfDay.size());
+        Log.d(TAG, "@sedentary: " + sedentary);
+
+        long totalDuration = 0L;
+
+        for (Session session : sessionsOfDay) {
+            if (session.getDuration() != 0L && session.isSedentary() == sedentary) {
+                totalDuration += session.getDuration();
+            }
+        }
+
+        return totalDuration;
+    }
 }
