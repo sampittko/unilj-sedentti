@@ -96,7 +96,7 @@ public class SessionHelper {
     }
 
     /**
-     * @return List of all the sessions from the latest to the oldest (potentioal pending session included)
+     * @return List of all the sessions from the latest to the oldest (potential pending session included)
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getLatestSessions() throws SQLException {
@@ -444,28 +444,24 @@ public class SessionHelper {
     }
 
     /**
+     * @param sessionsOfDay List of sessions to get streak for
      * @return The number of consequent sessions which were successful
      */
-    public int getDayStreak(ArrayList<Session> sessionsOfDay) {
+    public int getDayStreak(@NotNull ArrayList<Session> sessionsOfDay) {
         Log.d(TAG, "Executing getDayStreak");
 
-        return 0;
+        int streak = 0;
 
-//        Session lastUnsuccessful = getLastUnsuccessful();
-//
-//        if (lastUnsuccessful == null) {
-//            Log.d(TAG, "Last unsuccessful session not found, returning the amount of all sessions minus potential 1 (pending)");
-//            int latestSessionsCount = getLatestSessions().size();
-//            if (getPendingSession() == null) {
-//                return latestSessionsCount;
-//            }
-//            else {
-//                return latestSessionsCount - 1;
-//            }
-//        }
-//
-//        Log.d(TAG, "Last unsuccessful session found successfully");
-//        return getConsequentSuccessfulCount(lastUnsuccessful);
+        for (Session session : sessionsOfDay) {
+            if (session.isSuccessful()) {
+                streak += 1;
+            }
+            else {
+                break;
+            }
+        }
+
+        return streak;
     }
 
     /**

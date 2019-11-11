@@ -1,15 +1,15 @@
-package sk.tuke.ms.sedentti.model.helper;
+package sk.tuke.ms.sedentti.model.helper.day;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.day.Day;
 import sk.tuke.ms.sedentti.model.day.DayOverview;
+import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class DayOverviewHelper {
     private SessionHelper sessionHelper;
@@ -77,18 +77,7 @@ public class DayOverviewHelper {
 
     @NotNull
     private DayOverview getDayOverview(ArrayList<Session> sessionsOfDay) {
-        Day day = getDay(sessionsOfDay);
+        Day day = DayHelper.getDay(sessionsOfDay, sessionHelper);
         return new DayOverview(day, sessionsOfDay);
-    }
-
-    private Day getDay(@NotNull ArrayList<Session> sessionsOfDay) {
-        Date date = sessionsOfDay.get(0).getDate();
-        int streak = sessionHelper.getDayStreak(sessionsOfDay);
-        int successRate = sessionHelper.getDaySuccessRate(sessionsOfDay);
-        int numberOfSessions = sessionsOfDay.size();
-        long sedentaryTime = sessionHelper.getDaySedentaryTime(sessionsOfDay);
-        long activeTime = sessionHelper.getDayActiveTime(sessionsOfDay);
-
-        return new Day(date, streak, successRate, numberOfSessions, sedentaryTime, activeTime);
     }
 }
