@@ -1,6 +1,7 @@
 package sk.tuke.ms.sedentti.ui.statistics;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
     @Override
     public void onBindViewHolder(@NonNull TimelineHolder holder, int position) {
+        Log.i("bind", "now binding " + position);
         Session session = sessions.get(position);
 
         String sessionName;
@@ -58,7 +60,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         } else {
             holder.activityDuration.setVisibility(View.GONE);
         }
-
     }
 
     @Override

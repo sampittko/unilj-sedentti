@@ -59,7 +59,7 @@ public class StatisticsViewModel extends AndroidViewModel {
         @Override
         protected ArrayList<Session> doInBackground(Void... voids) {
             try {
-                return sessionHelper.getSessionsInInterval(SessionHelper.SessionsInterval.LAST_MONTH);
+                return sessionHelper.getLatestSessions();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

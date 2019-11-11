@@ -16,6 +16,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import sk.tuke.ms.sedentti.R;
@@ -32,6 +33,8 @@ public class StatisticsFragment extends Fragment {
         RecyclerView recyclerViewTimeline = root.findViewById(R.id.f_statistics_layout_timeline);
         recyclerViewTimeline.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerViewTimeline.setHasFixedSize(true);
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL);
+        recyclerViewTimeline.addItemDecoration(itemDecor);
 
         TimelineAdapter timelineAdapter = new TimelineAdapter(getActivity());
         recyclerViewTimeline.setAdapter(timelineAdapter);
