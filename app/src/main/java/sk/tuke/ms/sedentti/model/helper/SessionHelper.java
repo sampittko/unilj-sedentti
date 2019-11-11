@@ -480,12 +480,14 @@ public class SessionHelper {
 
     @Contract("_ -> param1")
     private ArrayList<Session> getSuccessfulSessions(@NotNull ArrayList<Session> sessionsOfDay) {
+        ArrayList<Session> successfulSessions = new ArrayList<>();
+
         for (Session session : sessionsOfDay) {
-            if (!session.isSuccessful()) {
-                sessionsOfDay.remove(session);
+            if (session.isSuccessful()) {
+                successfulSessions.add(session);
             }
         }
-        return sessionsOfDay;
+        return successfulSessions;
     }
 
     @Contract("_, _ -> param1")
