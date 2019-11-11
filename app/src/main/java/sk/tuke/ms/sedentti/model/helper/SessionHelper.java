@@ -473,7 +473,7 @@ public class SessionHelper {
 
         ArrayList<Session> successfulSessions = getSuccessfulSessions(sessionsOfDay);
 
-        ArrayList<Session> unsuccessfulSessions = getUnsuccessfulSessions(sessionsOfDay, successfulSessions);
+        ArrayList<Session> unsuccessfulSessions = getUnsuccessfulSessions(sessionsOfDay);
 
         return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
     }
@@ -481,7 +481,6 @@ public class SessionHelper {
     @Contract("_ -> param1")
     private ArrayList<Session> getSuccessfulSessions(@NotNull ArrayList<Session> sessionsOfDay) {
         ArrayList<Session> successfulSessions = new ArrayList<>();
-
         for (Session session : sessionsOfDay) {
             if (session.isSuccessful()) {
                 successfulSessions.add(session);
@@ -490,10 +489,14 @@ public class SessionHelper {
         return successfulSessions;
     }
 
-    @Contract("_, _ -> param1")
-    private ArrayList<Session> getUnsuccessfulSessions(@NotNull ArrayList<Session> sessionsOfDay, ArrayList<Session> successfulSessions) {
-        sessionsOfDay.removeAll(successfulSessions);
-        return sessionsOfDay;
+    private ArrayList<Session> getUnsuccessfulSessions(@NotNull ArrayList<Session> sessionsOfDay) {
+        ArrayList<Session> unsuccessfulSessions = new ArrayList<>();
+        for (Session session : sessionsOfDay) {
+            if (!session.isSuccessful()) {
+                unsuccessfulSessions.add(session);
+            }
+        }
+        return unsuccessfulSessions;
     }
 
     /**
