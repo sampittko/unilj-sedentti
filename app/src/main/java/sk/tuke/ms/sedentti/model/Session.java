@@ -5,10 +5,11 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
+import sk.tuke.ms.sedentti.model.day.DayModel;
 import sk.tuke.ms.sedentti.model.helper.DateHelper;
 
 @DatabaseTable
-public class Session {
+public class Session extends DayModel {
     public final static String COLUMN_ID = "id";
     public final static String COLUMN_SEDENTARY = "sedentary";
     public final static String COLUMN_START_TIMESTAMP = "startTimestamp";
