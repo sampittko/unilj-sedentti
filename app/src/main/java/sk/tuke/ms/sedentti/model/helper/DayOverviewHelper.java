@@ -2,7 +2,6 @@ package sk.tuke.ms.sedentti.model.helper;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
