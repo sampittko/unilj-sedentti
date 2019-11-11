@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.model.helper.session;
+package sk.tuke.ms.sedentti.model.helper.day;
 
 import org.jetbrains.annotations.NotNull;
 
