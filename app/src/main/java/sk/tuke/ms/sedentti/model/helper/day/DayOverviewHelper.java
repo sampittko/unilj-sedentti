@@ -1,7 +1,5 @@
 package sk.tuke.ms.sedentti.model.helper.day;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,21 +18,17 @@ public class DayOverviewHelper {
 
     public ArrayList<DayOverview> getDayOverviews() throws SQLException {
         List<Session> sessions = sessionHelper.getLatestSessions();
-        return getDayOverviews(sessions);
-    }
-
-    private ArrayList<DayOverview> getDayOverviews(@NotNull List<Session> sessions) {
-        ArrayList<DayOverview> dayOverviews = new ArrayList<>();
+        ArrayList<DayOverview> dayOverviewsList = new ArrayList<>();
 
         for (Session session : sessions) {
-            if (dayOverviews.isEmpty()) {
+            if (dayOverviewsList.isEmpty()) {
                 // only first time running
-                createNewDayOverview(dayOverviews, session);
+                createNewDayOverview(dayOverviewsList, session);
                 continue;
             }
 
             boolean added = false;
-            for (DayOverview dayOverview : dayOverviews) {
+            for (DayOverview dayOverview : dayOverviewsList) {
                 if (dayOverview.getDay().getDate().compareTo(session.getDate()) == 0) {
                     dayOverview.getSessionsOfDay().add(session);
                     added = true;
@@ -43,26 +37,24 @@ public class DayOverviewHelper {
             }
 
             if (!added) {
-                createNewDayOverview(dayOverviews, session);
+                createNewDayOverview(dayOverviewsList, session);
             }
         }
 
-        return dayOverviews;
+        for (DayOverview dayOverview : dayOverviewsList) {
+            Day day = DayHelper.getDay(dayOverview.getSessionsOfDay(), this.sessionHelper);
+            dayOverview.setDay(day);
+        }
+        return dayOverviewsList;
     }
 
-    private void createNewDayOverview(ArrayList<DayOverview> dayOverviews, Session session) {
+    private void createNewDayOverview(ArrayList<DayOverview> dayOverviewList, Session session) {
         DayOverview dayOverview = new DayOverview();
         Day day = new Day();
         day.setDate(session.getDate());
         dayOverview.setDay(day);
         dayOverview.getSessionsOfDay().add(session);
 
-        dayOverviews.add(dayOverview);
-    }
-
-    @NotNull
-    private DayOverview getDayOverview(ArrayList<Session> sessionsOfDay) {
-        Day day = DayHelper.getDay(sessionsOfDay, sessionHelper);
-        return new DayOverview(day, sessionsOfDay);
+        dayOverviewList.add(dayOverview);
     }
 }

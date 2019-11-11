@@ -58,6 +58,10 @@ public class TimelineAdapter27 extends RecyclerView.Adapter<RecyclerView.ViewHol
             Day day = (Day) dayModelsList.get(position);
 
             dayHolder.date.setText(TimeHelper.formatDate(day.getDate()));
+            dayHolder.completed.setText(day.getNumberOfSessions());
+
+            dayHolder.activeTime.setText(TimeHelper.formatTimeString(day.getActiveTime()));
+            dayHolder.sedentaryTime.setText(TimeHelper.formatTimeString(day.getSedentaryTime()));
 
         } else if (dayModelsList.get(position) instanceof Session) {
 //            doing session item
@@ -119,7 +123,7 @@ public class TimelineAdapter27 extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     class DayHolder extends RecyclerView.ViewHolder {
         private TextView date;
-        private TextView totalTime;
+        private TextView completed;
         private TextView success;
         private TextView activeTime;
         private TextView sedentaryTime;
@@ -127,7 +131,7 @@ public class TimelineAdapter27 extends RecyclerView.Adapter<RecyclerView.ViewHol
         public DayHolder(@NonNull View itemView) {
             super(itemView);
             date = itemView.findViewById(R.id.tw_f_home_timeline_day_date);
-            totalTime = itemView.findViewById(R.id.tw_f_home_timeline_day_value_time);
+            completed = itemView.findViewById(R.id.tw_f_home_timeline_day_value_completed);
             success = itemView.findViewById(R.id.tw_f_home_timeline_day_value_success);
             activeTime = itemView.findViewById(R.id.tw_f_home_timeline_day_value_active);
             sedentaryTime = itemView.findViewById(R.id.tw_f_home_timeline_day_value_sedentary);
