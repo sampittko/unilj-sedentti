@@ -110,4 +110,12 @@ public class Session extends DayModel {
     public void setProfile(Profile profile) {
         this.profile = profile;
     }
+
+    @Override
+    public String toString() {
+        return "Session{" +
+                "id=" + id +
+                ", date=" + date +
+                '}';
+    }
 }

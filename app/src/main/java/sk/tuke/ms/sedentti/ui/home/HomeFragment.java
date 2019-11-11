@@ -184,7 +184,7 @@ public class HomeFragment extends Fragment {
                 index_active++;
                 dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_active));
             }
-            TextView activityName = view.findViewById(R.id.tw_f_home_timeline_activity_name);
+            TextView activityName = view.findViewById(R.id.tw_f_home_timeline_session_activity_name);
             activityName.setText(sessionName);
 
 //            handles the time and adds date if needed
@@ -207,7 +207,7 @@ public class HomeFragment extends Fragment {
                 sessionTime += " " + TimeHelper.formatDuration(session.getDuration());
             }
 
-            TextView activityTime = view.findViewById(R.id.tw_f_home_timeline_activity_time);
+            TextView activityTime = view.findViewById(R.id.tw_f_home_timeline_session_activity_time);
             activityTime.setText(sessionTime);
 
             this.timelineLayout.addView(view);

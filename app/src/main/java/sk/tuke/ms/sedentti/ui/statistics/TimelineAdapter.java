@@ -16,7 +16,7 @@ import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.model.Session;
 
-public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TimelineHolder> {
+public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.SessionHolder> {
 
     private List<Session> sessions = new ArrayList<>();
     private Context context;
@@ -27,13 +27,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
     @NonNull
     @Override
-    public TimelineHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_timeline_statistics, parent, false);
-        return new TimelineHolder(itemView);
+    public SessionHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_timeline_statistics_session, parent, false);
+        return new SessionHolder(itemView);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull TimelineHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SessionHolder holder, int position) {
         Log.i("bind", "now binding " + position);
         Session session = sessions.get(position);
 
@@ -72,18 +71,18 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         notifyDataSetChanged();
     }
 
-    class TimelineHolder extends RecyclerView.ViewHolder {
+    class SessionHolder extends RecyclerView.ViewHolder {
         private TextView dot;
         private TextView activityName;
         private TextView activityTime;
         private TextView activityDuration;
 
-        public TimelineHolder(@NonNull View itemView) {
+        public SessionHolder(@NonNull View itemView) {
             super(itemView);
             dot = itemView.findViewById(R.id.tw_f_home_timeline_dot);
-            activityName = itemView.findViewById(R.id.tw_f_home_timeline_activity_name);
-            activityTime = itemView.findViewById(R.id.tw_f_home_timeline_activity_time);
-            activityDuration = itemView.findViewById(R.id.tw_f_home_timeline_activity_duration);
+            activityName = itemView.findViewById(R.id.tw_f_home_timeline_session_activity_name);
+            activityTime = itemView.findViewById(R.id.tw_f_home_timeline_session_activity_time);
+            activityDuration = itemView.findViewById(R.id.tw_f_home_timeline_session_activity_duration);
 
         }
     }

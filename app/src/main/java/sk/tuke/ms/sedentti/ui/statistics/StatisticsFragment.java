@@ -37,11 +37,19 @@ public class StatisticsFragment extends Fragment {
         recyclerViewTimeline.addItemDecoration(itemDecor);
 
         TimelineAdapter timelineAdapter = new TimelineAdapter(getActivity());
-        recyclerViewTimeline.setAdapter(timelineAdapter);
+
+        TimelineAdapter27 timelineAdapter27 = new TimelineAdapter27(getActivity());
+        recyclerViewTimeline.setAdapter(timelineAdapter27);
 
         this.chart = root.findViewById(R.id.wc_f_statistics_graph);
 
-        statisticsViewModel.getSessions().observe(this, sessions -> timelineAdapter.setSessions(sessions));
+        statisticsViewModel.getSessions().observe(this, sessions -> {
+            timelineAdapter.setSessions(sessions);
+        });
+
+        statisticsViewModel.getDayModels().observe(this, dayModels -> {
+            timelineAdapter27.setDayModelsList(dayModels);
+        });
 
         return root;
     }

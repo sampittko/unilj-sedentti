@@ -13,12 +13,18 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.day.DayModel;
+import sk.tuke.ms.sedentti.model.day.DayOverview;
+import sk.tuke.ms.sedentti.model.helper.DayOverviewHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class StatisticsViewModel extends AndroidViewModel {
 
     private MutableLiveData<ArrayList<Session>> sessions;
+
+    private final DayOverviewHelper dayOverviewHelper;
+    private MutableLiveData<ArrayList<DayModel>> dayModels;
     private SessionHelper sessionHelper;
 
     public StatisticsViewModel(@NonNull Application application) {
@@ -33,6 +39,7 @@ public class StatisticsViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
         this.sessionHelper = new SessionHelper(this.getApplication(), activeProfile);
+        this.dayOverviewHelper = new DayOverviewHelper(sessionHelper);
     }
 
 
@@ -69,6 +76,48 @@ public class StatisticsViewModel extends AndroidViewModel {
         @Override
         protected void onPostExecute(ArrayList<Session> result) {
             sessions.postValue(result);
+        }
+    }
+
+    public LiveData<ArrayList<DayModel>> getDayModels() {
+        if (this.dayModels == null) {
+            this.dayModels = new MutableLiveData<ArrayList<DayModel>>();
+            loadDayModels();
+        }
+        return this.dayModels;
+    }
+
+    private void loadDayModels() {
+        new loadDayModelsAsyncTask(this.sessionHelper).execute();
+    }
+
+    private class loadDayModelsAsyncTask extends AsyncTask<Void, Void, ArrayList<DayOverview>> {
+
+        private SessionHelper sessionHelper;
+
+        public loadDayModelsAsyncTask(SessionHelper sessionHelper) {
+            this.sessionHelper = sessionHelper;
+        }
+
+        @Override
+        protected ArrayList<DayOverview> doInBackground(Void... voids) {
+            try {
+                return dayOverviewHelper.getDayOverviews();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<DayOverview> result) {
+            ArrayList<DayModel> list = new ArrayList<>();
+
+            for (DayOverview dayOverview : result) {
+                list.add(dayOverview.getDay());
+                list.addAll(dayOverview.getSessionsOfDay());
+            }
+            dayModels.postValue(list);
         }
     }
 }

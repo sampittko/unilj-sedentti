@@ -19,6 +19,9 @@ public class Day extends DayModel {
         this.activeTime = activeTime;
     }
 
+    public Day() {
+    }
+
     public Date getDate() {
         return date;
     }
@@ -65,5 +68,12 @@ public class Day extends DayModel {
 
     public void setActiveTime(long activeTime) {
         this.activeTime = activeTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Day{" +
+                "date=" + date +
+                '}';
     }
 }

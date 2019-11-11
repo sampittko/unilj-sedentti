@@ -1,6 +1,7 @@
 package sk.tuke.ms.sedentti.helper;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class TimeHelper {
 
@@ -84,5 +85,9 @@ public class TimeHelper {
             return "0 minutes";
         }
         return duration;
+    }
+
+    public static String formatDate(Date date) {
+        return SimpleDateFormat.getDateInstance(java.text.DateFormat.SHORT).format(date);
     }
 }
