@@ -15,9 +15,9 @@ import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.day.DayModel;
 import sk.tuke.ms.sedentti.model.day.DayOverview;
-import sk.tuke.ms.sedentti.model.helper.DayOverviewHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
+import sk.tuke.ms.sedentti.model.helper.day.DayOverviewHelper;
 
 public class StatisticsViewModel extends AndroidViewModel {
 

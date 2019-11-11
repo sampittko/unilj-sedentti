@@ -25,25 +25,10 @@ public class DayOverviewHelper {
 
     private ArrayList<DayOverview> getDayOverviews(@NotNull List<Session> sessions) {
         ArrayList<DayOverview> dayOverviews = new ArrayList<>();
-//        ArrayList<Session> sessionsOfDay = new ArrayList<>();
-//        Session previousSession = null;
-//
-//        for (Session session : sessions) {
-//            if (previousSession != null) {
-//                if (session.getDate() != previousSession.getDate()) {
-//                    dayOverviews.add(
-//                            getDayOverview(sessionsOfDay)
-//                    );
-//                    sessionsOfDay = new ArrayList<>();
-//                }
-//            }
-//            sessionsOfDay.add(session);
-//            previousSession = session;
-//        }
 
         for (Session session : sessions) {
             if (dayOverviews.isEmpty()) {
-//                only first time running
+                // only first time running
                 createNewDayOverview(dayOverviews, session);
                 continue;
             }
@@ -57,7 +42,7 @@ public class DayOverviewHelper {
                 }
             }
 
-            if (added == false) {
+            if (!added) {
                 createNewDayOverview(dayOverviews, session);
             }
         }
