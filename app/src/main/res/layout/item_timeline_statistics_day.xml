@@ -28,7 +28,7 @@
             android:text="Total time" />
 
         <TextView
-            android:id="@+id/tw_f_home_timeline_day_value_time"
+            android:id="@+id/tw_f_home_timeline_day_value_completed"
             style="@style/TextAppearance.MaterialComponents.Subtitle2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
