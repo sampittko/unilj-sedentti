@@ -15,59 +15,93 @@ import androidx.recyclerview.widget.RecyclerView;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.day.Day;
+import sk.tuke.ms.sedentti.model.day.DayModel;
 
-public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.SessionHolder> {
+public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Session> sessions = new ArrayList<>();
+    private final int DAY_VIEW = 0;
+    private final int SESSION_VIEW = 1;
+    private List<DayModel> dayModelsList = new ArrayList<>();
     private Context context;
 
     public TimelineAdapter(Context context) {
         this.context = context;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (dayModelsList.get(position) instanceof Day) {
+            return DAY_VIEW;
+        }
+        return SESSION_VIEW;
+    }
+
     @NonNull
     @Override
-    public SessionHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == DAY_VIEW) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_timeline_statistics_day, parent, false);
+            return new DayHolder(itemView);
+        }
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_timeline_statistics_session, parent, false);
         return new SessionHolder(itemView);
     }
 
-    public void onBindViewHolder(@NonNull SessionHolder holder, int position) {
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Log.i("bind", "now binding " + position);
-        Session session = sessions.get(position);
 
-        String sessionName;
-        if (session.isSedentary()) {
-            sessionName = context.getResources().getString(R.string.home_timeline_name_sedentary);
-            holder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_sedentarry));
-        } else {
-            sessionName = context.getResources().getString(R.string.home_timeline_name_activity);
-            holder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_active));
-        }
-        holder.activityName.setText(sessionName);
+        if (dayModelsList.get(position) instanceof Day) {
+//            doing day item
+            DayHolder dayHolder = (DayHolder) holder;
+            Day day = (Day) dayModelsList.get(position);
+
+            dayHolder.date.setText(TimeHelper.formatDate(day.getDate()));
+            dayHolder.completed.setText(String.valueOf(day.getNumberOfSessions()));
+
+            dayHolder.activeTime.setText(TimeHelper.formatTimeString(day.getActiveTime()));
+            dayHolder.sedentaryTime.setText(TimeHelper.formatTimeString(day.getSedentaryTime()));
+
+        } else if (dayModelsList.get(position) instanceof Session) {
+//            doing session item
+
+            SessionHolder sessionHolder = (SessionHolder) holder;
+            Session session = (Session) dayModelsList.get(position);
+
+            String sessionName;
+            if (session.isSedentary()) {
+                sessionName = context.getResources().getString(R.string.home_timeline_name_sedentary);
+                sessionHolder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_sedentarry));
+            } else {
+                sessionName = context.getResources().getString(R.string.home_timeline_name_activity);
+                sessionHolder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_active));
+            }
+            sessionHolder.activityName.setText(sessionName);
 
 //            handles the activityTime and adds date if needed
-        String sessionTime;
-        sessionTime = TimeHelper.formatDateTime(session.getStartTimestamp());
-        holder.activityTime.setText(sessionTime);
+            String sessionTime;
+            sessionTime = TimeHelper.formatDateTime(session.getStartTimestamp());
+            sessionHolder.activityTime.setText(sessionTime);
 
 //            handles duration
-        if (session.getDuration() > 0L) {
-            String sessionDuration;
-            sessionDuration = TimeHelper.formatDuration(session.getDuration());
-            holder.activityDuration.setText(sessionDuration);
-        } else {
-            holder.activityDuration.setVisibility(View.GONE);
+            if (session.getDuration() > 0L) {
+                String sessionDuration;
+                sessionDuration = TimeHelper.formatDuration(session.getDuration());
+                sessionHolder.activityDuration.setText(sessionDuration);
+            } else {
+                sessionHolder.activityDuration.setVisibility(View.GONE);
+            }
         }
     }
 
     @Override
     public int getItemCount() {
-        return sessions.size();
+        return this.dayModelsList.size();
     }
 
-    public void setSessions(List<Session> sessions) {
-        this.sessions = sessions;
+    public void setDayModelsList(List<DayModel> dayModelsList) {
+        this.dayModelsList = dayModelsList;
         notifyDataSetChanged();
     }
 
@@ -84,6 +118,23 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Sessio
             activityTime = itemView.findViewById(R.id.tw_f_home_timeline_session_activity_time);
             activityDuration = itemView.findViewById(R.id.tw_f_home_timeline_session_activity_duration);
 
+        }
+    }
+
+    class DayHolder extends RecyclerView.ViewHolder {
+        private TextView date;
+        private TextView completed;
+        private TextView success;
+        private TextView activeTime;
+        private TextView sedentaryTime;
+
+        public DayHolder(@NonNull View itemView) {
+            super(itemView);
+            date = itemView.findViewById(R.id.tw_f_home_timeline_day_date);
+            completed = itemView.findViewById(R.id.tw_f_home_timeline_day_value_completed);
+            success = itemView.findViewById(R.id.tw_f_home_timeline_day_value_success);
+            activeTime = itemView.findViewById(R.id.tw_f_home_timeline_day_value_active);
+            sedentaryTime = itemView.findViewById(R.id.tw_f_home_timeline_day_value_sedentary);
         }
     }
 }

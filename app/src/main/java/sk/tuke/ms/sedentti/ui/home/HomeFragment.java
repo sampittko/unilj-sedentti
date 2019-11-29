@@ -112,8 +112,10 @@ public class HomeFragment extends Fragment {
         homeViewModel.getPendingSessionDuration().observe(this, value -> {
             if (value != null) {
                 graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(value));
-                int limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit() * 1000;
-                int normalizedValue = getNormalizedValue(value, limit);
+                // TODO: 11/11/19 set session limit
+                long limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit() * 1000L;
+
+                int normalizedValue = getNormalizedValue(value, 30L * 60L * 1000L);
                 activeSessionGraph.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series1Index).setDelay(4000).build());
             }
         });

@@ -55,10 +55,11 @@
 
                 <TextView
                     android:id="@+id/tw_f_home_graph_time"
+                    style="@android:style/TextAppearance.Material.Large"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="Linear"
+                    android:text="9:87:45"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </RelativeLayout>
         </LinearLayout>

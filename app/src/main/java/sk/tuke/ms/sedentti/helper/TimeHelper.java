@@ -75,9 +75,9 @@ public class TimeHelper {
             }
 
             if (MM > 1) {
-                duration += MM + " minutes";
+                duration += MM + " mins";
             } else if (MM == 1) {
-                duration += MM + " minute";
+                duration += MM + " min";
             }
         }
 
