@@ -15,12 +15,7 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.FirstTimeStartupActivity" />
-
-        <service
-            android:name=".recognition.ActivityRecognitionService"
-            android:enabled="true"
-            android:exported="true" />
+        <activity android:name=".activity.PersonalityTestActivity" />
 
         <activity android:name=".activity.StatusActivity" />
         <activity android:name=".activity.SessionHistoryActivity" />

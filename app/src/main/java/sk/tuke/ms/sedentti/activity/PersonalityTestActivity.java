@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import sk.tuke.ms.sedentti.R;
 
-public class FirstTimeStartupActivity extends AppCompatActivity {
+public class PersonalityTestActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

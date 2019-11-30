@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "137652915710",
+    "firebase_url": "https://sedentti.firebaseio.com",
+    "project_id": "sedentti",
+    "storage_bucket": "sedentti.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137652915710:android:f0a7bfc3ee33e22d21c4af",
+        "android_client_info": {
+          "package_name": "sk.tuke.ms.sedentti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "137652915710-3qaar4uodhhnbnl2kjrsv3q4t25r1b1f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "sk.tuke.ms.sedentti",
+            "certificate_hash": "c0005c71a1ba65f8ab8bd63bd21af91b6850e196"
+          }
+        },
+        {
+          "client_id": "137652915710-58uvge5l79i4eblcouo12ldatvha5efe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT1-iQsS-2a6r_ZLFU8qwoKiUEY76Qm9o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "137652915710-58uvge5l79i4eblcouo12ldatvha5efe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
