@@ -12,11 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activity.PersonalityTestActivity" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.FirstTimeStartupActivity" />
         <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.PersonalityTestActivity" />
-
         <activity android:name=".activity.StatusActivity" />
         <activity android:name=".activity.SessionHistoryActivity" />
         <activity android:name=".activity.MotivateMeActivity" />

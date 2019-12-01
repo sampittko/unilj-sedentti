@@ -41,8 +41,8 @@ public class ProfileHelper {
      * @return New profile object
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Profile createNewProfile(String name) throws SQLException {
-        Profile profile = new Profile(name);
+    public Profile createNewProfile(String name, String email, String photoUrl, String firebaseAuthUid) throws SQLException {
+        Profile profile = new Profile(name, email, photoUrl, firebaseAuthUid);
         profileDao.create(profile);
         return profile;
     }

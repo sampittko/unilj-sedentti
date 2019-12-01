@@ -6,9 +6,19 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -16,9 +26,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.helper.CommonValues;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
@@ -40,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setBottomMenu();
 
         // line that needs to be run after database scheme upgrade (firstly change version FROM and version TO)
-//        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-//        databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 6, 7);
+        // DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        // databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2);
 
         Stetho.initializeWithDefaults(this);
 
@@ -51,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferencesHelper.setAppDefaultSettings();
 
-//        checkForPendingSession();
+        // checkForPendingSession();
     }
 
     private void setBottomMenu() {
@@ -76,7 +88,12 @@ public class MainActivity extends AppCompatActivity {
     private void updateActiveProfile() {
         try {
             if (profileHelper.getNumberOfExistingProfiles() == 0) {
-                activeProfile = profileHelper.createNewProfile("Jánošík");
+//                handleFirebaseAuthUI();
+                activeProfile = profileHelper.createNewProfile(
+                        "Janko Hrasko",
+                        "janko.hrasko@gmail.com",
+                        "https://hrasko.sk/profile.png",
+                        "LOLOLOLOLOLOL");
             }
             else {
                 activeProfile = profileHelper.getExistingProfile();
@@ -88,6 +105,49 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferencesHelper.updateActiveProfile(activeProfile);
 
         Log.d(TAG, "Profile updated");
+    }
+
+    private void handleFirebaseAuthUI() {
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build());
+
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .build(),
+                CommonValues.RC_SIGN_IN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CommonValues.RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                // Successfully signed in
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                assert user != null;
+                try {
+                    activeProfile = profileHelper.createNewProfile(
+                            user.getDisplayName(),
+                            user.getEmail(),
+                            Objects.requireNonNull(user.getPhotoUrl()).getEncodedPath(),
+                            user.getUid());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                // ...
+            } else {
+                // Sign in failed. If response is null the user canceled the
+                // sign-in flow using the back button. Otherwise check
+                // response.getError().getErrorCode() and handle the error.
+                // ...
+            }
+        }
     }
 
     private void startForegroundService() {

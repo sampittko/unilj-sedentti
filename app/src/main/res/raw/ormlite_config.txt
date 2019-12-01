@@ -1,5 +1,5 @@
 #
-# generated on 2019/11/10 07:44:23
+# generated on 2019/11/30 09:09:40
 #
 # --table-start--
 dataClass=sk.tuke.ms.sedentti.model.PersonalityTest
@@ -58,9 +58,25 @@ columnName=name
 canBeNull=false
 # --field-end--
 # --field-start--
+fieldName=email
+columnName=email
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=photoUrl
+columnName=photoUrl
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=firebaseAuthUid
+columnName=firebaseAuthUid
+canBeNull=false
+# --field-end--
+# --field-start--
 fieldName=registeredDate
 columnName=registeredDate
 canBeNull=false
+unique=true
 # --field-end--
 # --field-start--
 fieldName=personalityTest
@@ -109,6 +125,34 @@ columnName=successful
 # --field-start--
 fieldName=profile
 columnName=profile_id
+canBeNull=false
+foreign=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=sk.tuke.ms.sedentti.model.Activity
+tableName=activity
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=type
+columnName=type
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=timestamp
+columnName=timestamp
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=session
+columnName=session_id
 canBeNull=false
 foreign=true
 # --field-end--

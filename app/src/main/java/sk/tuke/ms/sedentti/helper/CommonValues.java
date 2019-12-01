@@ -18,4 +18,7 @@ public class CommonValues {
     public static final String PROFILE_SHARED_PREFERENCES = "profile";
     public static final String PROFILE_SHARED_PREFERENCES_ACTIVE_ID = "active_id";
     public static final long PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT = 0L;
+
+    // Firebase Codes
+    public static final int RC_SIGN_IN = 1;
 }
