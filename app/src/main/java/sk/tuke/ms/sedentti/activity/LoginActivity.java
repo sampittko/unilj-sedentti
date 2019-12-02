@@ -103,8 +103,8 @@ public class LoginActivity extends AppCompatActivity {
                 // sign-in flow using the back button. Otherwise check
                 // response.getError().getErrorCode() and handle the error.
                 // ...
-                assert response != null;
-                Log.e(TAG, Objects.requireNonNull(response.getError()).getLocalizedMessage());
+                Log.e(TAG, "User did not log in, quitting app");
+                finish();
             }
         }
     }

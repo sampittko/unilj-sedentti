@@ -18,9 +18,9 @@ public class PersonalityTestActivity extends AppCompatActivity {
 
         Log.d(TAG, "Personality test started");
 
+        // TODO remove
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-
         finish();
     }
 }

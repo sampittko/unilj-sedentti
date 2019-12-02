@@ -40,6 +40,11 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
             setContentView(R.layout.activity_first_time_startup);
 
             sharedPreferencesHelper.updateFirstTimeStartupPerformed(true);
+
+            // TODO remove
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 }
