@@ -81,6 +81,12 @@ public class SharedPreferencesHelper {
         appShPrEditor.apply();
     }
 
+    private void updateAppSetting(String setting, boolean value) {
+        SharedPreferences.Editor appShPrEditor = appSharedPreferences.edit();
+        appShPrEditor.putBoolean(setting, value);
+        appShPrEditor.apply();
+    }
+
     /**
      * @return Sedentary seconds limit
      */
@@ -99,5 +105,22 @@ public class SharedPreferencesHelper {
                 CommonValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT,
                 CommonValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT_DEFAULT
         );
+    }
+
+    /**
+     * @return First time startup performed (true / false)
+     */
+    public boolean firstTimeStartupPerformed() {
+        return appSharedPreferences.getBoolean(
+                CommonValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED,
+                CommonValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT
+        );
+    }
+
+    /**
+     * @param value Value to set
+     */
+    public void updateFirstTimeStartupPerformed(boolean value) {
+        updateAppSetting(CommonValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED, value);
     }
 }
