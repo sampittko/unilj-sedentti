@@ -94,7 +94,7 @@ public class UploadTask {
         this.date = date;
     }
 
-    public long isBytesTransferred() {
+    public long getBytesTransferred() {
         return bytesTransferred;
     }
 
@@ -102,7 +102,7 @@ public class UploadTask {
         this.bytesTransferred = bytesTransferred;
     }
 
-    public long isBytesTotal() {
+    public long getBytesTotal() {
         return bytesTotal;
     }
 

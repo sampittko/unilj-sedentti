@@ -65,6 +65,9 @@ dependencies {
 
     // Google Firebase Auth UI
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
+
+    // Work Manager
+    implementation "androidx.work:work-runtime:2.2.0"
 }
 
 apply plugin: 'com.google.gms.google-services'

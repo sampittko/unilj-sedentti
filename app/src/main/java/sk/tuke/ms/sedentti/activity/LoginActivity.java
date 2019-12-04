@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import sk.tuke.ms.sedentti.helper.CommonValues;
+import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
                         .build(),
-                CommonValues.RC_SIGN_IN);
+                PredefinedValues.FIREBASE_CODE_SIGN_IN);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.d(TAG, "FirebaseUI resulted");
 
-        if (requestCode == CommonValues.RC_SIGN_IN) {
+        if (requestCode == PredefinedValues.FIREBASE_CODE_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {

@@ -3,7 +3,8 @@ package sk.tuke.ms.sedentti.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import sk.tuke.ms.sedentti.config.DefaultSettings;
+import sk.tuke.ms.sedentti.config.Settings;
+import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.model.Profile;
 
 public class SharedPreferencesHelper {
@@ -11,8 +12,8 @@ public class SharedPreferencesHelper {
     private SharedPreferences appSharedPreferences;
 
     public SharedPreferencesHelper(Context context) {
-        profileSharedPreferences = context.getSharedPreferences(CommonValues.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        appSharedPreferences = context.getSharedPreferences(CommonValues.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        profileSharedPreferences = context.getSharedPreferences(PredefinedValues.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        appSharedPreferences = context.getSharedPreferences(PredefinedValues.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     /**
@@ -22,7 +23,7 @@ public class SharedPreferencesHelper {
         SharedPreferences.Editor profileShPrEditor = profileSharedPreferences.edit();
 
         profileShPrEditor.putLong(
-                CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID,
+                PredefinedValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID,
                 profile.getId()
         );
 
@@ -34,8 +35,8 @@ public class SharedPreferencesHelper {
      */
     public long getActiveProfileId() {
         return profileSharedPreferences.getLong(
-                CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID,
-                CommonValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT
+                PredefinedValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID,
+                PredefinedValues.PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT
         );
     }
 
@@ -51,28 +52,28 @@ public class SharedPreferencesHelper {
      * Updates sedentary seconds limit to default value
      */
     public void updateSedentarySecondsLimit() {
-        updateSedentarySecondsLimit(DefaultSettings.SEDENTARY_MILLISECONDS_LIMIT);
+        updateSedentarySecondsLimit(Settings.SEDENTARY_MILLISECONDS_LIMIT);
     }
 
     /**
      * @param value Sedentary seconds limit value to set
      */
     public void updateSedentarySecondsLimit(int value) {
-        updateAppSetting(CommonValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT, value);
+        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT, value);
     }
 
     /**
      * Updates active seconds limit to default value
      */
     public void updateActiveSecondsLimit() {
-        updateActiveSecondsLimit(DefaultSettings.ACTIVE_MILLISECONDS_LIMIT);
+        updateActiveSecondsLimit(Settings.ACTIVE_MILLISECONDS_LIMIT);
     }
 
     /**
      * @param value Active seconds limit value to set
      */
     public void updateActiveSecondsLimit(int value) {
-        updateAppSetting(CommonValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT, value);
+        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT, value);
     }
 
     private void updateAppSetting(String setting, int value) {
@@ -92,8 +93,8 @@ public class SharedPreferencesHelper {
      */
     public int getSedentarySecondsLimit() {
         return appSharedPreferences.getInt(
-                CommonValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT,
-                CommonValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT_DEFAULT
+                PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT,
+                PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT_DEFAULT
         );
     }
 
@@ -102,8 +103,8 @@ public class SharedPreferencesHelper {
      */
     public int getActiveSecondsLimit() {
         return appSharedPreferences.getInt(
-                CommonValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT,
-                CommonValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT_DEFAULT
+                PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT,
+                PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT_DEFAULT
         );
     }
 
@@ -112,8 +113,8 @@ public class SharedPreferencesHelper {
      */
     public boolean firstTimeStartupPerformed() {
         return appSharedPreferences.getBoolean(
-                CommonValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED,
-                CommonValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT
+                PredefinedValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED,
+                PredefinedValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT
         );
     }
 
@@ -121,6 +122,6 @@ public class SharedPreferencesHelper {
      * @param value Value to set
      */
     public void updateFirstTimeStartupPerformed(boolean value) {
-        updateAppSetting(CommonValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED, value);
+        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED, value);
     }
 }

@@ -9,12 +9,18 @@ import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
@@ -22,6 +28,7 @@ import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
+import sk.tuke.ms.sedentti.firebase.uploader.UploadWorker;
 
 public class MainActivity extends AppCompatActivity {
     private Profile activeProfile;
@@ -47,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferencesHelper.setAppDefaultSettings();
 
         // checkForPendingSession();
+
+        activateUploadWorker();
     }
 
     private void setBottomMenu() {
@@ -74,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Initial setup performed");
     }
 
-
     private void startForegroundService() {
         Intent intent = new Intent(this, ActivityRecognitionService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -100,6 +108,20 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void activateUploadWorker() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.UNMETERED)
+                .setRequiresBatteryNotLow(true)
+                .build();
+
+        PeriodicWorkRequest uploadRequest =
+                new PeriodicWorkRequest.Builder(UploadWorker.class, 12, TimeUnit.HOURS)
+                        .setConstraints(constraints)
+                        .build();
+
+        WorkManager.getInstance(this).enqueue(uploadRequest);
     }
 
     @Override
