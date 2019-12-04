@@ -1,5 +1,5 @@
 #
-# generated on 2019/11/30 09:09:40
+# generated on 2019/12/04 03:16:02
 #
 # --table-start--
 dataClass=sk.tuke.ms.sedentti.model.PersonalityTest
@@ -153,6 +153,64 @@ canBeNull=false
 # --field-start--
 fieldName=session
 columnName=session_id
+canBeNull=false
+foreign=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=sk.tuke.ms.sedentti.model.UploadTask
+tableName=uploadtask
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=startTimestamp
+columnName=startTimestamp
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=endTimestamp
+columnName=endTimestamp
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=duration
+columnName=duration
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=date
+columnName=date
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=bytesTransferred
+columnName=bytesTransferred
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=bytesTotal
+columnName=bytesTotal
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=successful
+columnName=successful
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=error
+columnName=error
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=profile
+columnName=profile_id
 canBeNull=false
 foreign=true
 # --field-end--

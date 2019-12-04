@@ -51,7 +51,7 @@ public class SharedPreferencesHelper {
      * Updates sedentary seconds limit to default value
      */
     public void updateSedentarySecondsLimit() {
-        updateSedentarySecondsLimit(DefaultSettings.SEDENTARY_SECONDS_LIMIT);
+        updateSedentarySecondsLimit(DefaultSettings.SEDENTARY_MILLISECONDS_LIMIT);
     }
 
     /**
@@ -65,7 +65,7 @@ public class SharedPreferencesHelper {
      * Updates active seconds limit to default value
      */
     public void updateActiveSecondsLimit() {
-        updateActiveSecondsLimit(DefaultSettings.ACTIVE_SECONDS_LIMIT);
+        updateActiveSecondsLimit(DefaultSettings.ACTIVE_MILLISECONDS_LIMIT);
     }
 
     /**

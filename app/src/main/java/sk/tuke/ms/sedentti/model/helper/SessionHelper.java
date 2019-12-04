@@ -22,16 +22,15 @@ import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class SessionHelper {
-    private static final Long HOME_TIMELINE_SESSIONS_LIMIT = 3L;
-    private static final int HIGHEST_SUCCESS_RATE = 100;
-    private static final int LOWEST_SUCCESS_RATE = 0;
+    private final Long HOME_TIMELINE_SESSIONS_LIMIT = 3L;
+    private final int HIGHEST_SUCCESS_RATE = 100;
+    private final int LOWEST_SUCCESS_RATE = 0;
 
-    private static final String TAG = "SessionHelper";
+    private final String TAG = "SessionHelper";
 
     public enum SessionsInterval {
         LAST_MONTH,
         LAST_WEEK,
-        LAST_DAY
     }
 
     private Dao<Session, Long> sessionDao;

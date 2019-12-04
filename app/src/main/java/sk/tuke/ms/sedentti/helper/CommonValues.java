@@ -11,10 +11,10 @@ public class CommonValues {
     public static final String APP_SHARED_PREFERENCES = "app_settings";
 
     public static final String APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT = "active_limit";
-    public static final int APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT_DEFAULT = DefaultSettings.ACTIVE_SECONDS_LIMIT;
+    public static final int APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT_DEFAULT = DefaultSettings.ACTIVE_MILLISECONDS_LIMIT;
 
     public static final String APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT = "sedentary_limit";
-    public static final int APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT_DEFAULT = DefaultSettings.SEDENTARY_SECONDS_LIMIT;
+    public static final int APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT_DEFAULT = DefaultSettings.SEDENTARY_MILLISECONDS_LIMIT;
 
     public static final String APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED = "first_time_startup_performed";
     public static final boolean APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT = DefaultSettings.FIRST_TIME_STARTUP_PERFORMED;

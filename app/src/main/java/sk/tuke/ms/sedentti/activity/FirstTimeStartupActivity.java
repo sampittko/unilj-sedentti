@@ -21,8 +21,8 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // line that needs to be run after database scheme upgrade (firstly change version FROM and version TO)
-        // DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-        // databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2);
+//         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+//         databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2);
 
         SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(this);
         boolean firstTimeStartupPerformed = sharedPreferencesHelper.firstTimeStartupPerformed();
