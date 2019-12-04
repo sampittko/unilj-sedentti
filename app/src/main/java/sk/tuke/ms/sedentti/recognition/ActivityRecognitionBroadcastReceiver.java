@@ -3,6 +3,7 @@ package sk.tuke.ms.sedentti.recognition;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
@@ -20,6 +21,7 @@ import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private SessionHelper sessionHelper;
     private ActivityHelper activityHelper;
+    private final String TAG = this.getClass().getSimpleName();
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -36,6 +38,8 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                 for (ActivityTransitionEvent event : intentResult.getTransitionEvents()) {
                     int newActivityType = event.getActivityType();
                     int newActivityTransitionType = event.getTransitionType();
+
+                    Log.d(TAG, "New activity - type " + newActivityType + " transtionType " + newActivityTransitionType);
 
                     try {
                         Activity lastActivity = activityHelper.getLastActivity();

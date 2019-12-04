@@ -9,11 +9,14 @@ import sk.tuke.ms.sedentti.model.Profile;
 public class SharedPreferencesHelper {
     private SharedPreferences profileSharedPreferences;
     private SharedPreferences appSharedPreferences;
+    private Context context;
 
     public SharedPreferencesHelper(Context context) {
+        this.context = context;
         profileSharedPreferences = context.getSharedPreferences(CommonValues.PROFILE_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         appSharedPreferences = context.getSharedPreferences(CommonValues.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
+
 
     /**
      * @param profile Profile to update
@@ -123,4 +126,6 @@ public class SharedPreferencesHelper {
     public void updateFirstTimeStartupPerformed(boolean value) {
         updateAppSetting(CommonValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED, value);
     }
+
+
 }

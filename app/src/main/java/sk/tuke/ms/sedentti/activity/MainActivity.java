@@ -16,6 +16,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.helper.CommonValues;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
@@ -40,13 +41,25 @@ public class MainActivity extends AppCompatActivity {
 
         Stetho.initializeWithDefaults(this);
 
-        performInitialSetup();
-
         startForegroundService();
+
+        performInitialSetup();
 
         sharedPreferencesHelper.setAppDefaultSettings();
 
         // checkForPendingSession();
+    }
+
+    private void startForegroundService() {
+        Intent intent = new Intent(this, ActivityRecognitionService.class);
+        intent.setAction(CommonValues.COMMAND_INIT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
+
+        Log.d(TAG, "Activity recognition foreground service started");
     }
 
     private void setBottomMenu() {
@@ -72,18 +85,6 @@ public class MainActivity extends AppCompatActivity {
         sessionHelper = new SessionHelper(this, activeProfile);
 
         Log.d(TAG, "Initial setup performed");
-    }
-
-
-    private void startForegroundService() {
-        Intent intent = new Intent(this, ActivityRecognitionService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
-
-        Log.d(TAG, "Activity recognition foreground service started");
     }
 
     private void checkForPendingSession() {

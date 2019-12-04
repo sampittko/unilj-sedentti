@@ -8,40 +8,84 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
+import sk.tuke.ms.sedentti.helper.ActitivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.helper.CommonValues;
 
 public class ActivityRecognitionService extends Service {
 
     private static final int NOTIFICATION_ID = 1;
+    private static final String CHANNEL_ID = "sk.tuke.ms.sedentti";
 
     private NotificationManager notificationManager;
     private ActivityRecognitionHandler activityRecognitionHandler;
     private ActivityRecognitionBroadcastReceiver receiver;
+    private ActitivityRecognitionSPHelper activityRecognitionPreferences;
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Notification notification = createNotification();
-        startForeground(NOTIFICATION_ID, notification);
-
-        registerBroadcast();
-        activityRecognitionHandler.startTracking();
+        int commandResult = processCommand(intent);
+        startForeground(NOTIFICATION_ID, createNotification(commandResult));
 
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void registerBroadcast() {
-        registerReceiver(receiver, new IntentFilter(CommonValues.ACTIVITY_RECOGNITION_COMMAND));
+    private int processCommand(Intent intent) {
+//        if state is unknown, service is only started without sensing
+        if (intent == null || intent.getAction() == null) {
+            return CommonValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
+        }
+
+        switch (intent.getAction()) {
+            case CommonValues.COMMAND_INIT:
+                int state = this.activityRecognitionPreferences.getActivityRecognitionState();
+
+                if (state == CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
+                    serviceToggle(CommonValues.COMMAND_START);
+                } else {
+                    serviceToggle(CommonValues.COMMAND_START);
+                }
+
+                return state;
+
+            case CommonValues.COMMAND_START:
+                serviceToggle(CommonValues.COMMAND_START);
+                this.activityRecognitionPreferences.saveStateToSharedPreferences(CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING);
+
+                return CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
+
+            case CommonValues.COMMAND_STOP:
+                serviceToggle(CommonValues.COMMAND_STOP);
+                this.activityRecognitionPreferences.saveStateToSharedPreferences(CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
+
+                return CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
+        }
+//        Log.i(TAG, "Actual state is: " + state);7
+        return CommonValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
     }
+
+    private void serviceToggle(String command) {
+        if (command.equals(CommonValues.COMMAND_START)) {
+            registerReceiver(receiver, new IntentFilter(CommonValues.ACTIVITY_RECOGNITION_COMMAND));
+            this.activityRecognitionHandler.startTracking();
+        } else if (command.equals(CommonValues.COMMAND_STOP)) {
+            this.activityRecognitionHandler.stopTracking();
+            unregisterReceiver(receiver);
+        }
+    }
+
+
+
+
 
     @Override
     public void onCreate() {
@@ -50,6 +94,7 @@ public class ActivityRecognitionService extends Service {
         this.notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         this.receiver = new ActivityRecognitionBroadcastReceiver();
         activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
+        this.activityRecognitionPreferences = new ActitivityRecognitionSPHelper(getApplicationContext());
     }
 
     @Override
@@ -60,30 +105,43 @@ public class ActivityRecognitionService extends Service {
     }
 
 
-    private Notification createNotification() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String unit = preferences.getString("unit", "0");
+    private Notification createNotification(int commandResult) {
 
-        String channelId = "sk.tuke.ms.sedentti";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //            od Orea vyssie
             CharSequence channelName = getString(R.string.app_name);
-            int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importance);
-            notificationManager.createNotificationChannel(notificationChannel);
+
+            if (notificationManager != null) {
+                NotificationChannel notificationChannel = notificationManager.getNotificationChannel(CHANNEL_ID);
+
+                if (notificationChannel == null) {
+                    notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+                    notificationManager.createNotificationChannel(notificationChannel);
+                }
+            }
         }
 //            Nougat a nizsie
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//                .setSmallIcon(R.drawable.icon_all_applogo_white_24dp)
-//                .setColor(ContextCompat.getColor(this, R.color.primaryColor))
+                .setSmallIcon(R.drawable.ic_person_outline_black_24dp)
+                .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
                 .setShowWhen(false);
 
 
         Intent openingIntent = new Intent(this, MainActivity.class);
-
+        openingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent openingPendingIntent = PendingIntent.getActivity(this, 0, openingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(openingPendingIntent);
+
+        String state = null;
+        if (commandResult == CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
+            state = "Sedentti is tracking your sitting";
+        } else if (commandResult == CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+            state = "Sedentti is not active";
+        }
+        if (state != null) {
+            builder.setContentText(state);
+        }
 
         return builder.build();
     }

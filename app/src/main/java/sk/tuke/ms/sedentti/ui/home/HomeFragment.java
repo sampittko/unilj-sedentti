@@ -1,11 +1,15 @@
 package sk.tuke.ms.sedentti.ui.home;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,9 +28,12 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.helper.ActitivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.helper.CommonValues;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
 
 public class HomeFragment extends Fragment {
 
@@ -35,11 +42,11 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private final int TIMELINE_ITEM_HEIGHT = 60;
     private LinearLayout timelineLayout;
+    private ActitivityRecognitionSPHelper actitivityRecognitionSPHelper;
+    private int state;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-
-//        Log.i("haha", "hahaha");
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -62,8 +69,18 @@ public class HomeFragment extends Fragment {
 
         makeGraphs(root);
 
+        Button sensingButton = root.findViewById(R.id.f_home_button_sensing);
+        sensingButton.setOnClickListener((View view) -> toogleButton());
+
         setOnClickOnViews(root);
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        initSensingStateUI();
     }
 
     private void makeGraphs(View root) {
@@ -146,6 +163,50 @@ public class HomeFragment extends Fragment {
         return result;
     }
 
+    private void initSensingStateUI() {
+        this.state = this.actitivityRecognitionSPHelper.getActivityRecognitionState();
+        Log.i(TAG, "service state je " + state);
+        updateSensingStateUI(state);
+    }
+
+    private void updateSensingStateUI(int state) {
+        Button button = getActivity().findViewById(R.id.f_home_button_sensing);
+        if (state == CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+            button.setText("Start");
+        } else {
+            button.setText("Stop");
+        }
+    }
+
+    private void toogleButton() {
+        if (this.state == CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+//            turn it on
+            this.state = CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
+            startForegroundService(CommonValues.COMMAND_START);
+            updateSensingStateUI(this.state);
+        } else {
+//            turn it off
+            this.state = CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
+            startForegroundService(CommonValues.COMMAND_STOP);
+            updateSensingStateUI(this.state);
+        }
+    }
+
+    ;
+
+    private void startForegroundService(String command) {
+        Intent intent = new Intent(getActivity().getApplicationContext(), ActivityRecognitionService.class);
+        intent.setAction(command);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getActivity().startForegroundService(intent);
+        } else {
+            getActivity().startService(intent);
+        }
+
+        Log.d(TAG, "Activity recognition foreground service started");
+    }
+
+
     private void setOnClickOnViews(View root) {
         this.timelineLayout = root.findViewById(R.id.f_home_layout_timeline);
         this.timelineLayout.setOnClickListener(v -> {
@@ -221,6 +282,8 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
+        this.actitivityRecognitionSPHelper = new ActitivityRecognitionSPHelper(getContext());
         super.onCreate(savedInstanceState);
     }
 }

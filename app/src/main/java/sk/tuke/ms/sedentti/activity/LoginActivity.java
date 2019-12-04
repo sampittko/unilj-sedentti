@@ -1,7 +1,5 @@
 package sk.tuke.ms.sedentti.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.appcompat.app.AppCompatActivity;
 import sk.tuke.ms.sedentti.helper.CommonValues;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
@@ -35,6 +34,12 @@ public class LoginActivity extends AppCompatActivity {
 
         profileHelper = new ProfileHelper(this);
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
+
+        try {
+            profileHelper.createNewProfile("Branko", "email", "url", "fire");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         updateActiveProfile();
     }
