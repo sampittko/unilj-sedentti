@@ -52,9 +52,6 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
 
                                 // create new session
                                 pendingSession = getNewSession(newActivityType);
-
-                                // create new activity in connection with the new session
-                                activityHelper.createActivity(newActivityType, pendingSession);
                             }
                             // activity has not changed (still -> still; active -> active)
                             else {
@@ -63,9 +60,10 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                                     sessionHelper.createSession(newActivityType);
                                     pendingSession = sessionHelper.getPendingSession();
                                 }
-
-                                activityHelper.createActivity(newActivityType, pendingSession);
                             }
+
+                            // create new activity
+                            activityHelper.createActivity(newActivityType, pendingSession);
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();

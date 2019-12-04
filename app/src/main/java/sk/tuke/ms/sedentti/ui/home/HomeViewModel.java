@@ -222,9 +222,11 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         protected Long doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getPendingSessionDuration();
+                return this.sessionHelper.getPendingSession().getDuration();
             } catch (SQLException e) {
                 e.printStackTrace();
+            } catch (NullPointerException e) {
+                return 0L;
             }
             return null;
         }

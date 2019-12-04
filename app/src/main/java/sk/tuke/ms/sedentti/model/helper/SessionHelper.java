@@ -147,13 +147,16 @@ public class SessionHelper {
         Session lastUnsuccessful = getLastUnsuccessful();
 
         if (lastUnsuccessful == null) {
-            Log.d(TAG, "Last unsuccessful session not found, returning the amount of all sessions minus potential 1 (pending)");
+            Log.d(TAG, "Last unsuccessful session not found");
             int latestSessionsCount = getLatestSessions().size();
-            if (getPendingSession() == null) {
-                return latestSessionsCount;
+
+            if (pendingSessionExists()) {
+                Log.d(TAG, "Returning the amount of all sessions minus pending session");
+                return latestSessionsCount - 1;
             }
             else {
-                return latestSessionsCount - 1;
+                Log.d(TAG, "Returning the amount of all sessions");
+                return latestSessionsCount;
             }
         }
 
@@ -313,29 +316,68 @@ public class SessionHelper {
         }
     }
 
+    public boolean pendingSessionExists() {
+        Log.d(TAG, "Executing pendingSessionExists");
+        try {
+            getPendingSession();
+            Log.d(TAG, "Session exists");
+            return true;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        catch (NullPointerException e) {
+            Log.d(TAG, "Session does not exist");
+        }
+        return false;
+    }
+
     /**
      * @return Pending session if any
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Session getPendingSession() throws SQLException {
+    public Session getPendingSession() throws SQLException, NullPointerException {
         Log.d(TAG, "Executing getPendingSession");
 
         sessionDaoQueryBuilder.reset();
 
-        return sessionDaoQueryBuilder
+        Session pendingSession = sessionDaoQueryBuilder
                 .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()
                 .eq(Session.COLUMN_END_TIMESTAMP, 0L)
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .queryForFirst();
+
+        if (pendingSession == null) {
+            throw new NullPointerException();
+        }
+        else {
+            return getPendingSessionWithDuration(pendingSession);
+        }
+    }
+
+    /**
+     * @param pendingSession Pending session to set duration for
+     * @return Updated session object
+     */
+    @Contract("_ -> param1")
+    private Session getPendingSessionWithDuration(Session pendingSession) {
+        try {
+            pendingSession.setDuration(new Date().getTime() - pendingSession.getStartTimestamp());
+        }
+        catch (NullPointerException e) {
+            pendingSession.setDuration(0L);
+        }
+
+        return pendingSession;
     }
 
     /**
      * @param session Session to update
      * @throws SQLException In case that communication with DB was not successful
      */
-    public void updateSession(Session session) throws SQLException {
+    public void updateSession(@NotNull Session session) throws SQLException {
         Log.d(TAG, "Executing updateSession");
         Log.d(TAG, "@session ID: " + session.getId());
 
@@ -356,21 +398,6 @@ public class SessionHelper {
         );
 
         sessionDao.create(newSession);
-    }
-
-    /**
-     * @return Duration of pending session
-     * @throws SQLException In case that communication with DB was not successful
-     */
-    public long getPendingSessionDuration() throws SQLException {
-        Log.d(TAG, "Executing getPendingSessionDuration");
-
-        try {
-            return new Date().getTime() - getPendingSession().getStartTimestamp();
-        }
-        catch (NullPointerException e) {
-            return 0L;
-        }
     }
 
     /**
