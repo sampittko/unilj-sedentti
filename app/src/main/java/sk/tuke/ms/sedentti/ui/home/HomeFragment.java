@@ -29,7 +29,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
-import sk.tuke.ms.sedentti.helper.ActitivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.helper.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.model.Session;
@@ -42,7 +42,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private final int TIMELINE_ITEM_HEIGHT = 60;
     private LinearLayout timelineLayout;
-    private ActitivityRecognitionSPHelper actitivityRecognitionSPHelper;
+    private ActivityRecognitionSPHelper activityRecognitionSPHelper;
     private int state;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -164,7 +164,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void initSensingStateUI() {
-        this.state = this.actitivityRecognitionSPHelper.getActivityRecognitionState();
+        this.state = this.activityRecognitionSPHelper.getActivityRecognitionState();
         Log.i(TAG, "service state je " + state);
         updateSensingStateUI(state);
     }
@@ -283,7 +283,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
 
-        this.actitivityRecognitionSPHelper = new ActitivityRecognitionSPHelper(getContext());
+        this.activityRecognitionSPHelper = new ActivityRecognitionSPHelper(getContext());
         super.onCreate(savedInstanceState);
     }
 }

@@ -9,14 +9,21 @@ import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
+import sk.tuke.ms.sedentti.firebase.uploader.UploadWorker;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
@@ -48,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferencesHelper.setAppDefaultSettings();
 
         // checkForPendingSession();
+
+        // activateUploadWorker();
     }
 
     private void startForegroundService() {
@@ -103,13 +112,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
+    private void activateUploadWorker() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.UNMETERED)
+                .setRequiresBatteryNotLow(true)
+                .build();
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+        PeriodicWorkRequest uploadRequest =
+                new PeriodicWorkRequest.Builder(UploadWorker.class, 12, TimeUnit.HOURS)
+                        .setConstraints(constraints)
+                        .build();
+
+        WorkManager.getInstance(this).enqueue(uploadRequest);
     }
 }

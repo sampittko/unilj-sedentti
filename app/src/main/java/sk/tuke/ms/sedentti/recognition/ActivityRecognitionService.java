@@ -18,7 +18,7 @@ import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
-import sk.tuke.ms.sedentti.helper.ActitivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.helper.ActivityRecognitionSPHelper;
 
 public class ActivityRecognitionService extends Service {
 
@@ -28,7 +28,7 @@ public class ActivityRecognitionService extends Service {
     private NotificationManager notificationManager;
     private ActivityRecognitionHandler activityRecognitionHandler;
     private ActivityRecognitionBroadcastReceiver receiver;
-    private ActitivityRecognitionSPHelper activityRecognitionPreferences;
+    private ActivityRecognitionSPHelper activityRecognitionPreferences;
 
 
     @Override
@@ -90,7 +90,7 @@ public class ActivityRecognitionService extends Service {
         this.notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         this.receiver = new ActivityRecognitionBroadcastReceiver();
         activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
-        this.activityRecognitionPreferences = new ActitivityRecognitionSPHelper(getApplicationContext());
+        this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(getApplicationContext());
     }
 
     @Override

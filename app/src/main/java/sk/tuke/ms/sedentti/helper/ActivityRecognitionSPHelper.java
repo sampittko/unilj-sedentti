@@ -5,11 +5,11 @@ import android.content.SharedPreferences;
 
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 
-public class ActitivityRecognitionSPHelper {
+public class ActivityRecognitionSPHelper {
 
     private final SharedPreferences preferences;
 
-    public ActitivityRecognitionSPHelper(Context context) {
+    public ActivityRecognitionSPHelper(Context context) {
         this.preferences = context.getSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 
