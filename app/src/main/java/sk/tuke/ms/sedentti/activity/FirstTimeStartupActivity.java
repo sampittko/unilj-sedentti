@@ -18,7 +18,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
         // line that needs to be run after database scheme upgrade (firstly change version FROM and version TO)
 //         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-//         databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 8, 9);
+//         databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2);
 
         SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(this);
         boolean firstTimeStartupPerformed = sharedPreferencesHelper.firstTimeStartupPerformed();
@@ -32,6 +32,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
         }
         else {
             Log.d(TAG, "Performing first time startup now");
+
             setContentView(R.layout.activity_first_time_startup);
 
             sharedPreferencesHelper.updateFirstTimeStartupPerformed(true);

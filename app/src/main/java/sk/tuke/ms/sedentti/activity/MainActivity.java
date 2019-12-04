@@ -16,7 +16,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.helper.CommonValues;
+import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
         Stetho.initializeWithDefaults(this);
 
-        startForegroundService();
-
         performInitialSetup();
+
+        startForegroundService();
 
         sharedPreferencesHelper.setAppDefaultSettings();
 
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startForegroundService() {
         Intent intent = new Intent(this, ActivityRecognitionService.class);
-        intent.setAction(CommonValues.COMMAND_INIT);
+        intent.setAction(PredefinedValues.COMMAND_INIT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {

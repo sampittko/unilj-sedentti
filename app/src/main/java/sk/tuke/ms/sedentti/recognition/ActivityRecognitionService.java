@@ -17,8 +17,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
+import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.ActitivityRecognitionSPHelper;
-import sk.tuke.ms.sedentti.helper.CommonValues;
 
 public class ActivityRecognitionService extends Service {
 
@@ -42,50 +42,46 @@ public class ActivityRecognitionService extends Service {
     private int processCommand(Intent intent) {
 //        if state is unknown, service is only started without sensing
         if (intent == null || intent.getAction() == null) {
-            return CommonValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
+            return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
         }
 
         switch (intent.getAction()) {
-            case CommonValues.COMMAND_INIT:
+            case PredefinedValues.COMMAND_INIT:
                 int state = this.activityRecognitionPreferences.getActivityRecognitionState();
 
-                if (state == CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
-                    serviceToggle(CommonValues.COMMAND_START);
+                if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
+                    serviceToggle(PredefinedValues.COMMAND_START);
                 } else {
-                    serviceToggle(CommonValues.COMMAND_START);
+                    serviceToggle(PredefinedValues.COMMAND_START);
                 }
 
                 return state;
 
-            case CommonValues.COMMAND_START:
-                serviceToggle(CommonValues.COMMAND_START);
-                this.activityRecognitionPreferences.saveStateToSharedPreferences(CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING);
+            case PredefinedValues.COMMAND_START:
+                serviceToggle(PredefinedValues.COMMAND_START);
+                this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING);
 
-                return CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
+                return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
 
-            case CommonValues.COMMAND_STOP:
-                serviceToggle(CommonValues.COMMAND_STOP);
-                this.activityRecognitionPreferences.saveStateToSharedPreferences(CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
+            case PredefinedValues.COMMAND_STOP:
+                serviceToggle(PredefinedValues.COMMAND_STOP);
+                this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
 
-                return CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
+                return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
         }
 //        Log.i(TAG, "Actual state is: " + state);7
-        return CommonValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
+        return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
     }
 
     private void serviceToggle(String command) {
-        if (command.equals(CommonValues.COMMAND_START)) {
-            registerReceiver(receiver, new IntentFilter(CommonValues.ACTIVITY_RECOGNITION_COMMAND));
+        if (command.equals(PredefinedValues.COMMAND_START)) {
+            registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
             this.activityRecognitionHandler.startTracking();
-        } else if (command.equals(CommonValues.COMMAND_STOP)) {
+        } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
             this.activityRecognitionHandler.stopTracking();
             unregisterReceiver(receiver);
         }
     }
-
-
-
-
 
     @Override
     public void onCreate() {
@@ -134,9 +130,9 @@ public class ActivityRecognitionService extends Service {
         builder.setContentIntent(openingPendingIntent);
 
         String state = null;
-        if (commandResult == CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
+        if (commandResult == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
             state = "Sedentti is tracking your sitting";
-        } else if (commandResult == CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+        } else if (commandResult == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
             state = "Sedentti is not active";
         }
         if (state != null) {

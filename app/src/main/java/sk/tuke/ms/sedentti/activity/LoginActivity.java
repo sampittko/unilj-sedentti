@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
-import sk.tuke.ms.sedentti.helper.CommonValues;
+import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
@@ -34,12 +34,6 @@ public class LoginActivity extends AppCompatActivity {
 
         profileHelper = new ProfileHelper(this);
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
-
-        try {
-            profileHelper.createNewProfile("Branko", "email", "url", "fire");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         updateActiveProfile();
     }
@@ -72,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
                         .build(),
-                CommonValues.RC_SIGN_IN);
+                PredefinedValues.FIREBASE_CODE_SIGN_IN);
     }
 
     @Override
@@ -81,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.d(TAG, "FirebaseUI resulted");
 
-        if (requestCode == CommonValues.RC_SIGN_IN) {
+        if (requestCode == PredefinedValues.FIREBASE_CODE_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
@@ -108,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                 // sign-in flow using the back button. Otherwise check
                 // response.getError().getErrorCode() and handle the error.
                 // ...
-                Log.e(TAG, "User did not log in, quitting app");
+                Log.w(TAG, "User did not log in, quitting app");
                 finish();
             }
         }

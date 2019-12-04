@@ -28,8 +28,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.ActitivityRecognitionSPHelper;
-import sk.tuke.ms.sedentti.helper.CommonValues;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.model.Session;
@@ -171,7 +171,7 @@ public class HomeFragment extends Fragment {
 
     private void updateSensingStateUI(int state) {
         Button button = getActivity().findViewById(R.id.f_home_button_sensing);
-        if (state == CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+        if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
             button.setText("Start");
         } else {
             button.setText("Stop");
@@ -179,15 +179,15 @@ public class HomeFragment extends Fragment {
     }
 
     private void toogleButton() {
-        if (this.state == CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+        if (this.state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
 //            turn it on
-            this.state = CommonValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
-            startForegroundService(CommonValues.COMMAND_START);
+            this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
+            startForegroundService(PredefinedValues.COMMAND_START);
             updateSensingStateUI(this.state);
         } else {
 //            turn it off
-            this.state = CommonValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
-            startForegroundService(CommonValues.COMMAND_STOP);
+            this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
+            startForegroundService(PredefinedValues.COMMAND_STOP);
             updateSensingStateUI(this.state);
         }
     }
