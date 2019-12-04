@@ -1,7 +1,9 @@
 package sk.tuke.ms.sedentti.ui.home;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +26,7 @@ import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -171,9 +174,15 @@ public class HomeFragment extends Fragment {
 
     private void updateSensingStateUI(int state) {
         Button button = getActivity().findViewById(R.id.f_home_button_sensing);
+        TextView settingsIcon = getActivity().findViewById(R.id.f_home_sensing_settings);
         if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+            button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
+            settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorAccent)));
+
             button.setText("Start");
         } else {
+            button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+            settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorPrimary)));
             button.setText("Stop");
         }
     }
