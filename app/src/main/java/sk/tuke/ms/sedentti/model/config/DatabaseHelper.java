@@ -2,25 +2,16 @@ package sk.tuke.ms.sedentti.model.config;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
-import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.SQLException;
 
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.PersonalityTest;
 import sk.tuke.ms.sedentti.model.Profile;
@@ -28,9 +19,6 @@ import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.UploadTask;
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
-    private static final String DATABASE_NAME = "sedentti";
-    private static final int DATABASE_VERSION = 5;
-
     private Dao<PersonalityTest, Long> personalityTestDao;
     private Dao<Profile, Long> profileDao;
     private Dao<Session, Long> sessionDao;
@@ -38,7 +26,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<UploadTask, Long> uploadTaskDao;
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION,
+        super(context, Configuration.DATABASE_NAME, null, Configuration.DATABASE_VERSION,
                 R.raw.ormlite_config);
     }
 
@@ -132,34 +120,5 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             uploadTaskDao = getDao(UploadTask.class);
         }
         return uploadTaskDao;
-    }
-
-    public static void exportDatabase(@NotNull SQLiteDatabase database) {
-        try {
-            File dbFile = new File(database.getPath());
-            FileInputStream fis = new FileInputStream(dbFile);
-
-            String outFileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator +
-                    DATABASE_NAME + ".db";
-
-            Log.e("DatabaseHelper", outFileName);
-
-            // Open the empty db as the output stream
-            OutputStream output = new FileOutputStream(outFileName);
-
-            // Transfer bytes from the inputfile to the outputfile
-            byte[] buffer = new byte[1024];
-            int length;
-            assert fis != null;
-            while ((length = fis.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
-            }
-            // Close the streams
-            output.flush();
-            output.close();
-            fis.close();
-        } catch (IOException e) {
-            Log.e("dbBackup:", e.getMessage());
-        }
     }
 }

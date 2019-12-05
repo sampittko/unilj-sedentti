@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.helper;
+package sk.tuke.ms.sedentti.helper.shared_preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -3,15 +3,21 @@ package sk.tuke.ms.sedentti.firebase.uploader;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.File;
 import java.sql.SQLException;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.crashlytics.android.Crashlytics;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+
 import sk.tuke.ms.sedentti.firebase.helper.StorageHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.UploadTask;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
+import sk.tuke.ms.sedentti.model.exporter.DatabaseExporter;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.UploadTaskHelper;
 
@@ -21,11 +27,14 @@ public class UploadWorker extends Worker {
     private UploadTaskHelper uploadTaskHelper;
     private ProfileHelper profileHelper;
 
+    private DatabaseHelper databaseHelper;
+
     private Profile profile;
 
     public UploadWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
 
+        this.databaseHelper = OpenHelperManager.getHelper(getApplicationContext(), DatabaseHelper.class);
         this.profileHelper = new ProfileHelper(context);
         try {
             profile = profileHelper.getActiveProfile();
@@ -47,15 +56,15 @@ public class UploadWorker extends Worker {
         }
 
         if (latestUploadTask != null && !latestUploadTask.isSuccessful()) {
-            Log.d(TAG, "Continuing unfinished upload task");
+            Crashlytics.log(Log.DEBUG, TAG, "Continuing unfinished upload task");
             continueWork();
         } else {
-            Log.d(TAG, "No unfinished upload task found");
+            Crashlytics.log(Log.DEBUG, TAG, "No unfinished upload task found");
             if (dataAvailable()) {
-                Log.d(TAG, "Data for upload available");
-                generateFileDB();
+                Crashlytics.log(Log.DEBUG, TAG, "Data for upload available");
+                String dbFilePath = DatabaseExporter.getDatabaseAsFile(databaseHelper.getReadableDatabase());
                 UploadTask uploadTask = getNewUploadTask();
-                performUpload(uploadTask);
+                performUpload(uploadTask, new File(dbFilePath));
             }
         }
 
@@ -71,16 +80,12 @@ public class UploadWorker extends Worker {
         return true;
     }
 
-    private void generateFileDB() {
-        // TODO generateFileDB
-    }
-
     private UploadTask getNewUploadTask() {
         // TODO getNewUploadTask
         return null;
     }
 
-    private void performUpload(UploadTask uploadTask) {
+    private void performUpload(UploadTask uploadTask, File dbFile) {
         // TODO performUpload
     }
 

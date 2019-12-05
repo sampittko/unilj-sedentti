@@ -3,6 +3,7 @@ package sk.tuke.ms.sedentti.model.helper;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -36,7 +37,7 @@ public class SessionHelper {
     private Dao<Session, Long> sessionDao;
     private QueryBuilder<Session, Long> sessionDaoQueryBuilder;
 
-    private SharedPreferencesHelper sharedPreferencesHelper;
+    private AppSPHelper appSPHelper;
 
     private Profile profile;
 
@@ -50,7 +51,7 @@ public class SessionHelper {
             e.printStackTrace();
         }
 
-        this.sharedPreferencesHelper = new SharedPreferencesHelper(context);
+        this.appSPHelper = new AppSPHelper(context);
         this.profile = profile;
     }
 
@@ -60,8 +61,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getSessionsInInterval(SessionsInterval interval) throws SQLException {
-        Log.d(TAG, "Executing getSessionsInInterval");
-        Log.d(TAG, "@interval: " + interval);
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getSessionsInInterval");
+        Crashlytics.log(Log.DEBUG, TAG, "@interval: " + interval);
 
         Date normalizedEndDate = DateHelper.getNormalizedDate(
                 new Date()
@@ -70,8 +71,8 @@ public class SessionHelper {
                 getStartDate(interval)
         );
 
-        Log.d(TAG, "Start date: " + normalizedStartDate + "\n");
-        Log.d(TAG, "End date: " + normalizedEndDate);
+        Crashlytics.log(Log.DEBUG, TAG, "Start date: " + normalizedStartDate + "\n");
+        Crashlytics.log(Log.DEBUG, TAG, "End date: " + normalizedEndDate);
 
         sessionDaoQueryBuilder.reset();
 
@@ -108,8 +109,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getLatestSessions(long limit) throws SQLException {
-        Log.d(TAG, "Executing getLatestSessions");
-        Log.d(TAG, "@limit: " + limit);
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getLatestSessions");
+        Crashlytics.log(Log.DEBUG, TAG, "@limit: " + limit);
 
         sessionDaoQueryBuilder.reset();
 
@@ -124,8 +125,8 @@ public class SessionHelper {
     }
 
     private Date getStartDate(@NotNull SessionsInterval interval) {
-        Log.d(TAG, "Executing getStartDate");
-        Log.d(TAG, "@interval: " + interval);
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getStartDate");
+        Crashlytics.log(Log.DEBUG, TAG, "@interval: " + interval);
 
         switch (interval) {
             case LAST_MONTH:
@@ -141,30 +142,30 @@ public class SessionHelper {
      * @return The number of consequent sessions which were successful
      */
     public int getStreak() throws SQLException {
-        Log.d(TAG, "Executing getStreak");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getStreak");
 
         Session lastUnsuccessful = getLastUnsuccessful();
 
         if (lastUnsuccessful == null) {
-            Log.d(TAG, "Last unsuccessful session not found");
+            Crashlytics.log(Log.DEBUG, TAG, "Last unsuccessful session not found");
             int latestSessionsCount = getLatestSessions().size();
 
             if (pendingSessionExists()) {
-                Log.d(TAG, "Returning the amount of all sessions minus pending session");
+                Crashlytics.log(Log.DEBUG, TAG, "Returning the amount of all sessions minus pending session");
                 return latestSessionsCount - 1;
             }
             else {
-                Log.d(TAG, "Returning the amount of all sessions");
+                Crashlytics.log(Log.DEBUG, TAG, "Returning the amount of all sessions");
                 return latestSessionsCount;
             }
         }
 
-        Log.d(TAG, "Last unsuccessful session found successfully");
+        Crashlytics.log(Log.DEBUG, TAG, "Last unsuccessful session found successfully");
         return getConsequentSuccessfulCount(lastUnsuccessful);
     }
 
     private Session getLastUnsuccessful() throws SQLException {
-        Log.d(TAG, "Executing getLastUnsuccessful");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getLastUnsuccessful");
 
         sessionDaoQueryBuilder.reset();
 
@@ -180,8 +181,8 @@ public class SessionHelper {
     }
 
     private int getConsequentSuccessfulCount(@NotNull Session lastUnsuccessful) throws SQLException {
-        Log.d(TAG, "Executing getConsequentSuccessfulCount");
-        Log.d(TAG, "@lastUnsuccessful ID: " + lastUnsuccessful.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getConsequentSuccessfulCount");
+        Crashlytics.log(Log.DEBUG, TAG, "@lastUnsuccessful ID: " + lastUnsuccessful.getId());
 
         sessionDaoQueryBuilder.reset();
 
@@ -209,8 +210,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public int getSuccessRate(Date date) throws SQLException {
-        Log.d(TAG, "Executing getSuccessRate");
-        Log.d(TAG, "@date: " + date);
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getSuccessRate");
+        Crashlytics.log(Log.DEBUG, TAG, "@date: " + date);
 
         Date normalizedDate = DateHelper.getNormalizedDate(date);
 
@@ -244,9 +245,9 @@ public class SessionHelper {
     }
 
     private int getCalculatedSuccessRate(@NotNull List<Session> successfulSessions, @NotNull List<Session> unsuccessfulSessions) {
-        Log.d(TAG, "Executing getCalculatedSuccessRate");
-        Log.d(TAG, "@successfulSessions SIZE: " + successfulSessions.size());
-        Log.d(TAG, "@unsuccessfulSessions SIZE: " + unsuccessfulSessions.size());
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getCalculatedSuccessRate");
+        Crashlytics.log(Log.DEBUG, TAG, "@successfulSessions SIZE: " + successfulSessions.size());
+        Crashlytics.log(Log.DEBUG, TAG, "@unsuccessfulSessions SIZE: " + unsuccessfulSessions.size());
 
         if (unsuccessfulSessions.size() == 0 && successfulSessions.size() != 0) {
             return HIGHEST_SUCCESS_RATE;
@@ -268,8 +269,8 @@ public class SessionHelper {
     // TODO context-involved determination
     @Contract(pure = true)
     private boolean isSedentary(int activityType) {
-        Log.d(TAG, "Executing isSedentary");
-        Log.d(TAG, "@activityType: " + activityType);
+        Crashlytics.log(Log.DEBUG, TAG, "Executing isSedentary");
+        Crashlytics.log(Log.DEBUG, TAG, "@activityType: " + activityType);
 
         return activityType == DetectedActivity.STILL;
     }
@@ -279,8 +280,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public void updateAsEndedSession(@NotNull Session session) throws SQLException {
-        Log.d(TAG, "Executing updateAsEndedSession");
-        Log.d(TAG, "@session ID:" + session.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "Executing updateAsEndedSession");
+        Crashlytics.log(Log.DEBUG, TAG, "@session ID:" + session.getId());
 
         long endTimestamp = new Date().getTime();
 
@@ -294,39 +295,39 @@ public class SessionHelper {
     }
 
     private long getSessionDuration(long startTimestamp, long endTimestamp) {
-        Log.d(TAG, "Executing getSessionDuration");
-        Log.d(TAG, "@startTimestamp: " + startTimestamp);
-        Log.d(TAG, "@endTimestamp: " + endTimestamp);
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getSessionDuration");
+        Crashlytics.log(Log.DEBUG, TAG, "@startTimestamp: " + startTimestamp);
+        Crashlytics.log(Log.DEBUG, TAG, "@endTimestamp: " + endTimestamp);
 
         return endTimestamp - startTimestamp;
     }
 
     private boolean isSuccessful(@NotNull Session session) {
-        Log.d(TAG, "Executing isSuccessful");
-        Log.d(TAG, "@session ID: " + session.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "Executing isSuccessful");
+        Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
 
         if (session.isSedentary()) {
-            Log.d(TAG, "Session is sedentary");
-            return session.getDuration() <= sharedPreferencesHelper.getSedentarySecondsLimit();
+            Crashlytics.log(Log.DEBUG, TAG, "Session is sedentary");
+            return session.getDuration() <= appSPHelper.getSedentarySecondsLimit();
         }
         else {
-            Log.d(TAG, "Session is not sedentary");
-            return session.getDuration() >= sharedPreferencesHelper.getActiveSecondsLimit();
+            Crashlytics.log(Log.DEBUG, TAG, "Session is not sedentary");
+            return session.getDuration() >= appSPHelper.getActiveSecondsLimit();
         }
     }
 
     public boolean pendingSessionExists() {
-        Log.d(TAG, "Executing pendingSessionExists");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing pendingSessionExists");
         try {
             getPendingSession();
-            Log.d(TAG, "Session exists");
+            Crashlytics.log(Log.DEBUG, TAG, "Session exists");
             return true;
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
         catch (NullPointerException e) {
-            Log.d(TAG, "Session does not exist");
+            Crashlytics.log(Log.DEBUG, TAG, "Session does not exist");
         }
         return false;
     }
@@ -336,7 +337,7 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public Session getPendingSession() throws SQLException, NullPointerException {
-        Log.d(TAG, "Executing getPendingSession");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getPendingSession");
 
         sessionDaoQueryBuilder.reset();
 
@@ -377,8 +378,8 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public void updateSession(@NotNull Session session) throws SQLException {
-        Log.d(TAG, "Executing updateSession");
-        Log.d(TAG, "@session ID: " + session.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "Executing updateSession");
+        Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
 
         sessionDao.update(session);
     }
@@ -388,7 +389,7 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public void createSession(int activityType) throws SQLException {
-        Log.d(TAG, "Executing createSession");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing createSession");
 
         Session newSession = new Session(
                 isSedentary(activityType),
@@ -434,9 +435,9 @@ public class SessionHelper {
     }
 
     private long getDailyDuration(Date date, boolean sedentary) throws SQLException {
-        Log.d(TAG, "Executing getDailyDuration");
-        Log.d(TAG, "@date: " + date);
-        Log.d(TAG, "@sedentary: " + sedentary);
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getDailyDuration");
+        Crashlytics.log(Log.DEBUG, TAG, "@date: " + date);
+        Crashlytics.log(Log.DEBUG, TAG, "@sedentary: " + sedentary);
 
         Date normalizedDate = DateHelper.getNormalizedDate(date);
 
@@ -455,8 +456,8 @@ public class SessionHelper {
     }
 
     private long getTotalDuration(@NotNull List<Session> sessions) {
-        Log.d(TAG, "Executing getTotalDuration");
-        Log.d(TAG, "@sessions SIZE: " + sessions.size());
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getTotalDuration");
+        Crashlytics.log(Log.DEBUG, TAG, "@sessions SIZE: " + sessions.size());
 
         long totalDuration = 0L;
 
@@ -474,7 +475,7 @@ public class SessionHelper {
      * @return The number of consequent sessions which were successful
      */
     public int getDayStreak(@NotNull ArrayList<Session> sessionsOfDay) {
-        Log.d(TAG, "Executing getDayStreak");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getDayStreak");
 
         int streak = 0;
 
@@ -495,7 +496,7 @@ public class SessionHelper {
      * @return Integer value representing the sessions success ratio in the spectified day
      */
     public int getDaySuccessRate(ArrayList<Session> sessionsOfDay) {
-        Log.d(TAG, "Executing getDaySuccessRate");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getDaySuccessRate");
 
         ArrayList<Session> successfulSessions = getSuccessfulSessions(sessionsOfDay);
 
@@ -542,9 +543,9 @@ public class SessionHelper {
     }
 
     private long getDayTotalDuration(@NotNull List<Session> sessionsOfDay, boolean sedentary) {
-        Log.d(TAG, "Executing getDayTotalDuration");
-        Log.d(TAG, "@sessions SIZE: " + sessionsOfDay.size());
-        Log.d(TAG, "@sedentary: " + sedentary);
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getDayTotalDuration");
+        Crashlytics.log(Log.DEBUG, TAG, "@sessions SIZE: " + sessionsOfDay.size());
+        Crashlytics.log(Log.DEBUG, TAG, "@sedentary: " + sedentary);
 
         long totalDuration = 0L;
 

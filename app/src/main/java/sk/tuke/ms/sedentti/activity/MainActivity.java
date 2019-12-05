@@ -5,10 +5,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -26,13 +25,12 @@ import androidx.work.WorkManager;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.firebase.uploader.UploadWorker;
-import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
-import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
-import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
+import sk.tuke.ms.sedentti.activity_recognition.ActivityRecognitionService;
 
 public class MainActivity extends AppCompatActivity {
     private Profile activeProfile;
@@ -40,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
 
     private SessionHelper sessionHelper;
-    private SharedPreferencesHelper sharedPreferencesHelper;
+    private AppSPHelper appSPHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         startForegroundService();
 
-        sharedPreferencesHelper.setAppDefaultSettings();
+        appSPHelper.setAppDefaultSettings();
 
         // checkForPendingSession();
 
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             startService(intent);
         }
 
-        Log.d(TAG, "Activity recognition foreground service started");
+        Crashlytics.log(Log.DEBUG, TAG, "Activity recognition foreground service started");
     }
 
     private void setBottomMenu() {
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void performInitialSetup() {
-        sharedPreferencesHelper = new SharedPreferencesHelper(this);
+        appSPHelper = new AppSPHelper(this);
         ProfileHelper profileHelper = new ProfileHelper(this);
 
         try {
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
         sessionHelper = new SessionHelper(this, activeProfile);
 
-        Log.d(TAG, "Initial setup performed");
+        Crashlytics.log(Log.DEBUG, TAG, "Initial setup performed");
     }
 
     private void checkForPendingSession() {
@@ -105,10 +103,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (pendingSession != null) {
                 sessionHelper.updateAsEndedSession(pendingSession);
-                Log.d(TAG, "Pending session set to ended");
+                Crashlytics.log(Log.DEBUG, TAG, "Pending session set to ended");
             }
             else {
-                Log.d(TAG, "Last session is not pending");
+                Crashlytics.log(Log.DEBUG, TAG, "Last session is not pending");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -118,8 +116,6 @@ public class MainActivity extends AppCompatActivity {
     private void activateUploadWorker() {
         // TODO check for last work and upload if needed
         // TODO delay upload request (do not perform it now)
-//        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-//        DatabaseHelper.exportDatabase(databaseHelper.getWritableDatabase());
 
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.UNMETERED)

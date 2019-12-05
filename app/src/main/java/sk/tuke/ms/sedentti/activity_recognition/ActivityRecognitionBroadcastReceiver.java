@@ -1,10 +1,11 @@
-package sk.tuke.ms.sedentti.recognition;
+package sk.tuke.ms.sedentti.activity_recognition;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
@@ -39,7 +40,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                     int newActivityType = event.getActivityType();
                     int newActivityTransitionType = event.getTransitionType();
 
-                    Log.d(TAG, "New activity - type " + newActivityType + " transtionType " + newActivityTransitionType);
+                    Crashlytics.log(Log.DEBUG, TAG, "New activity - type " + newActivityType + " transtionType " + newActivityTransitionType);
 
                     try {
                         Activity lastActivity = activityHelper.getLastActivity();
