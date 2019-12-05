@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
             else {
                 Log.d(TAG, "Existing profile is being used");
                 activeProfile = profileHelper.getExistingProfile();
+                setUpCrashlytics();
                 startFollowingActivity();
             }
         } catch (SQLException e) {
@@ -92,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                             Objects.requireNonNull(user.getPhotoUrl()).getEncodedPath(),
                             user.getUid());
 
+                    setUpCrashlytics();
                     startFollowingActivity();
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -106,6 +109,12 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         }
+    }
+
+    private void setUpCrashlytics() {
+        Crashlytics.setUserIdentifier(activeProfile.getFirebaseAuthUid());
+        Crashlytics.setUserEmail(activeProfile.getEmail());
+        Crashlytics.setUserName(activeProfile.getName());
     }
 
     private void startFollowingActivity() {

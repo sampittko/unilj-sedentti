@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
 import sk.tuke.ms.sedentti.firebase.helper.StorageHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.UploadTask;
