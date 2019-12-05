@@ -11,4 +11,10 @@ public abstract class Configuration {
     //
     public static final String STORAGE_DATE_PATH_SEPARATOR = "-";
     public static final String STORAGE_FILE_TYPE = ".csv";
+
+    //
+    // Local Database
+    //
+    public static final String DATABASE_NAME = "sedentti";
+    public static final int DATABASE_VERSION = 5;
 }

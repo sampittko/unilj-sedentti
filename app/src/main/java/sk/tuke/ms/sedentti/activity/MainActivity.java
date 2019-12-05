@@ -116,8 +116,6 @@ public class MainActivity extends AppCompatActivity {
     private void activateUploadWorker() {
         // TODO check for last work and upload if needed
         // TODO delay upload request (do not perform it now)
-//        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-//        DatabaseHelper.exportDatabase(databaseHelper.getWritableDatabase());
 
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.UNMETERED)
