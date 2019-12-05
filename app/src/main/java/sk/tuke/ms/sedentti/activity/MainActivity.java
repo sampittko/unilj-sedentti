@@ -23,7 +23,9 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
+import sk.tuke.ms.sedentti.firebase.uploader.UploadScheduler;
 import sk.tuke.ms.sedentti.firebase.uploader.UploadWorker;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
@@ -114,19 +116,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void activateUploadWorker() {
-        // TODO check for last work and upload if needed
-        // TODO delay upload request (do not perform it now)
-
         Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.UNMETERED)
-                .setRequiresBatteryNotLow(true)
+                .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
         PeriodicWorkRequest uploadRequest =
-                new PeriodicWorkRequest.Builder(UploadWorker.class, 10, TimeUnit.MINUTES)
+                new PeriodicWorkRequest.Builder(UploadWorker.class, Configuration.STORAGE_MINUTES_UPLOAD_INTERVAL, TimeUnit.MINUTES)
                         .setConstraints(constraints)
+                        .setInitialDelay(
+                                UploadScheduler.getInitialMillisecondsDelay(this, activeProfile),
+                                TimeUnit.MILLISECONDS
+                        )
                         .build();
 
+        // TODO check for pending work requests
         WorkManager.getInstance(this).enqueue(uploadRequest);
     }
 }

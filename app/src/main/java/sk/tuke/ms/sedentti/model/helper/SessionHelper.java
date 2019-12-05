@@ -124,6 +124,23 @@ public class SessionHelper {
         );
     }
 
+    /**
+     * @return Number of sessions
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public int getFinishedSessionsCount() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getFinishedSessionsCount");
+
+        sessionDaoQueryBuilder.reset();
+
+        return (int) sessionDaoQueryBuilder
+                        .where()
+                        .ne(Session.COLUMN_END_TIMESTAMP, 0L)
+                        .and()
+                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                        .countOf();
+    }
+
     private Date getStartDate(@NotNull SessionsInterval interval) {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getStartDate");
         Crashlytics.log(Log.DEBUG, TAG, "@interval: " + interval);
@@ -174,7 +191,7 @@ public class SessionHelper {
                 .where()
                 .eq(Session.COLUMN_SUCCESSFUL, false)
                 .and()
-                .gt(Session.COLUMN_DURATION, 0L)
+                .ne(Session.COLUMN_END_TIMESTAMP, 0L)
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .queryForFirst();
@@ -190,7 +207,7 @@ public class SessionHelper {
                 .where()
                 .gt(Session.COLUMN_START_TIMESTAMP, lastUnsuccessful.getStartTimestamp())
                 .and()
-                .gt(Session.COLUMN_DURATION, 0L)
+                .ne(Session.COLUMN_END_TIMESTAMP, 0L)
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .countOf();

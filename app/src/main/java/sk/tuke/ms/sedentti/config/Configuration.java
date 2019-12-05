@@ -11,6 +11,7 @@ public abstract class Configuration {
     //
     public static final String STORAGE_DATE_PATH_SEPARATOR = "-";
     public static final String STORAGE_FILE_TYPE = ".csv";
+    public static final int STORAGE_MINUTES_UPLOAD_INTERVAL = 10;
 
     //
     // Local Database
