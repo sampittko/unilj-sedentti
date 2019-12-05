@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
+
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MotivateMeActivity;
 import sk.tuke.ms.sedentti.activity.StatusActivity;
@@ -26,6 +27,7 @@ public class ProfileFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
+
         return root;
     }
 

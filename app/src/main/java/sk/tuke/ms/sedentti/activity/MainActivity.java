@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +29,7 @@ import sk.tuke.ms.sedentti.firebase.uploader.UploadWorker;
 import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         // checkForPendingSession();
 
-        // activateUploadWorker();
+         activateUploadWorker();
     }
 
     private void startForegroundService() {
@@ -113,13 +116,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void activateUploadWorker() {
+        // TODO check for last work and upload if needed
+        // TODO delay upload request (do not perform it now)
+//        DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+//        DatabaseHelper.exportDatabase(databaseHelper.getWritableDatabase());
+
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.UNMETERED)
                 .setRequiresBatteryNotLow(true)
                 .build();
 
         PeriodicWorkRequest uploadRequest =
-                new PeriodicWorkRequest.Builder(UploadWorker.class, 12, TimeUnit.HOURS)
+                new PeriodicWorkRequest.Builder(UploadWorker.class, 10, TimeUnit.MINUTES)
                         .setConstraints(constraints)
                         .build();
 
