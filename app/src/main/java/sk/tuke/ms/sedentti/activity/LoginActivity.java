@@ -37,7 +37,6 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
 
         updateActiveProfile();
-        setUpCrashlytics();
     }
 
     private void updateActiveProfile() {
@@ -49,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
             else {
                 Log.d(TAG, "Existing profile is being used");
                 activeProfile = profileHelper.getExistingProfile();
+                setUpCrashlytics();
                 startFollowingActivity();
             }
         } catch (SQLException e) {
@@ -94,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                             Objects.requireNonNull(user.getPhotoUrl()).getEncodedPath(),
                             user.getUid());
 
+                    setUpCrashlytics();
                     startFollowingActivity();
                 } catch (SQLException e) {
                     e.printStackTrace();
