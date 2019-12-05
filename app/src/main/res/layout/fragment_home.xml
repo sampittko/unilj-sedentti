@@ -85,6 +85,17 @@
             app:layout_constraintStart_toEndOf="@+id/f_home_button_sensing"
             app:layout_constraintTop_toTopOf="@+id/f_home_button_sensing" />
 
+        <TextView
+            android:id="@+id/f_home_text_sensing_state"
+            style="@android:style/TextAppearance.Material.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="App is tracking"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/f_home_button_sensing"></TextView>
+
         <LinearLayout
             android:id="@+id/f_home_layout_rates"
             android:layout_width="wrap_content"
@@ -93,7 +104,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/f_home_button_sensing">
+            app:layout_constraintTop_toBottomOf="@+id/f_home_text_sensing_state">
 
 
             <LinearLayout
