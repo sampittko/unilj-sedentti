@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
 
         updateActiveProfile();
+        setUpCrashlytics();
     }
 
     private void updateActiveProfile() {
@@ -106,6 +108,12 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         }
+    }
+
+    private void setUpCrashlytics() {
+        Crashlytics.setUserIdentifier(activeProfile.getFirebaseAuthUid());
+        Crashlytics.setUserEmail(activeProfile.getEmail());
+        Crashlytics.setUserName(activeProfile.getName());
     }
 
     private void startFollowingActivity() {
