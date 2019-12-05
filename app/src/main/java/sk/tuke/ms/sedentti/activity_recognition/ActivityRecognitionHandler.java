@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.recognition;
+package sk.tuke.ms.sedentti.activity_recognition;
 
 import android.app.PendingIntent;
 import android.content.Context;

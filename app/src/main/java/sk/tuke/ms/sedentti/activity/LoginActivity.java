@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
-import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.ProfileSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 
@@ -27,14 +27,14 @@ public class LoginActivity extends AppCompatActivity {
     private Profile activeProfile;
 
     private ProfileHelper profileHelper;
-    private SharedPreferencesHelper sharedPreferencesHelper;
+    private ProfileSPHelper profileSPHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         profileHelper = new ProfileHelper(this);
-        sharedPreferencesHelper = new SharedPreferencesHelper(this);
+        profileSPHelper = new ProfileSPHelper(this);
 
         updateActiveProfile();
     }
@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startFollowingActivity() {
-        sharedPreferencesHelper.updateActiveProfile(activeProfile);
+        profileSPHelper.updateActiveProfile(activeProfile);
 
         Intent intent;
         if (activeProfile.getPersonalityTest() != null) {

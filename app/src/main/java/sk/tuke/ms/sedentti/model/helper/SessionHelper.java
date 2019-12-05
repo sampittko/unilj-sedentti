@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -37,7 +37,7 @@ public class SessionHelper {
     private Dao<Session, Long> sessionDao;
     private QueryBuilder<Session, Long> sessionDaoQueryBuilder;
 
-    private SharedPreferencesHelper sharedPreferencesHelper;
+    private AppSPHelper appSPHelper;
 
     private Profile profile;
 
@@ -51,7 +51,7 @@ public class SessionHelper {
             e.printStackTrace();
         }
 
-        this.sharedPreferencesHelper = new SharedPreferencesHelper(context);
+        this.appSPHelper = new AppSPHelper(context);
         this.profile = profile;
     }
 
@@ -308,11 +308,11 @@ public class SessionHelper {
 
         if (session.isSedentary()) {
             Crashlytics.log(Log.DEBUG, TAG, "Session is sedentary");
-            return session.getDuration() <= sharedPreferencesHelper.getSedentarySecondsLimit();
+            return session.getDuration() <= appSPHelper.getSedentarySecondsLimit();
         }
         else {
             Crashlytics.log(Log.DEBUG, TAG, "Session is not sedentary");
-            return session.getDuration() >= sharedPreferencesHelper.getActiveSecondsLimit();
+            return session.getDuration() >= appSPHelper.getActiveSecondsLimit();
         }
     }
 

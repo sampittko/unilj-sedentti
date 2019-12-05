@@ -39,7 +39,7 @@
         </activity>
 
         <service
-            android:name=".recognition.ActivityRecognitionService"
+            android:name=".activity_recognition.ActivityRecognitionService"
             android:enabled="true"
             android:exported="true" />
     </application>

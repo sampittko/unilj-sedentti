@@ -33,11 +33,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
-import sk.tuke.ms.sedentti.helper.ActivityRecognitionSPHelper;
-import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.model.Session;
-import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
+import sk.tuke.ms.sedentti.activity_recognition.ActivityRecognitionService;
 
 public class HomeFragment extends Fragment {
 
@@ -134,7 +133,7 @@ public class HomeFragment extends Fragment {
             if (value != null) {
                 graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(value));
                 // TODO: 11/11/19 set session limit
-                long limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit() * 1000L;
+                // long limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit() * 1000L;
 
                 int normalizedValue = getNormalizedValue(value, 30L * 60L * 1000L);
                 activeSessionGraph.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series1Index).setDelay(4000).build());

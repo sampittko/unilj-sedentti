@@ -7,7 +7,7 @@ import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 
-import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.ProfileSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
@@ -32,7 +32,7 @@ public class ProfileHelper {
      */
     public Profile getActiveProfile() throws SQLException {
         return profileDao.queryForId(
-                new SharedPreferencesHelper(context).getActiveProfileId()
+                new ProfileSPHelper(context).getActiveProfileId()
         );
     }
 

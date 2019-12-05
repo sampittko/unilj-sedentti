@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.crashlytics.android.Crashlytics;
 
 import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 
 public class FirstTimeStartupActivity extends AppCompatActivity {
 
@@ -23,8 +23,8 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 //         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
 //         databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2);
 
-        SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(this);
-        boolean firstTimeStartupPerformed = sharedPreferencesHelper.firstTimeStartupPerformed();
+        AppSPHelper appSPHelper = new AppSPHelper(this);
+        boolean firstTimeStartupPerformed = appSPHelper.firstTimeStartupPerformed();
 
         if (firstTimeStartupPerformed) {
             Crashlytics.log(Log.DEBUG, TAG, "First time startup had already been performed before");
@@ -38,7 +38,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
             setContentView(R.layout.activity_first_time_startup);
 
-            sharedPreferencesHelper.updateFirstTimeStartupPerformed(true);
+            appSPHelper.updateFirstTimeStartupPerformed(true);
 
             // TODO remove
             Intent intent = new Intent(this, LoginActivity.class);

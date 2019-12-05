@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.recognition;
+package sk.tuke.ms.sedentti.activity_recognition;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -18,7 +18,7 @@ import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
-import sk.tuke.ms.sedentti.helper.ActivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 
 public class ActivityRecognitionService extends Service {
 

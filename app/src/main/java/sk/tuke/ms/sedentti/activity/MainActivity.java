@@ -8,8 +8,6 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -27,13 +25,12 @@ import androidx.work.WorkManager;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.firebase.uploader.UploadWorker;
-import sk.tuke.ms.sedentti.helper.SharedPreferencesHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
-import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
-import sk.tuke.ms.sedentti.recognition.ActivityRecognitionService;
+import sk.tuke.ms.sedentti.activity_recognition.ActivityRecognitionService;
 
 public class MainActivity extends AppCompatActivity {
     private Profile activeProfile;
@@ -41,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
 
     private SessionHelper sessionHelper;
-    private SharedPreferencesHelper sharedPreferencesHelper;
+    private AppSPHelper appSPHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         startForegroundService();
 
-        sharedPreferencesHelper.setAppDefaultSettings();
+        appSPHelper.setAppDefaultSettings();
 
         // checkForPendingSession();
 
@@ -86,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void performInitialSetup() {
-        sharedPreferencesHelper = new SharedPreferencesHelper(this);
+        appSPHelper = new AppSPHelper(this);
         ProfileHelper profileHelper = new ProfileHelper(this);
 
         try {
