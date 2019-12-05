@@ -36,6 +36,12 @@ public class LoginActivity extends AppCompatActivity {
         profileHelper = new ProfileHelper(this);
         profileSPHelper = new ProfileSPHelper(this);
 
+        try {
+            profileHelper.createNewProfile("Branko", "", "", "");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         updateActiveProfile();
     }
 

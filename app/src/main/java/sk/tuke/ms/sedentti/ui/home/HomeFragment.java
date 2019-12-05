@@ -32,11 +32,11 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.config.PredefinedValues;
-import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
-import sk.tuke.ms.sedentti.helper.TimeHelper;
-import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.activity_recognition.ActivityRecognitionService;
+import sk.tuke.ms.sedentti.config.PredefinedValues;
+import sk.tuke.ms.sedentti.helper.TimeHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.model.Session;
 
 public class HomeFragment extends Fragment {
 
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
 
         makeGraphs(root);
 
-        Button sensingButton = root.findViewById(R.id.f_home_button_sensing);
+        Button sensingButton = root.findViewById(R.id.btn_home_button_sensing);
         sensingButton.setOnClickListener((View view) -> toogleButton());
 
         setOnClickOnViews(root);
@@ -109,7 +109,7 @@ public class HomeFragment extends Fragment {
                 .setLineWidth(20f)
                 .build());
 
-        SeriesItem activeSessionItem = new SeriesItem.Builder(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null))
+        SeriesItem sessionItem = new SeriesItem.Builder(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null))
                 .setRange(0, 100, 0)
                 .setLineWidth(40f)
                 .build();
@@ -124,18 +124,27 @@ public class HomeFragment extends Fragment {
                 .setLineWidth(20f)
                 .build();
 
-        int series1Index = activeSessionGraph.addSeries(activeSessionItem);
+        int series1Index = activeSessionGraph.addSeries(sessionItem);
         int series2Index = activeTime.addSeries(activeItem);
         int series3Index = sedentaryTime.addSeries(sedentaryItem);
 
         TextView graphTimeValue = root.findViewById(R.id.tw_f_home_graph_time);
-        homeViewModel.getPendingSessionDuration().observe(this, value -> {
-            if (value != null) {
-                graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(value));
+        TextView sessionActivity = root.findViewById(R.id.tw_f_home_session_activity);
+        homeViewModel.getPendingSession().observe(this, session -> {
+            if (session != null) {
+                graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(session.getDuration()));
                 // TODO: 11/11/19 set session limit
                 // long limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit() * 1000L;
 
-                int normalizedValue = getNormalizedValue(value, 30L * 60L * 1000L);
+                int normalizedValue = getNormalizedValue(session.getDuration(), 30L * 60L * 1000L);
+
+                if (session.isSedentary()) {
+                    sessionActivity.setText("Sedentary");
+                    sessionItem.setColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
+                } else {
+                    sessionActivity.setText("Active");
+                    sessionItem.setColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null));
+                }
                 activeSessionGraph.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series1Index).setDelay(4000).build());
             }
         });
@@ -173,7 +182,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateSensingStateUI(int state) {
-        Button button = getActivity().findViewById(R.id.f_home_button_sensing);
+        Button button = getActivity().findViewById(R.id.btn_home_button_sensing);
         TextView settingsIcon = getActivity().findViewById(R.id.f_home_sensing_settings);
         if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
             button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorAccent), PorterDuff.Mode.MULTIPLY);

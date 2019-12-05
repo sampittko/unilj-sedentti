@@ -44,7 +44,15 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
 
                     try {
                         Activity lastActivity = activityHelper.getLastActivity();
-                        Session pendingSession = sessionHelper.getPendingSession();
+                        Session pendingSession = null;
+                        try {
+                            pendingSession = sessionHelper.getPendingSession();
+                            // TODO refactor null pointer exeception
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
 
                         // new activity has started
                         if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {

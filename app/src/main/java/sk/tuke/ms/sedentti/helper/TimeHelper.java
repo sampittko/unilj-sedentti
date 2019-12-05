@@ -21,7 +21,7 @@ public class TimeHelper {
         int MM = (int) (timestamp / 60);
         timestamp = timestamp % 60; // v time su teraz zvysne sekundy
 
-        return (String.format("%d:%02d:%02d", HH, MM, timestamp));
+        return (String.format("%02d:%02d:%02d", HH, MM, timestamp));
     }
 
 

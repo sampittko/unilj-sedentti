@@ -53,19 +53,34 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <TextView
-                    android:id="@+id/tw_f_home_graph_time"
-                    style="@android:style/TextAppearance.Material.Large"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
                     android:gravity="center"
-                    android:text="9:87:45"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tw_f_home_graph_time"
+                        style="@android:style/TextAppearance.Material.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="09:87:45"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <TextView
+                        android:id="@+id/tw_f_home_session_activity"
+                        style="@android:style/TextAppearance.Material.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Activity" />
+                </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/f_home_button_sensing"
+            android:id="@+id/btn_home_button_sensing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -81,9 +96,20 @@
             android:layout_marginStart="16dp"
             android:background="@drawable/ic_settings_black_24dp"
             android:backgroundTint="@color/colorAccent"
-            app:layout_constraintBottom_toBottomOf="@+id/f_home_button_sensing"
-            app:layout_constraintStart_toEndOf="@+id/f_home_button_sensing"
-            app:layout_constraintTop_toTopOf="@+id/f_home_button_sensing" />
+            app:layout_constraintBottom_toBottomOf="@+id/btn_home_button_sensing"
+            app:layout_constraintStart_toEndOf="@+id/btn_home_button_sensing"
+            app:layout_constraintTop_toTopOf="@+id/btn_home_button_sensing" />
+
+        <TextView
+            android:id="@+id/tw_home_text_sensing_state"
+            style="@android:style/TextAppearance.Material.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="App is tracking"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_home_button_sensing"></TextView>
 
         <LinearLayout
             android:id="@+id/f_home_layout_rates"
@@ -93,7 +119,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/f_home_button_sensing">
+            app:layout_constraintTop_toBottomOf="@+id/tw_home_text_sensing_state">
 
 
             <LinearLayout

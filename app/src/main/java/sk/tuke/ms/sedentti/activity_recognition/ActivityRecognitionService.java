@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -24,6 +25,7 @@ public class ActivityRecognitionService extends Service {
 
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "sk.tuke.ms.sedentti";
+    private static final String TAG = "ActivityRecognitionS";
 
     private NotificationManager notificationManager;
     private ActivityRecognitionHandler activityRecognitionHandler;
@@ -77,9 +79,11 @@ public class ActivityRecognitionService extends Service {
         if (command.equals(PredefinedValues.COMMAND_START)) {
             registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
             this.activityRecognitionHandler.startTracking();
+            Log.i(TAG, "Sensing service started");
         } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
             this.activityRecognitionHandler.stopTracking();
             unregisterReceiver(receiver);
+            Log.i(TAG, "Sensing service stopped");
         }
     }
 
@@ -128,6 +132,8 @@ public class ActivityRecognitionService extends Service {
         openingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent openingPendingIntent = PendingIntent.getActivity(this, 0, openingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(openingPendingIntent);
+
+        builder.setContentTitle("Sedentti");
 
         String state = null;
         if (commandResult == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {

@@ -22,7 +22,7 @@ public class HomeViewModel extends AndroidViewModel {
     private MutableLiveData<ArrayList<Session>> sessions;
     private MutableLiveData<Integer> success;
     private MutableLiveData<Integer> streak;
-    private MutableLiveData<Long> pendingSessionDuration;
+    private MutableLiveData<Session> pendingSession;
 
     private MutableLiveData<Long> dailySedentaryDuration;
     private MutableLiveData<Long> dailyActiveDuration;
@@ -94,12 +94,12 @@ public class HomeViewModel extends AndroidViewModel {
         new loadSuccessAsyncTask(this.sessionHelper).execute();
     }
 
-    public LiveData<Long> getPendingSessionDuration() {
-        if (this.pendingSessionDuration == null) {
-            this.pendingSessionDuration = new MutableLiveData<Long>();
+    public LiveData<Session> getPendingSession() {
+        if (this.pendingSession == null) {
+            this.pendingSession = new MutableLiveData<Session>();
             loadPendingSessionDuration();
         }
-        return this.pendingSessionDuration;
+        return this.pendingSession;
     }
 
     private void loadPendingSessionDuration() {
@@ -212,7 +212,7 @@ public class HomeViewModel extends AndroidViewModel {
         }
     }
 
-    private class loadPendingSessionDurationAsyncTask extends AsyncTask<Void, Void, Long> {
+    private class loadPendingSessionDurationAsyncTask extends AsyncTask<Void, Void, Session> {
         private SessionHelper sessionHelper;
 
         loadPendingSessionDurationAsyncTask(SessionHelper sessionHelper) {
@@ -220,20 +220,20 @@ public class HomeViewModel extends AndroidViewModel {
         }
 
         @Override
-        protected Long doInBackground(Void... voids) {
+        protected Session doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getPendingSession().getDuration();
+                return this.sessionHelper.getPendingSession();
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch (NullPointerException e) {
-                return 0L;
+                return null;
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(Long result) {
-            pendingSessionDuration.postValue(result);
+        protected void onPostExecute(Session result) {
+            pendingSession.postValue(result);
         }
     }
 
