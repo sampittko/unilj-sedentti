@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.crashlytics.android.Crashlytics;
+
 import sk.tuke.ms.sedentti.firebase.helper.StorageHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.UploadTask;
@@ -47,12 +49,12 @@ public class UploadWorker extends Worker {
         }
 
         if (latestUploadTask != null && !latestUploadTask.isSuccessful()) {
-            Log.d(TAG, "Continuing unfinished upload task");
+            Crashlytics.log(Log.DEBUG, TAG, "Continuing unfinished upload task");
             continueWork();
         } else {
-            Log.d(TAG, "No unfinished upload task found");
+            Crashlytics.log(Log.DEBUG, TAG, "No unfinished upload task found");
             if (dataAvailable()) {
-                Log.d(TAG, "Data for upload available");
+                Crashlytics.log(Log.DEBUG, TAG, "Data for upload available");
                 generateFileDB();
                 UploadTask uploadTask = getNewUploadTask();
                 performUpload(uploadTask);

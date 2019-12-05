@@ -3,6 +3,7 @@ package sk.tuke.ms.sedentti.model.helper;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -36,7 +37,7 @@ public class UploadTaskHelper {
     }
 
     public UploadTask getLatestUploadTask() throws SQLException {
-        Log.d(TAG, "Executing getLatestUploadTask");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getLatestUploadTask");
 
         return uploadTaskDaoQueryBuilder
                 .orderBy(UploadTask.COLUMN_START_TIMESTAMP, false)
@@ -46,7 +47,7 @@ public class UploadTaskHelper {
     }
 
     public int getTodaysUploadTasksCount() throws SQLException {
-        Log.d(TAG, "Executing getTodaysUploadTasksCount");
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getTodaysUploadTasksCount");
 
         return (int) uploadTaskDaoQueryBuilder
                 .where()

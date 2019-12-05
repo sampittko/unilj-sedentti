@@ -42,11 +42,11 @@ public class LoginActivity extends AppCompatActivity {
     private void updateActiveProfile() {
         try {
             if (profileHelper.getNumberOfExistingProfiles() == 0) {
-                Log.d(TAG, "Requesting profile information");
+                Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
                 handleFirebaseAuthUI();
             }
             else {
-                Log.d(TAG, "Existing profile is being used");
+                Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
                 activeProfile = profileHelper.getExistingProfile();
                 setUpCrashlytics();
                 startFollowingActivity();
@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build());
 
-        Log.d(TAG, "Starting FirebaseUI");
+        Crashlytics.log(Log.DEBUG, TAG, "Starting FirebaseUI");
 
         // Create and launch sign-in intent
         startActivityForResult(
@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d(TAG, "FirebaseUI resulted");
+        Crashlytics.log(Log.DEBUG, TAG, "FirebaseUI resulted");
 
         if (requestCode == PredefinedValues.FIREBASE_CODE_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 assert user != null;
-                Log.d(TAG, "Logged in with email " + user.getEmail());
+                Crashlytics.log(Log.DEBUG, TAG, "Logged in with email " + user.getEmail());
 
                 try {
                     activeProfile = profileHelper.createNewProfile(
@@ -122,11 +122,11 @@ public class LoginActivity extends AppCompatActivity {
 
         Intent intent;
         if (activeProfile.getPersonalityTest() != null) {
-            Log.d(TAG, "Starting main activity");
+            Crashlytics.log(Log.DEBUG, TAG, "Starting main activity");
             intent = new Intent(this, MainActivity.class);
         }
         else {
-            Log.d(TAG, "Starting personality test");
+            Crashlytics.log(Log.DEBUG, TAG, "Starting personality test");
             intent = new Intent(this, PersonalityTestActivity.class);
         }
 

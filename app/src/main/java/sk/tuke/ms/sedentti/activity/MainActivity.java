@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             startService(intent);
         }
 
-        Log.d(TAG, "Activity recognition foreground service started");
+        Crashlytics.log(Log.DEBUG, TAG, "Activity recognition foreground service started");
     }
 
     private void setBottomMenu() {
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         sessionHelper = new SessionHelper(this, activeProfile);
 
-        Log.d(TAG, "Initial setup performed");
+        Crashlytics.log(Log.DEBUG, TAG, "Initial setup performed");
     }
 
     private void checkForPendingSession() {
@@ -105,10 +106,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (pendingSession != null) {
                 sessionHelper.updateAsEndedSession(pendingSession);
-                Log.d(TAG, "Pending session set to ended");
+                Crashlytics.log(Log.DEBUG, TAG, "Pending session set to ended");
             }
             else {
-                Log.d(TAG, "Last session is not pending");
+                Crashlytics.log(Log.DEBUG, TAG, "Last session is not pending");
             }
         } catch (SQLException e) {
             e.printStackTrace();

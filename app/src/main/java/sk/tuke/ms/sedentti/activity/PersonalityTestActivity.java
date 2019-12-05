@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import sk.tuke.ms.sedentti.R;
 
 public class PersonalityTestActivity extends AppCompatActivity {
@@ -16,7 +18,7 @@ public class PersonalityTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personality_test);
 
-        Log.d(TAG, "Personality test started");
+        Crashlytics.log(Log.DEBUG, TAG, "Personality test started");
 
         // TODO remove
         Intent intent = new Intent(this, MainActivity.class);

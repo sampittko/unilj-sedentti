@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hookedonplay.decoviewlib.DecoView;
 import com.hookedonplay.decoviewlib.charts.SeriesItem;
@@ -212,7 +213,7 @@ public class HomeFragment extends Fragment {
             getActivity().startService(intent);
         }
 
-        Log.d(TAG, "Activity recognition foreground service started");
+        Crashlytics.log(Log.DEBUG, TAG, "Activity recognition foreground service started");
     }
 
 
