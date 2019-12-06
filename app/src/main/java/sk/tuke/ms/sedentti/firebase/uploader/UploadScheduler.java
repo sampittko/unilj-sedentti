@@ -19,16 +19,22 @@ import sk.tuke.ms.sedentti.model.helper.UploadTaskHelper;
 public class UploadScheduler {
     private static final String TAG = "UploadScheduler";
 
-    public static long getInitialMillisecondsDelay(@NotNull Context context, @NotNull Profile profile) {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getInitialMillisecondsDelay");
-        Crashlytics.log(Log.DEBUG, TAG, "@context: " + context.getPackageCodePath());
-        Crashlytics.log(Log.DEBUG, TAG, "@profile: " + profile.getFirebaseAuthUid());
+    private SessionHelper sessionHelper;
+    private UploadTaskHelper uploadTaskHelper;
 
-        UploadTask latestUploadTask = getLatestUploadTask(context, profile);
+    public UploadScheduler(Context context, Profile profile) {
+        sessionHelper = new SessionHelper(context, profile);
+        uploadTaskHelper = new UploadTaskHelper(context, profile);
+    }
+
+    public long getInitialMillisecondsDelay() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getInitialMillisecondsDelay");
+
+        UploadTask latestUploadTask = uploadTaskHelper.getLatestUploadTask();
 
         if (latestUploadTask == null) {
             Crashlytics.log(Log.DEBUG, TAG, "There is no previous upload task");
-            if (getSessionsCount(context, profile) > 0) {
+            if (sessionHelper.getFinishedSessionsCount() > 0) {
                 Crashlytics.log(Log.DEBUG, TAG, "Perform upload work now");
                 return 0L;
             }
@@ -46,30 +52,7 @@ public class UploadScheduler {
         return getTimeDiff(latestUploadTask);
     }
 
-    private static int getSessionsCount(Context context, Profile profile) {
-        SessionHelper sessionHelper = new SessionHelper(context, profile);
-        try {
-            return sessionHelper.getFinishedSessionsCount();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    private static UploadTask getLatestUploadTask(Context context, Profile profile) {
-        UploadTaskHelper uploadTaskHelper = new UploadTaskHelper(context, profile);
-        UploadTask latestUploadTask = null;
-
-        try {
-            latestUploadTask = uploadTaskHelper.getLatestUploadTask();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return latestUploadTask;
-    }
-
-    private static long getTimeDiff(@NotNull UploadTask latestUploadTask) {
+    private long getTimeDiff(@NotNull UploadTask latestUploadTask) {
         Crashlytics.log(Log.DEBUG, TAG, "Last upload task was successful and the next one will be scheduled for times difference");
 
         Calendar currentDate = Calendar.getInstance();

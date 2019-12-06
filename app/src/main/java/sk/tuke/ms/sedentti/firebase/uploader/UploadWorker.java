@@ -143,6 +143,7 @@ public class UploadWorker extends Worker {
             Crashlytics.log(Log.DEBUG, TAG, "Upload has just started ");
         } catch (SQLException e) {
             e.printStackTrace();
+            firebaseUploadTaskResult = Result.retry();
         }
     }
 

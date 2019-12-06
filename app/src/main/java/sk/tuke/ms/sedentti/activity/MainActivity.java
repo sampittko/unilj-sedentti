@@ -115,6 +115,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void activateUploadWorker() {
+        long initialMillisecondsDelay = 0;
+        try {
+            initialMillisecondsDelay = new UploadScheduler(this, activeProfile).getInitialMillisecondsDelay();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Crashlytics.log(Log.DEBUG, TAG, "Initial milliseconds delay for upload work is " + initialMillisecondsDelay);
+
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(Configuration.UPLOAD_WORK_NETWORK_TYPE)
                 .build();
@@ -123,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 new PeriodicWorkRequest.Builder(UploadWorker.class, Configuration.STORAGE_MINUTES_UPLOAD_INTERVAL, TimeUnit.MINUTES)
                         .setConstraints(constraints)
                         .setInitialDelay(
-                                UploadScheduler.getInitialMillisecondsDelay(this, activeProfile),
+                                initialMillisecondsDelay,
                                 TimeUnit.MILLISECONDS
                         )
                         .build();
