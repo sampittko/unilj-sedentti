@@ -28,14 +28,6 @@ public class ActivityHelper {
     }
 
     /**
-     * @param activity Activity to update
-     * @throws SQLException In case that communication with DB was not successful
-     */
-    public void updateActivity(Activity activity) throws SQLException {
-        activityDao.update(activity);
-    }
-
-    /**
      * @param type Type of the activity to create
      * @param session Session which the new activity belongs to
      * @throws SQLException In case that communication with DB was not successful

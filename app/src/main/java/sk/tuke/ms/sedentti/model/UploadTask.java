@@ -16,6 +16,7 @@ public class UploadTask {
     public final static String COLUMN_DATE = "date";
     public final static String COLUMN_BYTES_TRANSFERRED = "bytesTransferred";
     public final static String COLUMN_BYTES_TOTAL = "bytesTotal";
+    public final static String COLUMN_DB_FILE_PATH = "dbFilePath";
     public final static String COLUMN_SUCCESSFUL = "successful";
     public final static String COLUMN_ERROR = "error";
     public final static String COLUMN_PROFILE_ID = "profile_id";
@@ -24,9 +25,9 @@ public class UploadTask {
     private long id;
     @DatabaseField(canBeNull = false, columnName = COLUMN_START_TIMESTAMP)
     private long startTimestamp;
-    @DatabaseField(canBeNull = false, columnName = COLUMN_END_TIMESTAMP)
+    @DatabaseField(columnName = COLUMN_END_TIMESTAMP)
     private long endTimestamp;
-    @DatabaseField(canBeNull = false, columnName = COLUMN_DURATION)
+    @DatabaseField(columnName = COLUMN_DURATION)
     private long duration;
     @DatabaseField(canBeNull = false, columnName = COLUMN_DATE)
     private Date date;
@@ -34,9 +35,11 @@ public class UploadTask {
     private long bytesTransferred;
     @DatabaseField(canBeNull = false, columnName = COLUMN_BYTES_TOTAL)
     private long bytesTotal;
-    @DatabaseField(canBeNull = false, columnName = COLUMN_SUCCESSFUL)
+    @DatabaseField(canBeNull = false, columnName = COLUMN_DB_FILE_PATH)
+    private String dbFilePath;
+    @DatabaseField(columnName = COLUMN_SUCCESSFUL)
     private boolean successful;
-    @DatabaseField(canBeNull = false, columnName = COLUMN_ERROR)
+    @DatabaseField(columnName = COLUMN_ERROR)
     private String error;
     @DatabaseField(canBeNull = false, foreign = true, columnName = COLUMN_PROFILE_ID)
     private Profile profile;
@@ -45,11 +48,12 @@ public class UploadTask {
 
     }
 
-    public UploadTask(long startTimestamp, long bytesTotal, Profile profile) {
+    public UploadTask(long startTimestamp, long bytesTotal, String dbFilePath, Profile profile) {
         this.startTimestamp = startTimestamp;
         this.date = DateHelper.getNormalizedDate(new Date());
         this.bytesTotal = bytesTotal;
         this.bytesTransferred = 0L;
+        this.dbFilePath = dbFilePath;
         this.profile = profile;
     }
 
@@ -108,6 +112,14 @@ public class UploadTask {
 
     public void setBytesTotal(long bytesTotal) {
         this.bytesTotal = bytesTotal;
+    }
+
+    public String getDbFilePath() {
+        return dbFilePath;
+    }
+
+    public void setDbFilePath(String dbFilePath) {
+        this.dbFilePath = dbFilePath;
     }
 
     public boolean isSuccessful() {

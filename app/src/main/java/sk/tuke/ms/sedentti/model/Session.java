@@ -3,6 +3,8 @@ package sk.tuke.ms.sedentti.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Date;
 
 import sk.tuke.ms.sedentti.model.day.DayModel;
@@ -17,6 +19,8 @@ public class Session extends DayModel {
     public final static String COLUMN_DATE = "date";
     public final static String COLUMN_DURATION = "duration";
     public final static String COLUMN_SUCCESSFUL = "successful";
+    public final static String COLUMN_UPLOADED = "uploaded";
+    public final static String COLUMN_EXPORTED = "exported";
     public final static String COLUMN_PROFILE_ID = "profile_id";
 
     @DatabaseField(generatedId = true, columnName = COLUMN_ID)
@@ -33,6 +37,10 @@ public class Session extends DayModel {
     private Date date;
     @DatabaseField(columnName = COLUMN_SUCCESSFUL)
     private boolean successful;
+    @DatabaseField(canBeNull = false, columnName = COLUMN_UPLOADED)
+    private boolean uploaded;
+    @DatabaseField(canBeNull = false, columnName = COLUMN_EXPORTED)
+    private boolean exported;
     @DatabaseField(canBeNull = false, foreign = true, columnName = COLUMN_PROFILE_ID)
     private Profile profile;
 
@@ -44,6 +52,8 @@ public class Session extends DayModel {
         this.sedentary = sedentary;
         this.startTimestamp = startTimestamp;
         this.date = DateHelper.getNormalizedDate(new Date());
+        this.uploaded = false;
+        this.exported = false;
         this.profile = profile;
     }
 
@@ -103,6 +113,22 @@ public class Session extends DayModel {
         this.successful = successful;
     }
 
+    public boolean isUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(boolean uploaded) {
+        this.uploaded = uploaded;
+    }
+
+    public boolean isExported() {
+        return exported;
+    }
+
+    public void setExported(boolean exported) {
+        this.exported = exported;
+    }
+
     public Profile getProfile() {
         return profile;
     }
@@ -111,6 +137,7 @@ public class Session extends DayModel {
         this.profile = profile;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return "Session{" +

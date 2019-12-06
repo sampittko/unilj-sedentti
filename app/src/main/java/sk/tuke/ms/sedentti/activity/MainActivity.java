@@ -18,7 +18,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.work.Constraints;
-import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -117,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void activateUploadWorker() {
         Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiredNetworkType(Configuration.UPLOAD_WORK_NETWORK_TYPE)
                 .build();
 
         PeriodicWorkRequest uploadRequest =
@@ -129,7 +128,13 @@ public class MainActivity extends AppCompatActivity {
                         )
                         .build();
 
-        // TODO check for pending work requests
-        WorkManager.getInstance(this).enqueue(uploadRequest);
+        WorkManager.getInstance(this)
+                .enqueueUniquePeriodicWork(
+                        Configuration.UPLOAD_WORK_NAME,
+                        Configuration.UPLOAD_WORK_POLICY,
+                        uploadRequest
+                );
+
+        Crashlytics.log(Log.DEBUG, TAG, "Upload work scheduled");
     }
 }

@@ -1,26 +1,38 @@
 package sk.tuke.ms.sedentti.firebase.helper;
 
+import android.content.Context;
+
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
 import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
+import sk.tuke.ms.sedentti.model.Profile;
+import sk.tuke.ms.sedentti.model.helper.DateHelper;
+import sk.tuke.ms.sedentti.model.helper.UploadTaskHelper;
 
 public class StorageHelper {
+    private UploadTaskHelper uploadTaskHelper;
+
+    private Profile profile;
+
+    public StorageHelper(Context context, Profile profile) {
+        this.uploadTaskHelper = new UploadTaskHelper(context, profile);
+        this.profile = profile;
+    }
+
     @NotNull
-    public static String getPath(String activeProfileFirebaseAuthUid, int todaysUploadTasksCount) {
-        StringBuilder stringBuilder = new StringBuilder();
-        return stringBuilder
-                .append(PredefinedValues.STORAGE_FOLDER_SEPARATOR)
-                .append(activeProfileFirebaseAuthUid)
-                .append(PredefinedValues.STORAGE_FOLDER_SEPARATOR)
-                .append(StorageHelper.getPathDate())
-                .append(PredefinedValues.STORAGE_FOLDER_SEPARATOR)
-                .append(todaysUploadTasksCount + 1)
-                .append(Configuration.STORAGE_FILE_TYPE)
-                .toString();
+    public String getPath() throws SQLException {
+        return PredefinedValues.STORAGE_FOLDER_SEPARATOR +
+                profile.getFirebaseAuthUid() +
+                PredefinedValues.STORAGE_FOLDER_SEPARATOR +
+                getPathDate() +
+                PredefinedValues.STORAGE_FOLDER_SEPARATOR +
+                (uploadTaskHelper.getTodaysUploadTasksCount() + 1) +
+                Configuration.STORAGE_FILE_TYPE;
     }
 
     @NotNull
@@ -28,25 +40,10 @@ public class StorageHelper {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
 
-        StringBuilder stringBuilder = new StringBuilder();
-        return stringBuilder
-                .append(getDay(calendar))
-                .append(Configuration.STORAGE_DATE_PATH_SEPARATOR)
-                .append(getMonth(calendar))
-                .append(Configuration.STORAGE_DATE_PATH_SEPARATOR)
-                .append(getYear(calendar))
-                .toString();
-    }
-
-    private static int getDay(@NotNull Calendar calendar) {
-        return calendar.get(Calendar.DATE);
-    }
-
-    private static int getMonth(@NotNull Calendar calendar) {
-        return calendar.get(Calendar.MONTH);
-    }
-
-    private static int getYear(@NotNull Calendar calendar) {
-        return calendar.get(Calendar.YEAR);
+        return DateHelper.getDay(calendar) +
+                Configuration.STORAGE_DATE_PATH_SEPARATOR +
+                DateHelper.getMonth(calendar) +
+                Configuration.STORAGE_DATE_PATH_SEPARATOR +
+                DateHelper.getYear(calendar);
     }
 }

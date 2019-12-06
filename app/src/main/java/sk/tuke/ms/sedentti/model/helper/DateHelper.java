@@ -56,4 +56,16 @@ public class DateHelper {
 
         return calendar.getTime();
     }
+
+    public static int getDay(@NotNull Calendar calendar) {
+        return calendar.get(Calendar.DATE);
+    }
+
+    public static int getMonth(@NotNull Calendar calendar) {
+        return calendar.get(Calendar.MONTH);
+    }
+
+    public static int getYear(@NotNull Calendar calendar) {
+        return calendar.get(Calendar.YEAR);
+    }
 }

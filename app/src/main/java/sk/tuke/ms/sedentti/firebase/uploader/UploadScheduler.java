@@ -26,23 +26,23 @@ public class UploadScheduler {
 
         UploadTask latestUploadTask = getLatestUploadTask(context, profile);
 
-        // There is no previous upload task
         if (latestUploadTask == null) {
-            // Upload now if there are any sessions
+            Crashlytics.log(Log.DEBUG, TAG, "There is no previous upload task");
             if (getSessionsCount(context, profile) > 0) {
+                Crashlytics.log(Log.DEBUG, TAG, "Perform upload work now");
                 return 0L;
             }
             else {
+                Crashlytics.log(Log.DEBUG, TAG, "Perform upload work in STORAGE_MINUTES_UPLOAD_INTERVAL");
                 return Configuration.STORAGE_MINUTES_UPLOAD_INTERVAL;
             }
         }
 
-        // Last upload task was not successful so it will retry immediately
         if (!latestUploadTask.isSuccessful()) {
+            Crashlytics.log(Log.DEBUG, TAG, "Last upload task was not successful so it will retry immediately");
             return 0L;
         }
 
-        // Returning millis count until next upload
         return getTimeDiff(latestUploadTask);
     }
 
@@ -70,6 +70,8 @@ public class UploadScheduler {
     }
 
     private static long getTimeDiff(@NotNull UploadTask latestUploadTask) {
+        Crashlytics.log(Log.DEBUG, TAG, "Last upload task was successful and the next one will be scheduled for times difference");
+
         Calendar currentDate = Calendar.getInstance();
 
         Calendar dueDate = Calendar.getInstance();

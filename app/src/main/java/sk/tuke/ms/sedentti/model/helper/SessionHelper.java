@@ -574,4 +574,56 @@ public class SessionHelper {
 
         return totalDuration;
     }
+
+    /**
+     * @param sessions
+     * @throws SQLException
+     */
+    public void setExported(@NotNull List<Session> sessions) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing setExported");
+        Crashlytics.log(Log.DEBUG, TAG, "@sessions SIZE: " + sessions.size());
+
+        for (Session session : sessions) {
+            session.setExported(true);
+            updateSession(session);
+        }
+    }
+
+    /**
+     * @param sessions
+     * @throws SQLException
+     */
+    public void setUploaded(@NotNull List<Session> sessions) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing setUploaded");
+        Crashlytics.log(Log.DEBUG, TAG, "@sessions SIZE: " + sessions.size());
+
+        for (Session session : sessions) {
+            session.setUploaded(true);
+            updateSession(session);
+        }
+    }
+
+    public int getNotExportedFinishedSessionsCount() throws SQLException {
+        return (int) sessionDaoQueryBuilder
+                .where()
+                .eq(Session.COLUMN_EXPORTED, false)
+                .and()
+                .ne(Session.COLUMN_END_TIMESTAMP, 0L)
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                .countOf();
+    }
+
+    public ArrayList<Session> getNotExportedFinishedSessions() throws SQLException {
+        return new ArrayList<>(
+                sessionDaoQueryBuilder
+                        .where()
+                        .eq(Session.COLUMN_EXPORTED, false)
+                        .and()
+                        .ne(Session.COLUMN_END_TIMESTAMP, 0L)
+                        .and()
+                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                        .query()
+        );
+    }
 }
