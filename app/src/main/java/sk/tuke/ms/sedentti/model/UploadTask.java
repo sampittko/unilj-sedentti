@@ -50,7 +50,7 @@ public class UploadTask {
 
     public UploadTask(long startTimestamp, long bytesTotal, String dbFilePath, Profile profile) {
         this.startTimestamp = startTimestamp;
-        this.date = DateHelper.getNormalizedDate(new Date());
+        this.date = DateHelper.getNormalized(new Date());
         this.bytesTotal = bytesTotal;
         this.bytesTransferred = 0L;
         this.dbFilePath = dbFilePath;

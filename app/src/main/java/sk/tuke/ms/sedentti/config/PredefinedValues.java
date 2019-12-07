@@ -44,4 +44,9 @@ public abstract class PredefinedValues {
     // Firebase Cloud Storage
     //
     public static final String STORAGE_FOLDER_SEPARATOR = "/";
+
+    //
+    // DatabaseExporter
+    //
+    public static final String CSV_DATA_SEPARATOR = ",";
 }

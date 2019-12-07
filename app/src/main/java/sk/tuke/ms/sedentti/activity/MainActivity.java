@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         ProfileHelper profileHelper = new ProfileHelper(this);
 
         try {
-            activeProfile = profileHelper.getActiveProfile();
+            activeProfile = profileHelper.getActive();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkForPendingSession() {
         try {
-            Session pendingSession = sessionHelper.getPendingSession();
+            Session pendingSession = sessionHelper.getPending();
 
             if (pendingSession != null) {
                 sessionHelper.updateAsEndedSession(pendingSession);

@@ -60,14 +60,14 @@ public class SessionHelper {
      * @return List of sessions in specified interval
      * @throws SQLException In case that communication with DB was not successful
      */
-    public ArrayList<Session> getSessionsInInterval(SessionsInterval interval) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getSessionsInInterval");
+    public ArrayList<Session> getFromInterval(SessionsInterval interval) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getFromInterval");
         Crashlytics.log(Log.DEBUG, TAG, "@interval: " + interval);
 
-        Date normalizedEndDate = DateHelper.getNormalizedDate(
+        Date normalizedEndDate = DateHelper.getNormalized(
                 new Date()
         );
-        Date normalizedStartDate = DateHelper.getNormalizedDate(
+        Date normalizedStartDate = DateHelper.getNormalized(
                 getStartDate(interval)
         );
 
@@ -92,15 +92,15 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getHomeTimelineSessions() throws SQLException {
-        return getLatestSessions(HOME_TIMELINE_SESSIONS_LIMIT);
+        return getLatest(HOME_TIMELINE_SESSIONS_LIMIT);
     }
 
     /**
      * @return List of all the sessions from the latest to the oldest (potential pending session included)
      * @throws SQLException In case that communication with DB was not successful
      */
-    public ArrayList<Session> getLatestSessions() throws SQLException {
-        return getLatestSessions(0);
+    public ArrayList<Session> getLatest() throws SQLException {
+        return getLatest(0);
     }
 
     /**
@@ -108,8 +108,8 @@ public class SessionHelper {
      * @return List of the latest sessions (potentioal pending session included)
      * @throws SQLException In case that communication with DB was not successful
      */
-    public ArrayList<Session> getLatestSessions(long limit) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getLatestSessions");
+    public ArrayList<Session> getLatest(long limit) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getLatest");
         Crashlytics.log(Log.DEBUG, TAG, "@limit: " + limit);
 
         sessionDaoQueryBuilder.reset();
@@ -128,8 +128,8 @@ public class SessionHelper {
      * @return Number of sessions
      * @throws SQLException In case that communication with DB was not successful
      */
-    public int getFinishedSessionsCount() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getFinishedSessionsCount");
+    public int getFinishedCount() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getFinishedCount");
 
         sessionDaoQueryBuilder.reset();
 
@@ -165,9 +165,9 @@ public class SessionHelper {
 
         if (lastUnsuccessful == null) {
             Crashlytics.log(Log.DEBUG, TAG, "Last unsuccessful session not found");
-            int latestSessionsCount = getLatestSessions().size();
+            int latestSessionsCount = getLatest().size();
 
-            if (pendingSessionExists()) {
+            if (pendingExists()) {
                 Crashlytics.log(Log.DEBUG, TAG, "Returning the amount of all sessions minus pending session");
                 return latestSessionsCount - 1;
             }
@@ -230,7 +230,7 @@ public class SessionHelper {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getSuccessRate");
         Crashlytics.log(Log.DEBUG, TAG, "@date: " + date);
 
-        Date normalizedDate = DateHelper.getNormalizedDate(date);
+        Date normalizedDate = DateHelper.getNormalized(date);
 
         sessionDaoQueryBuilder.reset();
 
@@ -303,16 +303,16 @@ public class SessionHelper {
         long endTimestamp = new Date().getTime();
 
         session.setDuration(
-                getSessionDuration(session.getStartTimestamp(), endTimestamp)
+                getDuration(session.getStartTimestamp(), endTimestamp)
         );
         session.setEndTimestamp(endTimestamp);
         session.setSuccessful(isSuccessful(session));
 
-        updateSession(session);
+        update(session);
     }
 
-    private long getSessionDuration(long startTimestamp, long endTimestamp) {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getSessionDuration");
+    private long getDuration(long startTimestamp, long endTimestamp) {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getDuration");
         Crashlytics.log(Log.DEBUG, TAG, "@startTimestamp: " + startTimestamp);
         Crashlytics.log(Log.DEBUG, TAG, "@endTimestamp: " + endTimestamp);
 
@@ -333,10 +333,10 @@ public class SessionHelper {
         }
     }
 
-    public boolean pendingSessionExists() {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing pendingSessionExists");
+    public boolean pendingExists() {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing pendingExists");
         try {
-            getPendingSession();
+            getPending();
             Crashlytics.log(Log.DEBUG, TAG, "Session exists");
             return true;
         }
@@ -353,8 +353,8 @@ public class SessionHelper {
      * @return Pending session if any
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Session getPendingSession() throws SQLException, NullPointerException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getPendingSession");
+    public Session getPending() throws SQLException, NullPointerException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getPending");
 
         sessionDaoQueryBuilder.reset();
 
@@ -370,7 +370,7 @@ public class SessionHelper {
             throw new NullPointerException();
         }
         else {
-            return getPendingSessionWithDuration(pendingSession);
+            return getPendingWithDuration(pendingSession);
         }
     }
 
@@ -379,7 +379,7 @@ public class SessionHelper {
      * @return Updated session object
      */
     @Contract("_ -> param1")
-    private Session getPendingSessionWithDuration(Session pendingSession) {
+    private Session getPendingWithDuration(Session pendingSession) {
         try {
             pendingSession.setDuration(new Date().getTime() - pendingSession.getStartTimestamp());
         }
@@ -394,8 +394,8 @@ public class SessionHelper {
      * @param session Session to update
      * @throws SQLException In case that communication with DB was not successful
      */
-    public void updateSession(@NotNull Session session) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing updateSession");
+    public void update(@NotNull Session session) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing update");
         Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
 
         sessionDao.update(session);
@@ -405,8 +405,8 @@ public class SessionHelper {
      * @param activityType Type of activity to create session for
      * @throws SQLException In case that communication with DB was not successful
      */
-    public void createSession(int activityType) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing createSession");
+    public void create(int activityType) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing create");
 
         Session newSession = new Session(
                 isSedentary(activityType),
@@ -456,7 +456,7 @@ public class SessionHelper {
         Crashlytics.log(Log.DEBUG, TAG, "@date: " + date);
         Crashlytics.log(Log.DEBUG, TAG, "@sedentary: " + sedentary);
 
-        Date normalizedDate = DateHelper.getNormalizedDate(date);
+        Date normalizedDate = DateHelper.getNormalized(date);
 
         sessionDaoQueryBuilder.reset();
 
@@ -515,15 +515,15 @@ public class SessionHelper {
     public int getDaySuccessRate(ArrayList<Session> sessionsOfDay) {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getDaySuccessRate");
 
-        ArrayList<Session> successfulSessions = getSuccessfulSessions(sessionsOfDay);
+        ArrayList<Session> successfulSessions = getSuccessful(sessionsOfDay);
 
-        ArrayList<Session> unsuccessfulSessions = getUnsuccessfulSessions(sessionsOfDay);
+        ArrayList<Session> unsuccessfulSessions = getUnsuccessful(sessionsOfDay);
 
         return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
     }
 
     @Contract("_ -> param1")
-    private ArrayList<Session> getSuccessfulSessions(@NotNull ArrayList<Session> sessionsOfDay) {
+    private ArrayList<Session> getSuccessful(@NotNull ArrayList<Session> sessionsOfDay) {
         ArrayList<Session> successfulSessions = new ArrayList<>();
         for (Session session : sessionsOfDay) {
             if (session.isSuccessful()) {
@@ -533,7 +533,7 @@ public class SessionHelper {
         return successfulSessions;
     }
 
-    private ArrayList<Session> getUnsuccessfulSessions(@NotNull ArrayList<Session> sessionsOfDay) {
+    private ArrayList<Session> getUnsuccessful(@NotNull ArrayList<Session> sessionsOfDay) {
         ArrayList<Session> unsuccessfulSessions = new ArrayList<>();
         for (Session session : sessionsOfDay) {
             if (!session.isSuccessful()) {
@@ -585,25 +585,50 @@ public class SessionHelper {
 
         for (Session session : sessions) {
             session.setExported(true);
-            updateSession(session);
+            update(session);
         }
     }
 
     /**
-     * @param sessions
      * @throws SQLException
      */
-    public void setUploaded(@NotNull List<Session> sessions) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing setUploaded");
-        Crashlytics.log(Log.DEBUG, TAG, "@sessions SIZE: " + sessions.size());
+    public void setExportedToUploaded() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing setExportedToUploaded");
+
+        sessionDaoQueryBuilder.reset();
+
+        ArrayList<Session> sessions = getExportedNotUploaded();
 
         for (Session session : sessions) {
             session.setUploaded(true);
-            updateSession(session);
+            update(session);
         }
     }
 
-    public int getNotExportedFinishedSessionsCount() throws SQLException {
+    @NotNull
+    @Contract(" -> new")
+    private ArrayList<Session> getExportedNotUploaded() throws SQLException {
+        return new ArrayList<>(
+                sessionDaoQueryBuilder
+                        .where()
+                        .eq(Session.COLUMN_EXPORTED, true)
+                        .and()
+                        .eq(Session.COLUMN_UPLOADED, false)
+                        .and()
+                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                        .query()
+        );
+    }
+
+    /**
+     * @return
+     * @throws SQLException
+     */
+    public int getNotExportedFinishedCount() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getNotExportedFinishedCount");
+
+        sessionDaoQueryBuilder.reset();
+
         return (int) sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_EXPORTED, false)
@@ -614,7 +639,15 @@ public class SessionHelper {
                 .countOf();
     }
 
-    public ArrayList<Session> getNotExportedFinishedSessions() throws SQLException {
+    /**
+     * @return
+     * @throws SQLException
+     */
+    public ArrayList<Session> getNotExportedFinished() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getNotExportedFinished");
+
+        sessionDaoQueryBuilder.reset();
+
         return new ArrayList<>(
                 sessionDaoQueryBuilder
                         .where()

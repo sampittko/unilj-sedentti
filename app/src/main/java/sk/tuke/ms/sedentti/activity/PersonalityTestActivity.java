@@ -20,7 +20,7 @@ public class PersonalityTestActivity extends AppCompatActivity {
 
         Crashlytics.log(Log.DEBUG, TAG, "Personality test started");
 
-        // TODO remove
+        // TODO implement
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

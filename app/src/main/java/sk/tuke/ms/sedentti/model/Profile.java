@@ -41,7 +41,7 @@ public class Profile {
         this.email = email;
         this.photoUrl = photoUrl;
         this.firebaseAuthUid = firebaseAuthUid;
-        this.registeredDate = DateHelper.getNormalizedDate(new Date());
+        this.registeredDate = DateHelper.getNormalized(new Date());
     }
 
     public long getId() {

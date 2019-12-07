@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         profileSPHelper = new ProfileSPHelper(this);
 
         try {
-            profileHelper.createNewProfile("Branko", "", "", "");
+            profileHelper.createNew("Branko", "", "", "");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -47,13 +47,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateActiveProfile() {
         try {
-            if (profileHelper.getNumberOfExistingProfiles() == 0) {
+            if (profileHelper.getNumberOfExisting() == 0) {
                 Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
                 handleFirebaseAuthUI();
             }
             else {
                 Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
-                activeProfile = profileHelper.getExistingProfile();
+                activeProfile = profileHelper.getExisting();
                 setUpCrashlytics();
                 startFollowingActivity();
             }
@@ -94,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                 Crashlytics.log(Log.DEBUG, TAG, "Logged in with email " + user.getEmail());
 
                 try {
-                    activeProfile = profileHelper.createNewProfile(
+                    activeProfile = profileHelper.createNew(
                             user.getDisplayName(),
                             user.getEmail(),
                             Objects.requireNonNull(user.getPhotoUrl()).getEncodedPath(),

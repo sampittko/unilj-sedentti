@@ -31,7 +31,7 @@ public class StorageHelper {
                 PredefinedValues.STORAGE_FOLDER_SEPARATOR +
                 getPathDate() +
                 PredefinedValues.STORAGE_FOLDER_SEPARATOR +
-                (uploadTaskHelper.getTodaysUploadTasksCount() + 1) +
+                (uploadTaskHelper.getTodaysCount() + 1) +
                 Configuration.STORAGE_FILE_TYPE;
     }
 

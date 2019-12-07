@@ -51,7 +51,7 @@ public class Session extends DayModel {
     public Session(boolean sedentary, long startTimestamp, Profile profile) {
         this.sedentary = sedentary;
         this.startTimestamp = startTimestamp;
-        this.date = DateHelper.getNormalizedDate(new Date());
+        this.date = DateHelper.getNormalized(new Date());
         this.uploaded = false;
         this.exported = false;
         this.profile = profile;

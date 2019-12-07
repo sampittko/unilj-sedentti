@@ -42,7 +42,7 @@ public class PersonalityTest {
         this.extraversion = extraversion;
         this.agreeableness = agreeableness;
         this.neuroticism = neuroticism;
-        this.answeredDate = DateHelper.getNormalizedDate(new Date());
+        this.answeredDate = DateHelper.getNormalized(new Date());
     }
 
     public long getId() {

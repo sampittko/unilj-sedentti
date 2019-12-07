@@ -17,7 +17,7 @@ public class DayOverviewHelper {
     }
 
     public ArrayList<DayOverview> getDayOverviews() throws SQLException {
-        List<Session> sessions = sessionHelper.getLatestSessions();
+        List<Session> sessions = sessionHelper.getLatest();
         ArrayList<DayOverview> dayOverviewsList = new ArrayList<>();
 
         for (Session session : sessions) {

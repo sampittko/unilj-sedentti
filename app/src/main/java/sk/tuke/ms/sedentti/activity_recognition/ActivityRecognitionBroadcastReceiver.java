@@ -40,43 +40,44 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                     int newActivityType = event.getActivityType();
                     int newActivityTransitionType = event.getTransitionType();
 
-                    Crashlytics.log(Log.DEBUG, TAG, "New activity - type " + newActivityType + " transtionType " + newActivityTransitionType);
+                    Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " and transition " +
+                            newActivityTransitionType + " received");
 
                     try {
-                        Activity lastActivity = activityHelper.getLastActivity();
+                        Activity lastActivity = activityHelper.getLast();
                         Session pendingSession = null;
                         try {
-                            pendingSession = sessionHelper.getPendingSession();
-                            // TODO refactor null pointer exeception
+                            pendingSession = sessionHelper.getPending();
                         } catch (SQLException e) {
                             e.printStackTrace();
                         } catch (NullPointerException e) {
-                            e.printStackTrace();
+                            Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
                         }
 
-                        // new activity has started
                         if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
-                            // activity has changed (active -> still; still -> active)
+                            Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
                             if (hasActivityChanged(newActivityType, lastActivity)) {
-                                // close pending session
+                                Crashlytics.log(Log.DEBUG, TAG, "Activity has changed");
                                 if (pendingSession != null) {
                                     sessionHelper.updateAsEndedSession(pendingSession);
+                                    Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
                                 }
 
-                                // create new session
                                 pendingSession = getNewSession(newActivityType);
+                                Crashlytics.log(Log.DEBUG, TAG, "New session created");
                             }
-                            // activity has not changed (still -> still; active -> active)
                             else {
-                                // create new session
+                                Crashlytics.log(Log.DEBUG, TAG, "Activity has not changed");
                                 if (pendingSession == null) {
-                                    sessionHelper.createSession(newActivityType);
-                                    pendingSession = sessionHelper.getPendingSession();
+                                    sessionHelper.create(newActivityType);
+                                    Crashlytics.log(Log.DEBUG, TAG, "New session created");
+                                    pendingSession = sessionHelper.getPending();
+                                    Crashlytics.log(Log.DEBUG, TAG, "Pending session retrieved");
                                 }
                             }
 
-                            // create new activity
-                            activityHelper.createActivity(newActivityType, pendingSession);
+                            activityHelper.create(newActivityType, pendingSession);
+                            Crashlytics.log(Log.DEBUG, TAG, "New activity created");
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -91,7 +92,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
             activityHelper = new ActivityHelper(context);
             sessionHelper = new SessionHelper(
                     context,
-                    new ProfileHelper(context).getActiveProfile()
+                    new ProfileHelper(context).getActive()
             );
         }
     }
@@ -106,7 +107,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     }
 
     private Session getNewSession(int newActivityType) throws SQLException {
-        sessionHelper.createSession(newActivityType);
-        return sessionHelper.getPendingSession();
+        sessionHelper.create(newActivityType);
+        return sessionHelper.getPending();
     }
 }

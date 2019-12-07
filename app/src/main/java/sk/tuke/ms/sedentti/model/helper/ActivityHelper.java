@@ -1,12 +1,17 @@
 package sk.tuke.ms.sedentti.model.helper;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import sk.tuke.ms.sedentti.model.Activity;
@@ -14,6 +19,8 @@ import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class ActivityHelper {
+    private static final String TAG = "ActivityHelper";
+
     private Dao<Activity, Long> activityDao;
     private QueryBuilder<Activity, Long> activityDaoQueryBuilder;
 
@@ -32,7 +39,11 @@ public class ActivityHelper {
      * @param session Session which the new activity belongs to
      * @throws SQLException In case that communication with DB was not successful
      */
-    public void createActivity(int type, Session session) throws SQLException {
+    public void create(int type, @NotNull Session session) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing create");
+        Crashlytics.log(Log.DEBUG, TAG, "@type: " + type);
+        Crashlytics.log(Log.DEBUG, TAG, "@session: " + session.getId());
+
         Activity newActivity = new Activity(
                 type,
                 new Date().getTime(),
@@ -46,11 +57,32 @@ public class ActivityHelper {
      * @return Activity with the highest timestamp
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Activity getLastActivity() throws SQLException {
+    public Activity getLast() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getLast");
+
         activityDaoQueryBuilder.reset();
 
         return activityDaoQueryBuilder
                 .orderBy(Activity.COLUMN_TIMESTAMP, false)
                 .queryForFirst();
+    }
+
+    /**
+     * @param session
+     * @return
+     * @throws SQLException
+     */
+    public ArrayList<Activity> getCorresponding(@NotNull Session session) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getCorresponding");
+        Crashlytics.log(Log.DEBUG, TAG, "@session: " + session.getId());
+
+        activityDaoQueryBuilder.reset();
+
+        return new ArrayList<>(
+                activityDaoQueryBuilder
+                        .where()
+                        .eq(Activity.COLUMN_SESSION_ID, session.getId())
+                        .query()
+        );
     }
 }

@@ -28,4 +28,20 @@ public abstract class Configuration {
     public static final NetworkType UPLOAD_WORK_NETWORK_TYPE = NetworkType.CONNECTED;
     public static final String UPLOAD_WORK_NAME = "UPLOAD_WORK";
     public static final ExistingPeriodicWorkPolicy UPLOAD_WORK_POLICY = ExistingPeriodicWorkPolicy.KEEP;
+
+    //
+    // DatabaseExporter
+    //
+    public static final String CSV_EXPORT_FILENAME = "export.csv";
+    public static final String CSV_HEADER_COLUMN_1 = "USER";
+    public static final String CSV_HEADER_COLUMN_2 = "SESSION";
+    public static final String CSV_HEADER_COLUMN_3 = "SESSION_SEDENTARY";
+    public static final String CSV_HEADER_COLUMN_4 = "SESSION_START_TIMESTAMP";
+    public static final String CSV_HEADER_COLUMN_5 = "SESSION_END_TIMESTAMP";
+    public static final String CSV_HEADER_COLUMN_6 = "SESSION_DURATION";
+    public static final String CSV_HEADER_COLUMN_7 = "SESSION_SUCCESSFUL";
+    public static final String CSV_HEADER_COLUMN_8 = "SESSION_DATE";
+    public static final String CSV_HEADER_COLUMN_9 = "ACTIVITY";
+    public static final String CSV_HEADER_COLUMN_10 = "ACTIVITY_TYPE";
+    public static final String CSV_HEADER_COLUMN_11 = "ACTIVITY_TIMESTAMP";
 }

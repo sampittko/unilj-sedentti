@@ -30,11 +30,11 @@ public class UploadScheduler {
     public long getInitialMillisecondsDelay() throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getInitialMillisecondsDelay");
 
-        UploadTask latestUploadTask = uploadTaskHelper.getLatestUploadTask();
+        UploadTask latestUploadTask = uploadTaskHelper.getLatest();
 
         if (latestUploadTask == null) {
             Crashlytics.log(Log.DEBUG, TAG, "There is no previous upload task");
-            if (sessionHelper.getFinishedSessionsCount() > 0) {
+            if (sessionHelper.getFinishedCount() > 0) {
                 Crashlytics.log(Log.DEBUG, TAG, "Perform upload work now");
                 return 0L;
             }

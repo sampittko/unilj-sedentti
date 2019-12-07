@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Objects;
 
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.UploadTask;
@@ -40,8 +39,14 @@ public class UploadTaskHelper {
         this.profile = profile;
     }
 
-    public UploadTask getLatestUploadTask() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getLatestUploadTask");
+    /**
+     * @return
+     * @throws SQLException
+     */
+    public UploadTask getLatest() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getLatest");
+
+        uploadTaskDaoQueryBuilder.reset();
 
         return uploadTaskDaoQueryBuilder
                 .orderBy(UploadTask.COLUMN_START_TIMESTAMP, false)
@@ -50,12 +55,18 @@ public class UploadTaskHelper {
                 .queryForFirst();
     }
 
-    public int getTodaysUploadTasksCount() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getTodaysUploadTasksCount");
+    /**
+     * @return
+     * @throws SQLException
+     */
+    public int getTodaysCount() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getTodaysCount");
+
+        uploadTaskDaoQueryBuilder.reset();
 
         return (int) uploadTaskDaoQueryBuilder
                 .where()
-                .eq(UploadTask.COLUMN_DATE, DateHelper.getNormalizedDate(new Date()))
+                .eq(UploadTask.COLUMN_DATE, DateHelper.getNormalized(new Date()))
                 .and()
                 .ne(UploadTask.COLUMN_END_TIMESTAMP, 0L)
                 .and()
@@ -63,8 +74,13 @@ public class UploadTaskHelper {
                 .countOf();
     }
 
-    public UploadTask startNewUploadTask(@NotNull File dbFile) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing startNewUploadTask");
+    /**
+     * @param dbFile
+     * @return
+     * @throws SQLException
+     */
+    public UploadTask startNew(@NotNull File dbFile) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing startNew");
         Crashlytics.log(Log.DEBUG, TAG, "@dbFile: " + dbFile.getPath());
 
         UploadTask uploadTask = new UploadTask(
@@ -79,26 +95,54 @@ public class UploadTaskHelper {
         return uploadTask;
     }
 
+    /**
+     * @param uploadTask
+     * @param exception
+     * @throws SQLException
+     */
     public void failure(@NotNull UploadTask uploadTask, @NotNull Exception exception) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing failure");
+        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask: " + uploadTask.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@exception: " + exception.getMessage());
+
         uploadTask.setSuccessful(false);
-        uploadTask.setError(Objects.requireNonNull(exception.getMessage()));
+        uploadTask.setError(exception.getMessage());
         end(uploadTask);
     }
 
+    /**
+     * @param uploadTask
+     * @throws SQLException
+     */
     public void success(@NotNull UploadTask uploadTask) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing success");
+        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask: " + uploadTask.getId());
+
         uploadTask.setSuccessful(true);
         uploadTask.setBytesTransferred(uploadTask.getBytesTotal());
         end(uploadTask);
     }
 
     private void end(@NotNull UploadTask uploadTask) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing end");
+        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask: " + uploadTask.getId());
+
         long endTimestamp = new Date().getTime();
         uploadTask.setEndTimestamp(endTimestamp);
         uploadTask.setDuration(endTimestamp - uploadTask.getStartTimestamp());
         uploadTaskDao.update(uploadTask);
     }
 
+    /**
+     * @param uploadTask
+     * @param bytesTransferred
+     * @throws SQLException
+     */
     public void updateProgress(@NotNull UploadTask uploadTask, long bytesTransferred) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing updateProgress");
+        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask: " + uploadTask.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@bytesTransferred: " + bytesTransferred);
+
         uploadTask.setBytesTransferred(bytesTransferred);
         uploadTask.setDuration(new Date().getTime() - uploadTask.getStartTimestamp());
         uploadTaskDao.update(uploadTask);

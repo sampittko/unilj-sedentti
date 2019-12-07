@@ -30,7 +30,7 @@ public class ProfileHelper {
      * @return Currently active profile based on shared preferences
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Profile getActiveProfile() throws SQLException {
+    public Profile getActive() throws SQLException {
         return profileDao.queryForId(
                 new ProfileSPHelper(context).getActiveProfileId()
         );
@@ -41,7 +41,7 @@ public class ProfileHelper {
      * @return New profile object
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Profile createNewProfile(String name, String email, String photoUrl, String firebaseAuthUid) throws SQLException {
+    public Profile createNew(String name, String email, String photoUrl, String firebaseAuthUid) throws SQLException {
         Profile profile = new Profile(name, email, photoUrl, firebaseAuthUid);
         profileDao.create(profile);
         return profile;
@@ -51,7 +51,7 @@ public class ProfileHelper {
      * @return Some existing profile
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Profile getExistingProfile() throws SQLException {
+    public Profile getExisting() throws SQLException {
         return profileDao.queryForAll().get(0);
     }
 
@@ -59,7 +59,7 @@ public class ProfileHelper {
      * @return Number of existing profiles in database
      * @throws SQLException In case that communication with DB was not successful
      */
-    public int getNumberOfExistingProfiles() throws SQLException {
+    public int getNumberOfExisting() throws SQLException {
         return (int) profileDao.countOf();
     }
 }

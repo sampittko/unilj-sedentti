@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import androidx.annotation.NonNull;
@@ -48,8 +47,8 @@ public class UploadWorker extends Worker {
         this.profileHelper = new ProfileHelper(context);
 
         try {
-            profile = profileHelper.getActiveProfile();
-            this.uploadTaskHelper = new UploadTaskHelper(context, profileHelper.getActiveProfile());
+            profile = profileHelper.getActive();
+            this.uploadTaskHelper = new UploadTaskHelper(context, profileHelper.getActive());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -64,7 +63,7 @@ public class UploadWorker extends Worker {
         firebaseUploadTaskResult = null;
 
         try {
-            latestUploadTask = uploadTaskHelper.getLatestUploadTask();
+            latestUploadTask = uploadTaskHelper.getLatest();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -81,9 +80,8 @@ public class UploadWorker extends Worker {
 
                 String dbFilePath;
                 try {
-                    dbFilePath = new DatabaseExporter(getApplicationContext(), profile)
-                            .getDatabaseAsFile(databaseHelper.getReadableDatabase());
-                } catch (IOException | SQLException e) {
+                    dbFilePath = new DatabaseExporter(getApplicationContext(), profile).generateFile();
+                } catch (SQLException e) {
                     Crashlytics.log(Log.DEBUG, TAG, "Work failure and will be retried later on");
                     e.printStackTrace();
                     return Result.retry();
@@ -116,7 +114,7 @@ public class UploadWorker extends Worker {
 
     private boolean newDataAvailable() {
         try {
-            return sessionHelper.getNotExportedFinishedSessionsCount() > 0;
+            return sessionHelper.getNotExportedFinishedCount() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -132,7 +130,7 @@ public class UploadWorker extends Worker {
 
         try {
             FirebaseStorage storage = FirebaseStorage.getInstance();
-            uploadTask = uploadTaskHelper.startNewUploadTask(dbFile);
+            uploadTask = uploadTaskHelper.startNew(dbFile);
             storageRef = storage.getReference(
                     new StorageHelper(getApplicationContext(), profile).getPath()
             );
@@ -160,6 +158,7 @@ public class UploadWorker extends Worker {
             Crashlytics.log(Log.DEBUG, TAG, "Upload was successful");
             try {
                 uploadTaskHelper.success(uploadTask);
+                sessionHelper.setExportedToUploaded();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

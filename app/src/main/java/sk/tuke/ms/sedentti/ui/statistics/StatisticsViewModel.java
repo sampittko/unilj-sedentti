@@ -33,7 +33,7 @@ public class StatisticsViewModel extends AndroidViewModel {
         ProfileHelper profileHelper = new ProfileHelper(this.getApplication());
         Profile activeProfile = null;
         try {
-            activeProfile = profileHelper.getActiveProfile();
+            activeProfile = profileHelper.getActive();
         } catch (SQLException e) {
             Toast.makeText(this.getApplication(), "Error, no profile", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class StatisticsViewModel extends AndroidViewModel {
         @Override
         protected ArrayList<Session> doInBackground(Void... voids) {
             try {
-                return sessionHelper.getLatestSessions();
+                return sessionHelper.getLatest();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

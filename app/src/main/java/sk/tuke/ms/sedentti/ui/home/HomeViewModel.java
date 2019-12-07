@@ -44,7 +44,7 @@ public class HomeViewModel extends AndroidViewModel {
 
         Profile activeProfile = null;
         try {
-            activeProfile = profileHelper.getActiveProfile();
+            activeProfile = profileHelper.getActive();
         } catch (SQLException e) {
             Toast.makeText(this.getApplication(), "Error, no profile", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -222,7 +222,7 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         protected Session doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getPendingSession();
+                return this.sessionHelper.getPending();
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch (NullPointerException e) {

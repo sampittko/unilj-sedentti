@@ -40,7 +40,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
             appSPHelper.updateFirstTimeStartupPerformed(true);
 
-            // TODO remove
+            // TODO implement
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
