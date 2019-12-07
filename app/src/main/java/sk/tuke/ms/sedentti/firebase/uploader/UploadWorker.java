@@ -121,13 +121,15 @@ public class UploadWorker extends Worker {
         Crashlytics.log(Log.DEBUG, TAG, "Executing undoWork");
         try {
             sessionHelper.revertExported();
+            Crashlytics.log(Log.DEBUG, TAG, "Sessions reverted");
             uploadTaskHelper.cancel(latestUploadTask);
+            Crashlytics.log(Log.DEBUG, TAG, "Upload task canceled");
+            return Result.success();
         } catch (SQLException e) {
             Crashlytics.log(Log.DEBUG, TAG, "Unsuccessful revert process, retrying later on");
             e.printStackTrace();
             return Result.retry();
         }
-        return Result.success();
     }
 
     private boolean newDataAvailable() {
