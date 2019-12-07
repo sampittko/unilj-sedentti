@@ -42,7 +42,7 @@ public class StorageHelper {
 
         return DateHelper.getDay(calendar) +
                 Configuration.STORAGE_DATE_PATH_SEPARATOR +
-                DateHelper.getMonth(calendar) +
+                (DateHelper.getMonth(calendar) + 1) +
                 Configuration.STORAGE_DATE_PATH_SEPARATOR +
                 DateHelper.getYear(calendar);
     }

@@ -6,9 +6,11 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -52,15 +54,21 @@ public class DatabaseExporter {
         return dbFilePath;
     }
 
-    // TODO set valid database file export location
+    public String regenerateFile() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing regenerateFile");
+        ArrayList<Session> sessions = sessionHelper.getExportedNotUploaded();
+        String dbFilePath = generateFile(sessions);
+        Crashlytics.log(Log.DEBUG, TAG, "File generated");
+        return dbFilePath;
+    }
+
     private String generateFile(@NotNull ArrayList<Session> sessions) {
         Crashlytics.log(Log.DEBUG, TAG, "generateFile");
         Crashlytics.log(Log.DEBUG, TAG, "@sessions: " + sessions.size());
 
-        File exportDir = getExportDir();
         File file;
         PrintWriter printWriter = null;
-        String outFilePath = exportDir + File.separator + Configuration.CSV_EXPORT_FILENAME;
+        String outFilePath = getOutFilePath();
 
         try {
             file = new File(outFilePath);
@@ -113,7 +121,7 @@ public class DatabaseExporter {
                 activities = activityHelper.getCorresponding(session);
                 for (Activity activity : activities) {
                     record =
-                        profile.getEmail() + PredefinedValues.CSV_DATA_SEPARATOR +
+                        profile.getFirebaseAuthUid() + PredefinedValues.CSV_DATA_SEPARATOR +
                         session.getId() + PredefinedValues.CSV_DATA_SEPARATOR +
                         session.isSuccessful() + PredefinedValues.CSV_DATA_SEPARATOR +
                         session.getStartTimestamp() + PredefinedValues.CSV_DATA_SEPARATOR +
@@ -133,15 +141,45 @@ public class DatabaseExporter {
         }
     }
 
-    private File getExportDir() {
+    @NotNull
+    @Contract(" -> !null")
+    public static String getExistingFilePath() throws FileNotFoundException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getExistingFilePath");
+
+        String existingFilePath = getOutFilePath();
+        if (isValid(existingFilePath)) {
+            return existingFilePath;
+        }
+        throw new FileNotFoundException();
+    }
+
+    private static boolean isValid(String existingFilePath) {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing isValid");
+        Crashlytics.log(Log.DEBUG, TAG, "@existingFilePath: " + existingFilePath);
+
+        File file = new File(existingFilePath);
+        return file.exists() && !file.isDirectory();
+    }
+
+    @NotNull
+    @Contract(" -> !null")
+    private static String getOutFilePath() {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getOutFilePath");
+
+        return getExportDir() + File.separator + Configuration.CSV_EXPORT_FILENAME;
+    }
+
+    // TODO set database file export location to the different one (currently Downloads folder)
+    private static File getExportDir() {
         Crashlytics.log(Log.DEBUG, TAG, "getExportDir");
 
         File exportDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         if (!exportDir.exists()) {
+            Crashlytics.log(Log.DEBUG, TAG, "Creating new directory");
             exportDir.mkdirs();
         }
 
-        Crashlytics.log(Log.DEBUG, TAG, "Export dir: " + exportDir);
+        Crashlytics.log(Log.DEBUG, TAG, "Export dir is " + exportDir);
 
         return exportDir;
     }

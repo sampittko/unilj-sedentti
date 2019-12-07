@@ -14,6 +14,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.Date;
 
+import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.UploadTask;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -135,16 +136,25 @@ public class UploadTaskHelper {
 
     /**
      * @param uploadTask
-     * @param bytesTransferred
      * @throws SQLException
      */
-    public void updateProgress(@NotNull UploadTask uploadTask, long bytesTransferred) throws SQLException {
+    public void updateProgress(@NotNull UploadTask uploadTask) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing updateProgress");
         Crashlytics.log(Log.DEBUG, TAG, "@uploadTask ID: " + uploadTask.getId());
-        Crashlytics.log(Log.DEBUG, TAG, "@bytesTransferred: " + bytesTransferred);
 
-        uploadTask.setBytesTransferred(bytesTransferred);
+        uploadTask.setBytesTransferred(uploadTask.getBytesTransferred());
         uploadTask.setDuration(new Date().getTime() - uploadTask.getStartTimestamp());
+        uploadTaskDao.update(uploadTask);
+    }
+
+    /**
+     * @param uploadTask
+     * @throws SQLException
+     */
+    public void cancel(@NotNull UploadTask uploadTask) throws SQLException {
+        uploadTask.setSuccessful(true);
+        uploadTask.setError(Configuration.UPLOAD_WORK_UNDO_REASON);
+        uploadTask.setEndTimestamp(new Date().getTime());
         uploadTaskDao.update(uploadTask);
     }
 }

@@ -21,7 +21,6 @@ public abstract class Configuration {
     //
     public static final String STORAGE_DATE_PATH_SEPARATOR = "-";
     public static final String STORAGE_FILE_TYPE = ".csv";
-    public static final int STORAGE_MINUTES_UPLOAD_INTERVAL = 10;
 
     //
     // Local Database
@@ -35,6 +34,9 @@ public abstract class Configuration {
     public static final NetworkType UPLOAD_WORK_NETWORK_TYPE = NetworkType.CONNECTED;
     public static final String UPLOAD_WORK_NAME = "UPLOAD_WORK";
     public static final ExistingPeriodicWorkPolicy UPLOAD_WORK_POLICY = ExistingPeriodicWorkPolicy.KEEP;
+    public static final int UPLOAD_WORK_RESULT_WAITING_THREAD_SLEEP_MILLISECONDS_LENGTH = 1000;
+    public static final int UPLOAD_WORK_MINUTES_UPLOAD_INTERVAL = 10;
+    public static final String UPLOAD_WORK_UNDO_REASON = "Upload task was canceled";
 
     //
     // DatabaseExporter

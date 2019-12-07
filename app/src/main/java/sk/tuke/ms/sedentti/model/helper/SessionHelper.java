@@ -605,9 +605,25 @@ public class SessionHelper {
         }
     }
 
+    /**
+     * @throws SQLException
+     */
+    public void revertExported() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing revertExported");
+
+        sessionDaoQueryBuilder.reset();
+
+        ArrayList<Session> sessions = getExportedNotUploaded();
+
+        for (Session session : sessions) {
+            session.setExported(false);
+            update(session);
+        }
+    }
+
     @NotNull
     @Contract(" -> new")
-    private ArrayList<Session> getExportedNotUploaded() throws SQLException {
+    public ArrayList<Session> getExportedNotUploaded() throws SQLException {
         return new ArrayList<>(
                 sessionDaoQueryBuilder
                         .where()

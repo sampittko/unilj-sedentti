@@ -19,6 +19,7 @@ public class UploadTask {
     public final static String COLUMN_DB_FILE_PATH = "dbFilePath";
     public final static String COLUMN_SUCCESSFUL = "successful";
     public final static String COLUMN_ERROR = "error";
+    public final static String COLUMN_SESSION_URI_STRING = "sessionUriString";
     public final static String COLUMN_PROFILE_ID = "profile_id";
 
     @DatabaseField(generatedId = true, columnName = COLUMN_ID)
@@ -41,6 +42,8 @@ public class UploadTask {
     private boolean successful;
     @DatabaseField(columnName = COLUMN_ERROR)
     private String error;
+    @DatabaseField(columnName = COLUMN_SESSION_URI_STRING)
+    private String sessionUriString;
     @DatabaseField(canBeNull = false, foreign = true, columnName = COLUMN_PROFILE_ID)
     private Profile profile;
 
@@ -137,6 +140,14 @@ public class UploadTask {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getSessionUriString() {
+        return sessionUriString;
+    }
+
+    public void setSessionUriString(String sessionUriString) {
+        this.sessionUriString = sessionUriString;
     }
 
     public Profile getProfile() {

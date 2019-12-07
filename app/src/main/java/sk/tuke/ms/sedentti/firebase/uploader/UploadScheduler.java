@@ -39,8 +39,8 @@ public class UploadScheduler {
                 return 0L;
             }
             else {
-                Crashlytics.log(Log.DEBUG, TAG, "Perform upload work in STORAGE_MINUTES_UPLOAD_INTERVAL");
-                return Configuration.STORAGE_MINUTES_UPLOAD_INTERVAL;
+                Crashlytics.log(Log.DEBUG, TAG, "Perform upload work in UPLOAD_WORK_MINUTES_UPLOAD_INTERVAL");
+                return Configuration.UPLOAD_WORK_MINUTES_UPLOAD_INTERVAL;
             }
         }
 
@@ -61,7 +61,7 @@ public class UploadScheduler {
         dueDate.setTimeInMillis(latestUploadTask.getStartTimestamp());
 
         while (dueDate.before(currentDate)) {
-            dueDate.add(Calendar.MINUTE, Configuration.STORAGE_MINUTES_UPLOAD_INTERVAL);
+            dueDate.add(Calendar.MINUTE, Configuration.UPLOAD_WORK_MINUTES_UPLOAD_INTERVAL);
         }
 
         return dueDate.getTimeInMillis() - currentDate.getTimeInMillis();
