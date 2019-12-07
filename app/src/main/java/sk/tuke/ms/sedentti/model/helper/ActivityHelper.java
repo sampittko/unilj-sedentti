@@ -42,7 +42,7 @@ public class ActivityHelper {
     public void create(int type, @NotNull Session session) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing create");
         Crashlytics.log(Log.DEBUG, TAG, "@type: " + type);
-        Crashlytics.log(Log.DEBUG, TAG, "@session: " + session.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
 
         Activity newActivity = new Activity(
                 type,
@@ -74,7 +74,7 @@ public class ActivityHelper {
      */
     public ArrayList<Activity> getCorresponding(@NotNull Session session) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getCorresponding");
-        Crashlytics.log(Log.DEBUG, TAG, "@session: " + session.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
 
         activityDaoQueryBuilder.reset();
 

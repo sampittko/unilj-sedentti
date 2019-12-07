@@ -54,6 +54,7 @@ public class UploadTask {
         this.bytesTotal = bytesTotal;
         this.bytesTransferred = 0L;
         this.dbFilePath = dbFilePath;
+        this.successful = false;
         this.profile = profile;
     }
 

@@ -13,9 +13,10 @@ import com.google.firebase.auth.FirebaseUser;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ProfileSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
@@ -35,12 +36,6 @@ public class LoginActivity extends AppCompatActivity {
 
         profileHelper = new ProfileHelper(this);
         profileSPHelper = new ProfileSPHelper(this);
-
-        try {
-            profileHelper.createNew("Branko", "", "", "");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         updateActiveProfile();
     }
@@ -87,31 +82,22 @@ public class LoginActivity extends AppCompatActivity {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
-                // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
                 assert user != null;
-                Crashlytics.log(Log.DEBUG, TAG, "Logged in with email " + user.getEmail());
-
+                Crashlytics.log(Log.DEBUG, TAG, "Logged in user ID: " + user.getUid());
                 try {
                     activeProfile = profileHelper.createNew(
-                            user.getDisplayName(),
-                            user.getEmail(),
-                            Objects.requireNonNull(user.getPhotoUrl()).getEncodedPath(),
+                            user.getDisplayName() == null ? Configuration.PROFILE_UNKNOWN_DISPLAY_NAME : user.getDisplayName(),
+                            user.getEmail() == null ? Configuration.PROFILE_UNKNOWN_EMAIL : user.getEmail(),
+                            user.getPhotoUrl() == null ? Configuration.PROFILE_UNKNOWN_PHOTO_URL : user.getPhotoUrl().getEncodedPath(),
                             user.getUid());
-
                     setUpCrashlytics();
                     startFollowingActivity();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                // ...
             } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
-                Log.w(TAG, "User did not log in, quitting app");
+                Crashlytics.log(Log.ERROR, TAG, "Login not successful and quitting app as a consequence");
                 finish();
             }
         }
@@ -121,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         Crashlytics.setUserIdentifier(activeProfile.getFirebaseAuthUid());
         Crashlytics.setUserEmail(activeProfile.getEmail());
         Crashlytics.setUserName(activeProfile.getName());
+        Crashlytics.log(Log.DEBUG, TAG, "Crashlytics set up successfully");
     }
 
     private void startFollowingActivity() {

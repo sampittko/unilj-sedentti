@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.facebook.stetho.Stetho;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.sql.SQLException;
@@ -47,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         setBottomMenu();
-
-        Stetho.initializeWithDefaults(this);
 
         performInitialSetup();
 

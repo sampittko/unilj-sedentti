@@ -14,7 +14,6 @@ import androidx.work.WorkerParameters;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import sk.tuke.ms.sedentti.firebase.helper.StorageHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.UploadTask;
-import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 import sk.tuke.ms.sedentti.model.exporter.DatabaseExporter;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
@@ -32,8 +30,6 @@ public class UploadWorker extends Worker {
     private static final String TAG = "UploadWorker";
 
     private UploadTaskHelper uploadTaskHelper;
-    private ProfileHelper profileHelper;
-    private DatabaseHelper databaseHelper;
     private SessionHelper sessionHelper;
 
     private Profile profile;
@@ -43,8 +39,7 @@ public class UploadWorker extends Worker {
     public UploadWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
 
-        this.databaseHelper = OpenHelperManager.getHelper(getApplicationContext(), DatabaseHelper.class);
-        this.profileHelper = new ProfileHelper(context);
+        ProfileHelper profileHelper = new ProfileHelper(context);
 
         try {
             profile = profileHelper.getActive();

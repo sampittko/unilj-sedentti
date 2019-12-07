@@ -7,9 +7,12 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.stetho.Stetho;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class FirstTimeStartupActivity extends AppCompatActivity {
 
@@ -21,7 +24,11 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
         // line that needs to be run after database scheme upgrade (firstly change version FROM and version TO)
 //         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-//         databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 1, 2);
+//         databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), databaseHelper.getConnectionSource(), 5, 6);
+
+        Stetho.initializeWithDefaults(this);
+
+        // TODO request all required permissions
 
         AppSPHelper appSPHelper = new AppSPHelper(this);
         boolean firstTimeStartupPerformed = appSPHelper.firstTimeStartupPerformed();

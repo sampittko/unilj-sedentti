@@ -81,7 +81,7 @@ public class UploadTaskHelper {
      */
     public UploadTask startNew(@NotNull File dbFile) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing startNew");
-        Crashlytics.log(Log.DEBUG, TAG, "@dbFile: " + dbFile.getPath());
+        Crashlytics.log(Log.DEBUG, TAG, "@dbFile PATH: " + dbFile.getPath());
 
         UploadTask uploadTask = new UploadTask(
                 new Date().getTime(),
@@ -102,8 +102,8 @@ public class UploadTaskHelper {
      */
     public void failure(@NotNull UploadTask uploadTask, @NotNull Exception exception) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing failure");
-        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask: " + uploadTask.getId());
-        Crashlytics.log(Log.DEBUG, TAG, "@exception: " + exception.getMessage());
+        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask ID: " + uploadTask.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@exception MESSAGE: " + exception.getMessage());
 
         uploadTask.setSuccessful(false);
         uploadTask.setError(exception.getMessage());
@@ -116,7 +116,7 @@ public class UploadTaskHelper {
      */
     public void success(@NotNull UploadTask uploadTask) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing success");
-        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask: " + uploadTask.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask ID: " + uploadTask.getId());
 
         uploadTask.setSuccessful(true);
         uploadTask.setBytesTransferred(uploadTask.getBytesTotal());
@@ -125,7 +125,7 @@ public class UploadTaskHelper {
 
     private void end(@NotNull UploadTask uploadTask) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing end");
-        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask: " + uploadTask.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask ID: " + uploadTask.getId());
 
         long endTimestamp = new Date().getTime();
         uploadTask.setEndTimestamp(endTimestamp);
@@ -140,7 +140,7 @@ public class UploadTaskHelper {
      */
     public void updateProgress(@NotNull UploadTask uploadTask, long bytesTransferred) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing updateProgress");
-        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask: " + uploadTask.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@uploadTask ID: " + uploadTask.getId());
         Crashlytics.log(Log.DEBUG, TAG, "@bytesTransferred: " + bytesTransferred);
 
         uploadTask.setBytesTransferred(bytesTransferred);

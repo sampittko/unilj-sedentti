@@ -10,6 +10,13 @@ public abstract class Configuration {
     public static final boolean FIRST_TIME_STARTUP_PERFORMED = false;
 
     //
+    // Firebase Authentication
+    //
+    public static final String PROFILE_UNKNOWN_DISPLAY_NAME = "Unknown Name";
+    public static final String PROFILE_UNKNOWN_EMAIL = "";
+    public static final String PROFILE_UNKNOWN_PHOTO_URL = "";
+
+    //
     // Firebase Cloud Storage
     //
     public static final String STORAGE_DATE_PATH_SEPARATOR = "-";
@@ -32,7 +39,7 @@ public abstract class Configuration {
     //
     // DatabaseExporter
     //
-    public static final String CSV_EXPORT_FILENAME = "export.csv";
+    public static final String CSV_EXPORT_FILENAME = "export" + STORAGE_FILE_TYPE;
     public static final String CSV_HEADER_COLUMN_1 = "USER";
     public static final String CSV_HEADER_COLUMN_2 = "SESSION";
     public static final String CSV_HEADER_COLUMN_3 = "SESSION_SEDENTARY";
