@@ -70,7 +70,14 @@ public class ProfileHelper {
     public Profile getExisting() throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getExisting");
 
-        return profileDao.queryForAll().get(0);
+        profileDaoQueryBuilder.reset();
+
+        return profileDaoQueryBuilder
+                .where()
+                .ne(Profile.COLUMN_FIREBASE_AUTH_UID, Configuration.PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID)
+                .and()
+                .ne(Profile.COLUMN_FIREBASE_AUTH_UID, "")
+                .queryForFirst();
     }
 
     /**
@@ -88,6 +95,8 @@ public class ProfileHelper {
      */
     public Profile getArtificialProfile() throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getArtificialProfile");
+
+        profileDaoQueryBuilder.reset();
 
         Profile artificialProfile = profileDaoQueryBuilder
                 .where()

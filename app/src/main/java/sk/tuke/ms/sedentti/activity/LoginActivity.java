@@ -53,7 +53,8 @@ public class LoginActivity extends AppCompatActivity {
         else {
             Crashlytics.log(Log.DEBUG, TAG, "Using the real profile");
             try {
-                if (profileHelper.getNumberOfExisting() == 0) {
+                int numberOfExistingProfiles = profileHelper.getNumberOfExisting();
+                if (numberOfExistingProfiles == 0 || numberOfExistingProfiles == 1) {
                     Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
                     handleFirebaseAuthUI();
                 }

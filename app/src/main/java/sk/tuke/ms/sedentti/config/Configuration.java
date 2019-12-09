@@ -15,7 +15,7 @@ public abstract class Configuration {
     // General app config
     //
     public static final boolean FIRST_TIME_STARTUP_PERFORMED = false;
-    public static final boolean USING_ARTIFICIAL_PROFILE = true;
+    public static final boolean USING_ARTIFICIAL_PROFILE = false;
     public static final String APP_NAME = "Sedentti";
 
     //
