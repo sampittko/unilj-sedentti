@@ -60,6 +60,8 @@ public class ActivityRecognitionService extends Service {
                     serviceToggle(PredefinedValues.COMMAND_STOP);
                 } else {
                     // otherwise, first time run, some problem etc
+                    // register receiver just avoid the case when there is no registered register
+                    registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
                     serviceToggle(PredefinedValues.COMMAND_STOP);
                     this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
                 }
