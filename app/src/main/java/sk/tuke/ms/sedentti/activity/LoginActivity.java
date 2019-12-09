@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
             Crashlytics.log(Log.DEBUG, TAG, "Using artificial profile");
             try {
                 activeProfile = profileHelper.getArtificialProfile();
+                finalizeActiveProfileUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -59,13 +60,17 @@ public class LoginActivity extends AppCompatActivity {
                 else {
                     Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
                     activeProfile = profileHelper.getExisting();
-                    setUpCrashlytics();
-                    startFollowingActivity();
+                    finalizeActiveProfileUpdate();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void finalizeActiveProfileUpdate() {
+        setUpCrashlytics();
+        startFollowingActivity();
     }
 
     private void handleFirebaseAuthUI() {
@@ -102,8 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                             user.getEmail() == null ? Configuration.PROFILE_UNKNOWN_EMAIL : user.getEmail(),
                             user.getPhotoUrl() == null ? Configuration.PROFILE_UNKNOWN_PHOTO_URL : user.getPhotoUrl().getEncodedPath(),
                             user.getUid());
-                    setUpCrashlytics();
-                    startFollowingActivity();
+                    finalizeActiveProfileUpdate();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
