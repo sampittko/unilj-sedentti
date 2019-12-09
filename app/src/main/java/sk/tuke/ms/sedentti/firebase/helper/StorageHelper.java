@@ -26,13 +26,13 @@ public class StorageHelper {
 
     @NotNull
     public String getPath() throws SQLException {
-        return PredefinedValues.STORAGE_FOLDER_SEPARATOR +
+        return PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
                 profile.getFirebaseAuthUid() +
-                PredefinedValues.STORAGE_FOLDER_SEPARATOR +
+                PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
                 getPathDate() +
-                PredefinedValues.STORAGE_FOLDER_SEPARATOR +
-                (uploadTaskHelper.getTodaysCount() + 1) +
-                Configuration.STORAGE_FILE_TYPE;
+                PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
+                "export-" + (uploadTaskHelper.getTodaysCount() + 1) +
+                Configuration.DB_EXPORTER_FILE_TYPE;
     }
 
     @NotNull
@@ -41,9 +41,9 @@ public class StorageHelper {
         calendar.setTime(new Date());
 
         return DateHelper.getDay(calendar) +
-                Configuration.STORAGE_DATE_PATH_SEPARATOR +
+                Configuration.CLOUD_STORAGE_DATE_PATH_SEPARATOR +
                 (DateHelper.getMonth(calendar) + 1) +
-                Configuration.STORAGE_DATE_PATH_SEPARATOR +
+                Configuration.CLOUD_STORAGE_DATE_PATH_SEPARATOR +
                 DateHelper.getYear(calendar);
     }
 }

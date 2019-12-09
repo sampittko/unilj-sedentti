@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         PeriodicWorkRequest uploadRequest =
-                new PeriodicWorkRequest.Builder(UploadWorker.class, Configuration.UPLOAD_WORK_MINUTES_UPLOAD_INTERVAL, TimeUnit.MINUTES)
+                new PeriodicWorkRequest.Builder(UploadWorker.class, Configuration.UPLOAD_WORK_WAITING_MINUTES, TimeUnit.MINUTES)
                         .setConstraints(constraints)
                         .setInitialDelay(
                                 initialMillisecondsDelay,
