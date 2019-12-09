@@ -41,19 +41,30 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateActiveProfile() {
-        try {
-            if (profileHelper.getNumberOfExisting() == 0) {
-                Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
-                handleFirebaseAuthUI();
+        if (Configuration.USING_ARTIFICIAL_PROFILE) {
+            Crashlytics.log(Log.DEBUG, TAG, "Using artificial profile");
+            try {
+                activeProfile = profileHelper.getArtificialProfile();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            else {
-                Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
-                activeProfile = profileHelper.getExisting();
-                setUpCrashlytics();
-                startFollowingActivity();
+        }
+        else {
+            Crashlytics.log(Log.DEBUG, TAG, "Using the real profile");
+            try {
+                if (profileHelper.getNumberOfExisting() == 0) {
+                    Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
+                    handleFirebaseAuthUI();
+                }
+                else {
+                    Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
+                    activeProfile = profileHelper.getExisting();
+                    setUpCrashlytics();
+                    startFollowingActivity();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 

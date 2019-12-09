@@ -8,6 +8,8 @@ import androidx.work.NetworkType;
  */
 public abstract class Configuration {
     public static final boolean FIRST_TIME_STARTUP_PERFORMED = false;
+    public static final boolean USING_ARTIFICIAL_PROFILE = true;
+
 
     //
     // Firebase Authentication
@@ -15,6 +17,10 @@ public abstract class Configuration {
     public static final String PROFILE_UNKNOWN_DISPLAY_NAME = "Unknown Name";
     public static final String PROFILE_UNKNOWN_EMAIL = "";
     public static final String PROFILE_UNKNOWN_PHOTO_URL = "";
+    public static final String PROFILE_ARTIFICIAL_NAME = "Robot 4019";
+    public static final String PROFILE_ARTIFICIAL_EMAIL = "robot@4019.hack";
+    public static final String PROFILE_ARTIFICIAL_PHOTO_URL = PROFILE_UNKNOWN_PHOTO_URL;
+    public static final String PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID = "eD74z7vXByOTxV1tVAq87g0mVhx1";
 
     //
     // Firebase Cloud Storage

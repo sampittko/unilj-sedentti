@@ -6,9 +6,11 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
 
+import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ProfileSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -17,6 +19,7 @@ public class ProfileHelper {
     private static final String TAG = "ProfileHelper";
 
     private Dao<Profile, Long> profileDao;
+    private QueryBuilder<Profile, Long> profileDaoQueryBuilder;
 
     private Context context;
 
@@ -24,6 +27,7 @@ public class ProfileHelper {
         DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
         try {
             profileDao = databaseHelper.profileDao();
+            profileDaoQueryBuilder = profileDao.queryBuilder();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -77,5 +81,31 @@ public class ProfileHelper {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getNumberOfExisting");
 
         return (int) profileDao.countOf();
+    }
+
+    /**
+     * @return
+     */
+    public Profile getArtificialProfile() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getArtificialProfile");
+
+        Profile artificialProfile = profileDaoQueryBuilder
+                .where()
+                .eq(Profile.COLUMN_ID, Configuration.PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID)
+                .queryForFirst();
+
+        if (artificialProfile == null) {
+            return getNewArtificialProfile();
+        }
+        return artificialProfile;
+    }
+
+    private Profile getNewArtificialProfile() throws SQLException {
+        return createNew(
+                Configuration.PROFILE_ARTIFICIAL_NAME,
+                Configuration.PROFILE_ARTIFICIAL_EMAIL,
+                Configuration.PROFILE_ARTIFICIAL_PHOTO_URL,
+                Configuration.PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID
+        );
     }
 }
