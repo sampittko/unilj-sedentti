@@ -91,7 +91,7 @@ public class ProfileHelper {
 
         Profile artificialProfile = profileDaoQueryBuilder
                 .where()
-                .eq(Profile.COLUMN_ID, Configuration.PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID)
+                .eq(Profile.COLUMN_FIREBASE_AUTH_UID, Configuration.PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID)
                 .queryForFirst();
 
         if (artificialProfile == null) {
