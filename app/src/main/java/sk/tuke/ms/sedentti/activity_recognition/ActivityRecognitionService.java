@@ -49,29 +49,35 @@ public class ActivityRecognitionService extends Service {
 
         switch (intent.getAction()) {
             case PredefinedValues.COMMAND_INIT:
+                // this is called  each time app is opened
                 int state = this.activityRecognitionPreferences.getActivityRecognitionState();
 
                 if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
+                    // if the service was running and it was saved in shared preferences and make sure it runs
                     serviceToggle(PredefinedValues.COMMAND_START);
+                } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+                    // if the service was running and it was saved in shared preferences and make sure it has stopped
+                    serviceToggle(PredefinedValues.COMMAND_STOP);
                 } else {
-                    serviceToggle(PredefinedValues.COMMAND_START);
+                    // otherwise, first time run, some problem etc
+                    // register receiver just avoid the case when there is no registered register
+                    registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
+                    serviceToggle(PredefinedValues.COMMAND_STOP);
+                    this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
                 }
 
                 return state;
-
             case PredefinedValues.COMMAND_START:
                 serviceToggle(PredefinedValues.COMMAND_START);
                 this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING);
 
                 return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
-
             case PredefinedValues.COMMAND_STOP:
                 serviceToggle(PredefinedValues.COMMAND_STOP);
                 this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
 
                 return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
         }
-//        Log.i(TAG, "Actual state is: " + state);7
         return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
     }
 
