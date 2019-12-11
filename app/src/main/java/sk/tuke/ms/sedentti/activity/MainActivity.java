@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
 
     private SessionHelper sessionHelper;
-    private AppSPHelper appSPHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
         performInitialSetup();
 
         startForegroundService();
-
-        appSPHelper.setAppDefaultSettings();
 
         // checkForPendingSession();
 
@@ -81,16 +78,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void performInitialSetup() {
-        appSPHelper = new AppSPHelper(this);
-        ProfileHelper profileHelper = new ProfileHelper(this);
-
         try {
+            ProfileHelper profileHelper = new ProfileHelper(this);
             activeProfile = profileHelper.getActive();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         sessionHelper = new SessionHelper(this, activeProfile);
+
+        AppSPHelper appSPHelper = new AppSPHelper(this);
+        appSPHelper.setAppDefaultSettings();
 
         Crashlytics.log(Log.DEBUG, TAG, "Initial setup performed");
     }
@@ -125,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         PeriodicWorkRequest uploadRequest =
-                new PeriodicWorkRequest.Builder(UploadWorker.class, Configuration.UPLOAD_WORK_MINUTES_UPLOAD_INTERVAL, TimeUnit.MINUTES)
+                new PeriodicWorkRequest.Builder(UploadWorker.class, Configuration.UPLOAD_WORK_WAITING_MINUTES, TimeUnit.MINUTES)
                         .setConstraints(constraints)
                         .setInitialDelay(
                                 initialMillisecondsDelay,

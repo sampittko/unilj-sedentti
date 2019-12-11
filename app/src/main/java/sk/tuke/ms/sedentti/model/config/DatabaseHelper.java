@@ -26,7 +26,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<UploadTask, Long> uploadTaskDao;
 
     public DatabaseHelper(Context context) {
-        super(context, Configuration.DATABASE_NAME, null, Configuration.DATABASE_VERSION,
+        super(context, Configuration.LOCAL_DATABASE_NAME, null, Configuration.LOCAL_DATABASE_VERSION,
                 R.raw.ormlite_config);
     }
 

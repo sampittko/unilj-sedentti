@@ -1,7 +1,6 @@
 package sk.tuke.ms.sedentti.model.exporter;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -91,17 +90,17 @@ public class DatabaseExporter {
         Crashlytics.log(Log.DEBUG, TAG, "printCSVHeader");
 
         String CSVHeader =
-                Configuration.CSV_HEADER_COLUMN_1 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_2 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_3 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_4 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_5 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_6 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_7 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_8 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_9 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_10 + PredefinedValues.CSV_DATA_SEPARATOR +
-                Configuration.CSV_HEADER_COLUMN_11;
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_1 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_2 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_3 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_4 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_5 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_6 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_7 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_8 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_9 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_10 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_11;
 
         printWriter.println(CSVHeader);
         Crashlytics.log(Log.DEBUG, TAG, "CSV header: " + CSVHeader);
@@ -121,16 +120,16 @@ public class DatabaseExporter {
                 activities = activityHelper.getCorresponding(session);
                 for (Activity activity : activities) {
                     record =
-                        profile.getFirebaseAuthUid() + PredefinedValues.CSV_DATA_SEPARATOR +
-                        session.getId() + PredefinedValues.CSV_DATA_SEPARATOR +
-                        session.isSuccessful() + PredefinedValues.CSV_DATA_SEPARATOR +
-                        session.getStartTimestamp() + PredefinedValues.CSV_DATA_SEPARATOR +
-                        session.getEndTimestamp() + PredefinedValues.CSV_DATA_SEPARATOR +
-                        session.getDuration() + PredefinedValues.CSV_DATA_SEPARATOR +
-                        session.isSuccessful() + PredefinedValues.CSV_DATA_SEPARATOR +
-                        df.format(session.getDate()) + PredefinedValues.CSV_DATA_SEPARATOR +
-                        activity.getId() + PredefinedValues.CSV_DATA_SEPARATOR +
-                        activity.getType() + PredefinedValues.CSV_DATA_SEPARATOR +
+                        profile.getFirebaseAuthUid() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        session.getId() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        session.isSuccessful() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        session.getStartTimestamp() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        session.getEndTimestamp() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        session.getDuration() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        session.isSuccessful() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        df.format(session.getDate()) + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        activity.getId() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        activity.getType() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         activity.getTimestamp();
                     printWriter.println(record);
                     Crashlytics.log(Log.DEBUG, TAG, "Printed record: " + record);
@@ -166,14 +165,13 @@ public class DatabaseExporter {
     private static String getOutFilePath() {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getOutFilePath");
 
-        return getExportDir() + File.separator + Configuration.CSV_EXPORT_FILENAME;
+        return getExportDir() + File.separator + Configuration.DB_EXPORTER_FILENAME;
     }
 
-    // TODO set database file export location to the different one (currently Downloads folder)
     private static File getExportDir() {
         Crashlytics.log(Log.DEBUG, TAG, "getExportDir");
 
-        File exportDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File exportDir = Configuration.DB_EXPORTER_EXPORT_DIR;
         if (!exportDir.exists()) {
             Crashlytics.log(Log.DEBUG, TAG, "Creating new directory");
             exportDir.mkdirs();

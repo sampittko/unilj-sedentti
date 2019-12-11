@@ -41,20 +41,37 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateActiveProfile() {
-        try {
-            if (profileHelper.getNumberOfExisting() == 0) {
-                Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
-                handleFirebaseAuthUI();
+        if (Configuration.USING_ARTIFICIAL_PROFILE) {
+            Crashlytics.log(Log.DEBUG, TAG, "Using artificial profile");
+            try {
+                activeProfile = profileHelper.getArtificialProfile();
+                finalizeActiveProfileUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            else {
-                Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
-                activeProfile = profileHelper.getExisting();
-                setUpCrashlytics();
-                startFollowingActivity();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+        else {
+            Crashlytics.log(Log.DEBUG, TAG, "Using the real profile");
+            try {
+                int numberOfExistingProfiles = profileHelper.getNumberOfExisting();
+                if (numberOfExistingProfiles == 0 || numberOfExistingProfiles == 1) {
+                    Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
+                    handleFirebaseAuthUI();
+                }
+                else {
+                    Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
+                    activeProfile = profileHelper.getExisting();
+                    finalizeActiveProfileUpdate();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void finalizeActiveProfileUpdate() {
+        setUpCrashlytics();
+        startFollowingActivity();
     }
 
     private void handleFirebaseAuthUI() {
@@ -91,8 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                             user.getEmail() == null ? Configuration.PROFILE_UNKNOWN_EMAIL : user.getEmail(),
                             user.getPhotoUrl() == null ? Configuration.PROFILE_UNKNOWN_PHOTO_URL : user.getPhotoUrl().getEncodedPath(),
                             user.getUid());
-                    setUpCrashlytics();
-                    startFollowingActivity();
+                    finalizeActiveProfileUpdate();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

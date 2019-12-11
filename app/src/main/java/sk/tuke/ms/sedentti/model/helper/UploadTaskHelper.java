@@ -14,7 +14,6 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.Date;
 
-import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.UploadTask;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -153,7 +152,7 @@ public class UploadTaskHelper {
      */
     public void cancel(@NotNull UploadTask uploadTask) throws SQLException {
         uploadTask.setSuccessful(true);
-        uploadTask.setError(Configuration.UPLOAD_WORK_UNDO_REASON);
+        uploadTask.setError("Upload task was canceled");
         uploadTask.setEndTimestamp(new Date().getTime());
         uploadTaskDao.update(uploadTask);
     }

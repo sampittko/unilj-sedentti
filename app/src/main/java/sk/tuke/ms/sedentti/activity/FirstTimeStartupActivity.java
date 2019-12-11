@@ -28,6 +28,10 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
         Stetho.initializeWithDefaults(this);
 
+        AppSPHelper appSPHelper1 = new AppSPHelper(this);
+
+        appSPHelper1.setAppDefaultSettings();
+
         // TODO request all required permissions
 
         AppSPHelper appSPHelper = new AppSPHelper(this);
