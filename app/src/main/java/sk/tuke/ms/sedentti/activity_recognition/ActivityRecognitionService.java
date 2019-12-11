@@ -60,8 +60,9 @@ public class ActivityRecognitionService extends Service {
                     serviceToggle(PredefinedValues.COMMAND_STOP);
                 } else {
                     // otherwise, first time run, some problem etc
+                    // TODO: 12/11/19 check this line
                     // register receiver just avoid the case when there is no registered register
-                    registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
+//                    registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
                     serviceToggle(PredefinedValues.COMMAND_STOP);
                     this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
                 }
@@ -88,7 +89,11 @@ public class ActivityRecognitionService extends Service {
             Log.i(TAG, "Sensing service started");
         } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
             this.activityRecognitionHandler.stopTracking();
-            unregisterReceiver(receiver);
+            try {
+                unregisterReceiver(receiver);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
             Log.i(TAG, "Sensing service stopped");
         }
     }
