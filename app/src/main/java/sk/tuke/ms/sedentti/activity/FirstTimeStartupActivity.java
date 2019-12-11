@@ -28,16 +28,12 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
         Stetho.initializeWithDefaults(this);
 
-        AppSPHelper appSPHelper1 = new AppSPHelper(this);
-
-        appSPHelper1.setAppDefaultSettings();
+        AppSPHelper appSPHelper = new AppSPHelper(this);
+        appSPHelper.setAppDefaultSettings();
 
         // TODO request all required permissions
 
-        AppSPHelper appSPHelper = new AppSPHelper(this);
-        boolean firstTimeStartupPerformed = appSPHelper.firstTimeStartupPerformed();
-
-        if (firstTimeStartupPerformed) {
+        if (appSPHelper.firstTimeStartupPerformed()) {
             Crashlytics.log(Log.DEBUG, TAG, "First time startup had already been performed before");
 
             Intent intent = new Intent(this, LoginActivity.class);
@@ -49,9 +45,8 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
             setContentView(R.layout.activity_first_time_startup);
 
-            appSPHelper.updateFirstTimeStartupPerformed(true);
-
             // TODO implement
+            appSPHelper.updateFirstTimeStartupPerformed(true);
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
