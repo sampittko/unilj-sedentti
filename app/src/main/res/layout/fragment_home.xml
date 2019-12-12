@@ -20,7 +20,8 @@
             app:civ_border_color="#FF000000"
             app:civ_border_width="1dp"
             app:layout_constraintBottom_toBottomOf="@+id/tw_f_home_text_hello"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tw_f_home_text_hello" />
 
         <TextView
             android:id="@+id/tw_f_home_text_hello"

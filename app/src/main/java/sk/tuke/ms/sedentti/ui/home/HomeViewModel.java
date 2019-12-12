@@ -19,6 +19,7 @@ import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class HomeViewModel extends AndroidViewModel {
 
+    private Profile activeProfile;
     private MutableLiveData<ArrayList<Session>> sessions;
     private MutableLiveData<Session> pendingSession;
 
@@ -44,9 +45,8 @@ public class HomeViewModel extends AndroidViewModel {
         ProfileHelper profileHelper = new ProfileHelper(this.getApplication());
         this.tickHandler = new Handler();
 
-        Profile activeProfile = null;
         try {
-            activeProfile = profileHelper.getActive();
+            this.activeProfile = profileHelper.getActive();
         } catch (SQLException e) {
             Toast.makeText(this.getApplication(), "Error, no profile", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -69,6 +69,10 @@ public class HomeViewModel extends AndroidViewModel {
     protected void onCleared() {
         super.onCleared();
         stopTicker();
+    }
+
+    public Profile getActiveProfile() {
+        return activeProfile;
     }
 
     public LiveData<Integer> getStreak() {

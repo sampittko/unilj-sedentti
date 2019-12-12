@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hookedonplay.decoviewlib.DecoView;
@@ -31,11 +32,13 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import de.hdodenhof.circleimageview.CircleImageView;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity_recognition.ActivityRecognitionService;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 
 public class HomeFragment extends Fragment {
@@ -111,6 +114,22 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         updateSessionGraphStateUI(this.state);
         updateSensingStateUI(this.state);
+        updateProfile(homeViewModel.getActiveProfile());
+    }
+
+    private void updateProfile(Profile activeProfile) {
+        TextView username = getActivity().findViewById(R.id.tw_f_home_text_hello);
+        StringBuilder sb = new StringBuilder();
+        sb.append("Hello ");
+        sb.append(activeProfile.getName());
+        username.setText(sb.toString());
+
+        CircleImageView profilePhoto = getActivity().findViewById(R.id.iw_f_home_profile_image);
+        String imageUrl = activeProfile.getPhotoUrl();
+        if (imageUrl != null && imageUrl.length() > 0) {
+            Glide.with(this).load(imageUrl).into(profilePhoto);
+            profilePhoto.setBorderWidth(0);
+        }
     }
 
     private void makeGraphs(View root) {
