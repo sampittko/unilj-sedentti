@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ProfileSPHelper;
@@ -105,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                     activeProfile = profileHelper.createNew(
                             user.getDisplayName() == null ? Configuration.PROFILE_UNKNOWN_DISPLAY_NAME : user.getDisplayName(),
                             user.getEmail() == null ? Configuration.PROFILE_UNKNOWN_EMAIL : user.getEmail(),
-                            user.getPhotoUrl() == null ? Configuration.PROFILE_UNKNOWN_PHOTO_URL : user.getPhotoUrl().getEncodedPath(),
+                            user.getPhotoUrl() == null ? Configuration.PROFILE_UNKNOWN_PHOTO_URL : user.getPhotoUrl().toString(),
                             user.getUid());
                     finalizeActiveProfileUpdate();
                 } catch (SQLException e) {
