@@ -184,14 +184,18 @@ public class HomeFragment extends Fragment {
     private void updateSensingStateUI(int state) {
         Button button = getActivity().findViewById(R.id.btn_home_button_sensing);
         TextView settingsIcon = getActivity().findViewById(R.id.f_home_sensing_settings);
+        TextView sensingStatus = getActivity().findViewById(R.id.tw_home_text_sensing_state);
         if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
             button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
             settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorAccent)));
 
+            sensingStatus.setText("Sedentti is not tracking your activity");
             button.setText("Start");
         } else {
             button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
             settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorPrimary)));
+
+            sensingStatus.setText("Sedentti is tracking your activity");
             button.setText("Stop");
         }
     }
