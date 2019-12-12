@@ -17,6 +17,7 @@ public abstract class Configuration {
     public static final boolean FIRST_TIME_STARTUP_PERFORMED = false;
     public static final boolean USING_ARTIFICIAL_PROFILE = false;
     public static final String APP_NAME = "Sedentti";
+    public static final String APP_PACKAGE = "sk.tuke.ms.sedentti";
 
     //
     // Firebase Authentication
@@ -38,7 +39,7 @@ public abstract class Configuration {
     //
     // Local Database
     //
-    public static final String LOCAL_DATABASE_NAME = APP_NAME;
+    public static final String LOCAL_DATABASE_NAME = APP_PACKAGE + ".local.db";
     public static final int LOCAL_DATABASE_VERSION = 5;
 
     //
