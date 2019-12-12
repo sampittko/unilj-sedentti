@@ -33,6 +33,7 @@ public abstract class Configuration {
     // Firebase Cloud Storage
     //
     public static final String CLOUD_STORAGE_DATE_PATH_SEPARATOR = "-";
+    public static final String CLOUD_STORAGE_FILENAME_PREFIX = "export";
 
     //
     // Local Database

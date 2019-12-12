@@ -121,14 +121,14 @@ public class DatabaseExporter {
                 for (Activity activity : activities) {
                     record =
                         profile.getFirebaseAuthUid() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
-                        session.getId() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        getGloballyUniqueIdentifierOf(session.getId()) + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         session.isSuccessful() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         session.getStartTimestamp() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         session.getEndTimestamp() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         session.getDuration() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         session.isSuccessful() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         df.format(session.getDate()) + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
-                        activity.getId() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        getGloballyUniqueIdentifierOf(activity.getId()) + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         activity.getType() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         activity.getTimestamp();
                     printWriter.println(record);
@@ -138,6 +138,11 @@ public class DatabaseExporter {
                 e.printStackTrace();
             }
         }
+    }
+
+    @NotNull
+    private String getGloballyUniqueIdentifierOf(long id) {
+        return id + PredefinedValues.DB_EXPORTER_CSV_INNER_DATA_SEPARATOR + profile.getFirebaseAuthUid();
     }
 
     @NotNull

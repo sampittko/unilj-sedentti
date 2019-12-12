@@ -17,7 +17,7 @@ public class UploadTask {
     public final static String COLUMN_BYTES_TRANSFERRED = "bytesTransferred";
     public final static String COLUMN_BYTES_TOTAL = "bytesTotal";
     public final static String COLUMN_DB_FILE_PATH = "dbFilePath";
-    public final static String COLUMN_SUCCESSFUL = "successful";
+    public final static String COLUMN_PROCESSED = "processed";
     public final static String COLUMN_ERROR = "error";
     public final static String COLUMN_SESSION_URI_STRING = "sessionUriString";
     public final static String COLUMN_PROFILE_ID = "profile_id";
@@ -38,8 +38,8 @@ public class UploadTask {
     private long bytesTotal;
     @DatabaseField(canBeNull = false, columnName = COLUMN_DB_FILE_PATH)
     private String dbFilePath;
-    @DatabaseField(columnName = COLUMN_SUCCESSFUL)
-    private boolean successful;
+    @DatabaseField(columnName = COLUMN_PROCESSED)
+    private boolean processed;
     @DatabaseField(columnName = COLUMN_ERROR)
     private String error;
     @DatabaseField(columnName = COLUMN_SESSION_URI_STRING)
@@ -57,7 +57,7 @@ public class UploadTask {
         this.bytesTotal = bytesTotal;
         this.bytesTransferred = 0L;
         this.dbFilePath = dbFilePath;
-        this.successful = false;
+        this.processed = false;
         this.profile = profile;
     }
 
@@ -126,12 +126,12 @@ public class UploadTask {
         this.dbFilePath = dbFilePath;
     }
 
-    public boolean isSuccessful() {
-        return successful;
+    public boolean isProcessed() {
+        return processed;
     }
 
-    public void setSuccessful(boolean successful) {
-        this.successful = successful;
+    public void setProcessed(boolean processed) {
+        this.processed = processed;
     }
 
     public String getError() {

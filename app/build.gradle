@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\SAMPITTKO\\.android\\upload-keystore.jks.old')
+            keyAlias = 'upload'
+            keyPassword 'K6X!1H^aTqmwEB@gD*im'
+            storePassword '*yQ*og$YriAhmU9f6@6y'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "sk.tuke.ms.sedentti"
@@ -15,6 +23,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
