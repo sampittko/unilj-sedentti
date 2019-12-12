@@ -1,5 +1,5 @@
 #
-# generated on 2019/12/07 09:54:59
+# generated on 2019/12/12 04:08:08
 #
 # --table-start--
 dataClass=sk.tuke.ms.sedentti.model.PersonalityTest
@@ -212,8 +212,8 @@ columnName=dbFilePath
 canBeNull=false
 # --field-end--
 # --field-start--
-fieldName=successful
-columnName=successful
+fieldName=processed
+columnName=processed
 # --field-end--
 # --field-start--
 fieldName=error

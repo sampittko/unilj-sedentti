@@ -64,15 +64,16 @@ public class ProfileHelper {
     }
 
     /**
-     * @return Some existing profile
+     * @return Some existing profile which is also not artificial
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Profile getExisting() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getExisting");
+    public Profile getRealProfile() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getRealProfile");
 
         profileDaoQueryBuilder.reset();
 
         return profileDaoQueryBuilder
+                .orderBy(Profile.COLUMN_REGISTERED_DATE, false)
                 .where()
                 .ne(Profile.COLUMN_FIREBASE_AUTH_UID, Configuration.PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID)
                 .and()
@@ -81,13 +82,13 @@ public class ProfileHelper {
     }
 
     /**
-     * @return Number of existing profiles in database
+     * @return Whether the real profile exists or not
      * @throws SQLException In case that communication with DB was not successful
      */
-    public int getNumberOfExisting() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getNumberOfExisting");
+    public boolean realProfileExists() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing realProfileExists");
 
-        return (int) profileDao.countOf();
+        return getRealProfile() != null;
     }
 
     /**

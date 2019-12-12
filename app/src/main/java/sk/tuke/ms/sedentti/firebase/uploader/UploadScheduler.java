@@ -44,7 +44,7 @@ public class UploadScheduler {
             }
         }
 
-        if (!latestUploadTask.isSuccessful()) {
+        if (!latestUploadTask.isProcessed()) {
             Crashlytics.log(Log.DEBUG, TAG, "Last upload task was not successful so it will retry immediately");
             return 0L;
         }

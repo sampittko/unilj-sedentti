@@ -49,4 +49,5 @@ public abstract class PredefinedValues {
     // DatabaseExporter
     //
     public static final String DB_EXPORTER_CSV_DATA_SEPARATOR = ",";
+    public static final String DB_EXPORTER_CSV_INNER_DATA_SEPARATOR = "-";
 }

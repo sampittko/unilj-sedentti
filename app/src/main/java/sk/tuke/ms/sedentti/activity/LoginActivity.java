@@ -53,14 +53,13 @@ public class LoginActivity extends AppCompatActivity {
         else {
             Crashlytics.log(Log.DEBUG, TAG, "Using the real profile");
             try {
-                int numberOfExistingProfiles = profileHelper.getNumberOfExisting();
-                if (numberOfExistingProfiles == 0 || numberOfExistingProfiles == 1) {
+                if (!profileHelper.realProfileExists()) {
                     Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
                     handleFirebaseAuthUI();
                 }
                 else {
                     Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
-                    activeProfile = profileHelper.getExisting();
+                    activeProfile = profileHelper.getRealProfile();
                     finalizeActiveProfileUpdate();
                 }
             } catch (SQLException e) {

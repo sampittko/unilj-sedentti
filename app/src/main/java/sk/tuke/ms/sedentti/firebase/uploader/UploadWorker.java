@@ -67,8 +67,8 @@ public class UploadWorker extends Worker {
             e.printStackTrace();
         }
 
-        if (latestUploadTask != null && !latestUploadTask.isSuccessful()) {
-            Crashlytics.log(Log.DEBUG, TAG, "Continuing unfinished upload task");
+        if (latestUploadTask != null && !latestUploadTask.isProcessed()) {
+            Crashlytics.log(Log.DEBUG, TAG, "Continuing unprocessed upload task");
 
             String dbFilePath;
             try {
@@ -95,7 +95,7 @@ public class UploadWorker extends Worker {
             }
         }
         else {
-            Crashlytics.log(Log.DEBUG, TAG, "No unfinished upload task found");
+            Crashlytics.log(Log.DEBUG, TAG, "No unprocessed upload task found");
             if (newDataAvailable()) {
                 Crashlytics.log(Log.DEBUG, TAG, "New data for upload available");
 

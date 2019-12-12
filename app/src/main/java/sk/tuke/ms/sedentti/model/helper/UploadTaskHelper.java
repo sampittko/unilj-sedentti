@@ -59,8 +59,8 @@ public class UploadTaskHelper {
      * @return
      * @throws SQLException
      */
-    public int getTodaysCount() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getTodaysCount");
+    public int getTodaysCorrectlyProcessedCount() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getTodaysCorrectlyProcessedCount");
 
         uploadTaskDaoQueryBuilder.reset();
 
@@ -68,7 +68,9 @@ public class UploadTaskHelper {
                 .where()
                 .eq(UploadTask.COLUMN_DATE, DateHelper.getNormalized(new Date()))
                 .and()
-                .ne(UploadTask.COLUMN_END_TIMESTAMP, 0L)
+                .eq(UploadTask.COLUMN_ERROR, "")
+                .and()
+                .eq(UploadTask.COLUMN_PROCESSED, true)
                 .and()
                 .eq(UploadTask.COLUMN_PROFILE_ID, profile.getId())
                 .countOf();
@@ -105,7 +107,7 @@ public class UploadTaskHelper {
         Crashlytics.log(Log.DEBUG, TAG, "@uploadTask ID: " + uploadTask.getId());
         Crashlytics.log(Log.DEBUG, TAG, "@exception MESSAGE: " + exception.getMessage());
 
-        uploadTask.setSuccessful(false);
+        uploadTask.setProcessed(false);
         uploadTask.setError(exception.getMessage());
         end(uploadTask);
     }
@@ -118,7 +120,7 @@ public class UploadTaskHelper {
         Crashlytics.log(Log.DEBUG, TAG, "Executing success");
         Crashlytics.log(Log.DEBUG, TAG, "@uploadTask ID: " + uploadTask.getId());
 
-        uploadTask.setSuccessful(true);
+        uploadTask.setProcessed(true);
         uploadTask.setBytesTransferred(uploadTask.getBytesTotal());
         end(uploadTask);
     }
@@ -151,7 +153,7 @@ public class UploadTaskHelper {
      * @throws SQLException
      */
     public void cancel(@NotNull UploadTask uploadTask) throws SQLException {
-        uploadTask.setSuccessful(true);
+        uploadTask.setProcessed(true);
         uploadTask.setError("Upload task was canceled");
         uploadTask.setEndTimestamp(new Date().getTime());
         uploadTaskDao.update(uploadTask);

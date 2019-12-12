@@ -31,7 +31,7 @@ public class StorageHelper {
                 PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
                 getPathDate() +
                 PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
-                "export-" + (uploadTaskHelper.getTodaysCount() + 1) +
+                Configuration.CLOUD_STORAGE_FILENAME_PREFIX + "-" + (uploadTaskHelper.getTodaysCorrectlyProcessedCount() + 1) +
                 Configuration.DB_EXPORTER_FILE_TYPE;
     }
 
