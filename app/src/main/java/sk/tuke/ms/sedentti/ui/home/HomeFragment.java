@@ -30,19 +30,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import de.hdodenhof.circleimageview.CircleImageView;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity_recognition.ActivityRecognitionService;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
+import sk.tuke.ms.sedentti.dialog.StopSensingDialog;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements StopSensingDialog.StopSensingDialogListener {
 
+    private static final String STOP_SENSING_DIALOG = "StopSensigDialog";
     private final String TAG = this.getClass().getSimpleName();
 
     private HomeViewModel homeViewModel;
@@ -289,6 +292,10 @@ public class HomeFragment extends Fragment {
             startForegroundService(PredefinedValues.COMMAND_START);
         } else {
 //            turn it off
+
+            StopSensingDialog dialog = new StopSensingDialog();
+            dialog.setCallback(this);
+            dialog.show(getFragmentManager(), STOP_SENSING_DIALOG);
             this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
             startForegroundService(PredefinedValues.COMMAND_STOP);
         }
@@ -384,5 +391,15 @@ public class HomeFragment extends Fragment {
         ViewGroup.LayoutParams layoutParams = this.timelineLayout.getLayoutParams();
         layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TIMELINE_ITEM_HEIGHT * sessions.size(), getResources().getDisplayMetrics());
         this.timelineLayout.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Log.i("haha", "ok");
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        Log.i("haha", "ok");
     }
 }

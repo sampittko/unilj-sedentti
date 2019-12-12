@@ -111,7 +111,11 @@ public class ActivityRecognitionService extends Service {
     @Override
     public void onDestroy() {
         activityRecognitionHandler.stopTracking();
-        unregisterReceiver(receiver);
+        try {
+            unregisterReceiver(receiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 
