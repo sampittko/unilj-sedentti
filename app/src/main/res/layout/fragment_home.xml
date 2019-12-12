@@ -34,7 +34,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/f_home_layout_sessiongraph"
+            android:id="@+id/f_home_layout_session_graph"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginStart="32dp"
@@ -54,7 +54,40 @@
                     android:layout_height="match_parent" />
 
 
+                <TextView
+                    android:id="@+id/tw_f_home_first_time_note"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="Your session will show up here"></TextView>
+
                 <LinearLayout
+                    android:id="@+id/f_home_layout_sensing_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tw_f_home_sensing_off_note"
+                        style="@android:style/TextAppearance.Material.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tracking is paused"></TextView>
+
+                    <TextView
+                        android:id="@+id/tw_f_home_sensing_off_completed_sessions"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="You've completed 111 session so far" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/f_home_layout_session_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
@@ -70,7 +103,7 @@
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
                     <TextView
-                        android:id="@+id/tw_f_home_session_activity"
+                        android:id="@+id/tw_f_home_graph_session_activity"
                         style="@android:style/TextAppearance.Material.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -87,7 +120,7 @@
             android:text="Start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/f_home_layout_sessiongraph" />
+            app:layout_constraintTop_toBottomOf="@+id/f_home_layout_session_graph" />
 
         <TextView
             android:id="@+id/f_home_sensing_settings"

@@ -20,9 +20,11 @@ import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 public class HomeViewModel extends AndroidViewModel {
 
     private MutableLiveData<ArrayList<Session>> sessions;
+    private MutableLiveData<Session> pendingSession;
+
     private MutableLiveData<Integer> success;
     private MutableLiveData<Integer> streak;
-    private MutableLiveData<Session> pendingSession;
+    private MutableLiveData<Integer> finishedCount;
 
     private MutableLiveData<Long> dailySedentaryDuration;
     private MutableLiveData<Long> dailyActiveDuration;
@@ -136,6 +138,18 @@ public class HomeViewModel extends AndroidViewModel {
 
     private void loadDailyActiveTime() {
         new loadDailyActiveTimeAsyncTask(this.sessionHelper).execute();
+    }
+
+    public MutableLiveData<Integer> getFinishedCount() {
+        if (this.finishedCount == null) {
+            this.finishedCount = new MutableLiveData<Integer>();
+            loadFinishedCount();
+        }
+        return this.finishedCount;
+    }
+
+    private void loadFinishedCount() {
+        new loadFinishedCountAsyncTask(this.sessionHelper).execute();
     }
 
     private void loadSessions() {
@@ -280,6 +294,29 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         protected void onPostExecute(Long result) {
             dailyActiveDuration.postValue(result);
+        }
+    }
+
+    private class loadFinishedCountAsyncTask extends AsyncTask<Void, Void, Integer> {
+        private SessionHelper sessionHelper;
+
+        public loadFinishedCountAsyncTask(SessionHelper sessionHelper) {
+            this.sessionHelper = sessionHelper;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            try {
+                return this.sessionHelper.getFinishedCount();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            finishedCount.postValue(result);
         }
     }
 }

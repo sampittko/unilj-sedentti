@@ -47,6 +47,15 @@ public class HomeFragment extends Fragment {
     private LinearLayout timelineLayout;
     private ActivityRecognitionSPHelper activityRecognitionSPHelper;
     private int state;
+    private boolean startUp = true;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+
+        this.activityRecognitionSPHelper = new ActivityRecognitionSPHelper(getContext());
+        this.state = this.activityRecognitionSPHelper.getActivityRecognitionState();
+        super.onCreate(savedInstanceState);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
@@ -55,6 +64,26 @@ public class HomeFragment extends Fragment {
 
         homeViewModel.getHomeTimelineSessions().observe(this, sessions -> makeTimeline(sessions));
 
+        TextView sensingOffCompletedSessionText = root.findViewById(R.id.tw_f_home_sensing_off_completed_sessions);
+        homeViewModel.getFinishedCount().observe(this, count -> {
+            if (count > 0) {
+                startUp = false;
+            } else {
+                startUp = true;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("You've completed ");
+            sb.append(count);
+            if (count == 1) {
+                sb.append(" session");
+            } else {
+                sb.append(" sessions");
+            }
+            sb.append(" so far");
+
+            sensingOffCompletedSessionText.setText(sb.toString());
+        });
 
         TextView streakValue = root.findViewById(R.id.tw_f_home_value_streaks);
         homeViewModel.getStreak().observe(this, value -> {
@@ -72,18 +101,16 @@ public class HomeFragment extends Fragment {
 
         makeGraphs(root);
 
-        Button sensingButton = root.findViewById(R.id.btn_home_button_sensing);
-        sensingButton.setOnClickListener((View view) -> toogleButton());
-
         setOnClickOnViews(root);
         return root;
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        initSensingStateUI();
+        updateSessionGraphStateUI(this.state);
+        updateSensingStateUI(this.state);
     }
 
     private void makeGraphs(View root) {
@@ -129,7 +156,7 @@ public class HomeFragment extends Fragment {
         int series3Index = sedentaryTime.addSeries(sedentaryItem);
 
         TextView graphTimeValue = root.findViewById(R.id.tw_f_home_graph_time);
-        TextView sessionActivity = root.findViewById(R.id.tw_f_home_session_activity);
+        TextView sessionActivity = root.findViewById(R.id.tw_f_home_graph_session_activity);
         homeViewModel.getPendingSession().observe(this, session -> {
             if (session != null) {
                 graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(session.getDuration()));
@@ -146,12 +173,13 @@ public class HomeFragment extends Fragment {
                     sessionItem.setColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null));
                 }
                 activeSessionGraph.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series1Index).setDelay(4000).build());
+            } else {
+                updateSessionGraphStateUI(this.state);
             }
         });
 
         TextView activeTimeValue = root.findViewById(R.id.tw_f_home_value_active);
         TextView sedentaryTimeValue = root.findViewById(R.id.tw_f_home_value_sedentary);
-
         homeViewModel.getDailySedentaryDuration().observe(this, value -> {
             sedentaryTimeValue.setText(TimeHelper.formatTimeString(value));
             // TODO: 11/10/19 set sedentary time goal
@@ -175,10 +203,45 @@ public class HomeFragment extends Fragment {
         return result;
     }
 
-    private void initSensingStateUI() {
-        this.state = this.activityRecognitionSPHelper.getActivityRecognitionState();
-        Log.i(TAG, "service state je " + state);
-        updateSensingStateUI(state);
+
+    private void updateSessionGraphStateUI(int state) {
+        if (getActivity() != null) {
+            // first time start-up text
+            TextView firstTimeText = getActivity().findViewById(R.id.tw_f_home_first_time_note);
+
+            // layout when sensing turned-off
+            LinearLayout nonActiveTextLayout = getActivity().findViewById(R.id.f_home_layout_sensing_off);
+
+            // graph when sensing active
+            LinearLayout sessionTextLayout = getActivity().findViewById(R.id.f_home_layout_session_text);
+            DecoView sessionGraph = getActivity().findViewById(R.id.graph_f_home_session);
+
+
+            if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED || state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN) {
+                if (startUp) {
+                    // first time text visible and nothing else
+                    firstTimeText.setVisibility(View.VISIBLE);
+
+                    nonActiveTextLayout.setVisibility(View.INVISIBLE);
+                    sessionTextLayout.setVisibility(View.INVISIBLE);
+                    sessionGraph.setVisibility(View.INVISIBLE);
+                } else {
+                    // non active, sensing turned off
+                    nonActiveTextLayout.setVisibility(View.VISIBLE);
+
+                    firstTimeText.setVisibility(View.INVISIBLE);
+                    sessionTextLayout.setVisibility(View.INVISIBLE);
+                    sessionGraph.setVisibility(View.INVISIBLE);
+                }
+            } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
+                // sensing active, turned on
+                sessionGraph.setVisibility(View.VISIBLE);
+                sessionTextLayout.setVisibility(View.VISIBLE);
+
+                nonActiveTextLayout.setVisibility(View.INVISIBLE);
+                firstTimeText.setVisibility(View.INVISIBLE);
+            }
+        }
     }
 
     private void updateSensingStateUI(int state) {
@@ -189,29 +252,29 @@ public class HomeFragment extends Fragment {
             button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
             settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorAccent)));
 
-            sensingStatus.setText("Sedentti is not tracking your activity");
+            sensingStatus.setText("Tracking is turned off");
             button.setText("Start");
-        } else {
+        } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
             button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
             settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorPrimary)));
 
-            sensingStatus.setText("Sedentti is tracking your activity");
+            sensingStatus.setText("Tracking is active");
             button.setText("Stop");
         }
     }
 
-    private void toogleButton() {
+    private void toggleButton() {
         if (this.state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
 //            turn it on
             this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
             startForegroundService(PredefinedValues.COMMAND_START);
-            updateSensingStateUI(this.state);
         } else {
 //            turn it off
             this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
             startForegroundService(PredefinedValues.COMMAND_STOP);
-            updateSensingStateUI(this.state);
         }
+        updateSensingStateUI(this.state);
+        updateSessionGraphStateUI(this.state);
     }
 
     ;
@@ -245,6 +308,8 @@ public class HomeFragment extends Fragment {
                 view.performClick();
             }
         });
+
+        root.findViewById(R.id.btn_home_button_sensing).setOnClickListener((View view) -> toggleButton());
     }
 
     private void makeTimeline(ArrayList<Session> sessions) {
@@ -300,12 +365,5 @@ public class HomeFragment extends Fragment {
         ViewGroup.LayoutParams layoutParams = this.timelineLayout.getLayoutParams();
         layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TIMELINE_ITEM_HEIGHT * sessions.size(), getResources().getDisplayMetrics());
         this.timelineLayout.setLayoutParams(layoutParams);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-
-        this.activityRecognitionSPHelper = new ActivityRecognitionSPHelper(getContext());
-        super.onCreate(savedInstanceState);
     }
 }
