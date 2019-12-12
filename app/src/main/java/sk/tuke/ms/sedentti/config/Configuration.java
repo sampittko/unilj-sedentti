@@ -2,10 +2,10 @@ package sk.tuke.ms.sedentti.config;
 
 import android.os.Environment;
 
+import java.io.File;
+
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
-
-import java.io.File;
 
 /**
  * List of contants suited for changes by the developer
