@@ -15,6 +15,14 @@
             },
             "oauth_client": [
                 {
+                    "client_id": "137652915710-dkqr8jc1bm4mtrssa01etknsgkgtmc9n.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                        "package_name": "sk.tuke.ms.sedentti",
+                        "certificate_hash": "f5833662bc55b694e47bdcf0773c1ffd1fb73dce"
+                    },
+                },
+                {
                     "client_id": "137652915710-263qau5oacf5h7g5e9vvl5v42qteobeg.apps.googleusercontent.com",
                     "client_type": 1,
                     "android_info": {
