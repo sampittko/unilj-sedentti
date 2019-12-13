@@ -290,17 +290,15 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
 //            turn it on
             this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
             startForegroundService(PredefinedValues.COMMAND_START);
+            updateSensingStateUI(this.state);
+            updateSessionGraphStateUI(this.state);
         } else {
 //            turn it off
 
             StopSensingDialog dialog = new StopSensingDialog();
             dialog.setCallback(this);
             dialog.show(getFragmentManager(), STOP_SENSING_DIALOG);
-            this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
-            startForegroundService(PredefinedValues.COMMAND_STOP);
         }
-        updateSensingStateUI(this.state);
-        updateSessionGraphStateUI(this.state);
     }
 
     ;
@@ -393,13 +391,22 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         this.timelineLayout.setLayoutParams(layoutParams);
     }
 
+    private void stopSensing() {
+        this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
+        startForegroundService(PredefinedValues.COMMAND_STOP);
+        updateSensingStateUI(this.state);
+        updateSessionGraphStateUI(this.state);
+    }
+
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        Log.i("haha", "ok");
+        // TODO: 12/13/19 save pending activity to database
+        stopSensing();
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
-        Log.i("haha", "ok");
+        // TODO: 12/13/19 discard pending activity
+        stopSensing();
     }
 }
