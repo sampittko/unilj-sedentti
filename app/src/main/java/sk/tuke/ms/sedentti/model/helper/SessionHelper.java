@@ -35,6 +35,7 @@ public class SessionHelper {
     }
 
     private Dao<Session, Long> sessionDao;
+    private ActivityHelper activityHelper;
     private QueryBuilder<Session, Long> sessionDaoQueryBuilder;
 
     private AppSPHelper appSPHelper;
@@ -47,6 +48,7 @@ public class SessionHelper {
         try {
             this.sessionDao = databaseHelper.sessionDao();
             this.sessionDaoQueryBuilder = sessionDao.queryBuilder();
+            this.activityHelper = new ActivityHelper(context);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -296,8 +298,8 @@ public class SessionHelper {
      * @param session Session to update as the ended one
      * @throws SQLException In case that communication with DB was not successful
      */
-    public void updateAsEndedSession(@NotNull Session session) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing updateAsEndedSession");
+    public void end(@NotNull Session session) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing end");
         Crashlytics.log(Log.DEBUG, TAG, "@session ID:" + session.getId());
 
         long endTimestamp = new Date().getTime();
@@ -410,6 +412,22 @@ public class SessionHelper {
 
         Session newSession = new Session(
                 isSedentary(activityType),
+                new Date().getTime(),
+                profile
+        );
+
+        sessionDao.create(newSession);
+    }
+
+    /**
+     * @param sedentary Type of the new session
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public void create(boolean sedentary) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing create");
+
+        Session newSession = new Session(
+                sedentary,
                 new Date().getTime(),
                 profile
         );
@@ -674,5 +692,18 @@ public class SessionHelper {
                         .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                         .query()
         );
+    }
+
+    /**
+     * @throws SQLException
+     */
+    public void discardPending() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing discard");
+
+        Session pendingSession = getPending();
+
+        activityHelper.discardCorresponding(pendingSession);
+
+        sessionDao.delete(pendingSession);
     }
 }

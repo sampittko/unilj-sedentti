@@ -85,4 +85,25 @@ public class ActivityHelper {
                         .query()
         );
     }
+
+    /**
+     * @param session
+     * @return
+     * @throws SQLException
+     */
+    public void discardCorresponding(@NotNull Session session) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing discardCorresponding");
+        Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
+
+        activityDaoQueryBuilder.reset();
+
+        ArrayList<Activity> activities = new ArrayList<>(
+                activityDaoQueryBuilder
+                        .where()
+                        .eq(Activity.COLUMN_SESSION_ID, session.getId())
+                        .query()
+        );
+
+        activityDao.delete(activities);
+    }
 }

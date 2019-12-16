@@ -59,7 +59,7 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                             if (hasActivityChanged(newActivityType, lastActivity)) {
                                 Crashlytics.log(Log.DEBUG, TAG, "Activity has changed");
                                 if (pendingSession != null) {
-                                    sessionHelper.updateAsEndedSession(pendingSession);
+                                    sessionHelper.end(pendingSession);
                                     Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
                                 }
 

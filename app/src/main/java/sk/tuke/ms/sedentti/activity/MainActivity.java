@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             Session pendingSession = sessionHelper.getPending();
 
             if (pendingSession != null) {
-                sessionHelper.updateAsEndedSession(pendingSession);
+                sessionHelper.end(pendingSession);
                 Crashlytics.log(Log.DEBUG, TAG, "Pending session set to ended");
             }
             else {
