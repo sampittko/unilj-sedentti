@@ -36,9 +36,10 @@ public abstract class PredefinedValues {
     public static final int ACTIVITY_RECOGNITION_SERVICE_UNKNOWN = -1;
 
     //
-    // Firebase Codes
+    // Codes
     //
     public static final int FIREBASE_CODE_SIGN_IN = 1;
+    public static final int PERMISSION_REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE = 1;
 
     //
     // Firebase Cloud Storage
