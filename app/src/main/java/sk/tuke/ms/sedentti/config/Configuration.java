@@ -68,4 +68,10 @@ public abstract class Configuration {
     public static final String DB_EXPORTER_CSV_HEADER_COLUMN_10 = "ACTIVITY_TYPE";
     public static final String DB_EXPORTER_CSV_HEADER_COLUMN_11 = "ACTIVITY_TIMESTAMP";
     public static final File DB_EXPORTER_EXPORT_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS); // TODO set database file export location to the different one (currently Downloads folder)
+
+    //
+    // SignificantMovementDetector
+    //
+    public final static int SIG_MOV_TIMEOUT_TIME = 15000;
+    public final static int SIG_MOV_COUNTDOWN_UNIT = 300;
 }
