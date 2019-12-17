@@ -1,7 +1,6 @@
 package sk.tuke.ms.sedentti.ui.statistics;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +49,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Log.i("bind", "now binding " + position);
+//        Log.i("bind", "now binding " + position);
 
         if (dayModelsList.get(position) instanceof Day) {
 //            doing day item
@@ -79,18 +78,27 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
             sessionHolder.activityName.setText(sessionName);
 
-//            handles the activityTime and adds date if needed
-            String sessionTime;
-            sessionTime = TimeHelper.formatDateTime(session.getStartTimestamp());
-            sessionHolder.activityTime.setText(sessionTime);
+//            handles the startTime and adds date if needed
+            String startTime = TimeHelper.formatDateTime(session.getStartTimestamp());
+            sessionHolder.startTime.setText(startTime);
+
+
 
 //            handles duration
             if (session.getDuration() > 0L) {
                 String sessionDuration;
                 sessionDuration = TimeHelper.formatDuration(session.getDuration());
                 sessionHolder.activityDuration.setText(sessionDuration);
+
+//                handles end time of session
+                String endTime = TimeHelper.formatTime(session.getEndTimestamp());
+                sessionHolder.endTime.setText(endTime);
             } else {
-                sessionHolder.activityDuration.setVisibility(View.GONE);
+                sessionHolder.activityDuration.setText("pending");
+
+//                handles end time if session is not finished yet
+                sessionHolder.signTime.setVisibility(View.GONE);
+                sessionHolder.endTime.setVisibility(View.GONE);
             }
         }
     }
@@ -108,14 +116,18 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     class SessionHolder extends RecyclerView.ViewHolder {
         private TextView dot;
         private TextView activityName;
-        private TextView activityTime;
+        private TextView startTime;
+        private TextView endTime;
+        private TextView signTime;
         private TextView activityDuration;
 
         public SessionHolder(@NonNull View itemView) {
             super(itemView);
             dot = itemView.findViewById(R.id.tw_f_home_timeline_dot);
             activityName = itemView.findViewById(R.id.tw_f_home_timeline_session_activity_name);
-            activityTime = itemView.findViewById(R.id.tw_f_home_timeline_session_activity_time);
+            startTime = itemView.findViewById(R.id.tw_f_home_timeline_session_start_time);
+            endTime = itemView.findViewById(R.id.tw_f_home_timeline_session_end_time);
+            signTime = itemView.findViewById(R.id.tw_f_home_timeline_session_sign_time);
             activityDuration = itemView.findViewById(R.id.tw_f_home_timeline_session_activity_duration);
 
         }

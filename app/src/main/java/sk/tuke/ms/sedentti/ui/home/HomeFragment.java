@@ -381,7 +381,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
                 sessionTime += " " + TimeHelper.formatDuration(session.getDuration());
             }
 
-            TextView activityTime = view.findViewById(R.id.tw_f_home_timeline_session_activity_time);
+            TextView activityTime = view.findViewById(R.id.tw_f_home_timeline_session_start_time);
             activityTime.setText(sessionTime);
 
             this.timelineLayout.addView(view);

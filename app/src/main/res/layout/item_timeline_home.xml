@@ -27,7 +27,7 @@
             android:text="Name of the activity" />
 
         <TextView
-            android:id="@+id/tw_f_home_timeline_session_activity_time"
+            android:id="@+id/tw_f_home_timeline_session_start_time"
             style="@style/TextAppearance.MaterialComponents.Subtitle2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
