@@ -406,8 +406,9 @@ public class SessionHelper {
     /**
      * @param activityType Type of activity to create session for
      * @throws SQLException In case that communication with DB was not successful
+     * @return New session object
      */
-    public void create(int activityType) throws SQLException {
+    public Session create(int activityType) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing create");
 
         Session newSession = new Session(
@@ -417,13 +418,16 @@ public class SessionHelper {
         );
 
         sessionDao.create(newSession);
+
+        return newSession;
     }
 
     /**
      * @param sedentary Type of the new session
      * @throws SQLException In case that communication with DB was not successful
+     * @return New session object
      */
-    public void create(boolean sedentary) throws SQLException {
+    public Session create(boolean sedentary) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing create");
 
         Session newSession = new Session(
@@ -433,6 +437,8 @@ public class SessionHelper {
         );
 
         sessionDao.create(newSession);
+
+        return newSession;
     }
 
     /**
