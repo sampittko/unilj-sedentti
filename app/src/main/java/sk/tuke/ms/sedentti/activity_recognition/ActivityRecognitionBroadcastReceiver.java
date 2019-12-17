@@ -16,8 +16,8 @@ import org.jetbrains.annotations.Contract;
 import java.sql.SQLException;
 import java.util.Objects;
 
-import sk.tuke.ms.sedentti.activity_recognition.significant_movement.SignificantMotionDetector;
-import sk.tuke.ms.sedentti.activity_recognition.significant_movement.SignificantMotionListener;
+import sk.tuke.ms.sedentti.activity_recognition.significant_motion.SignificantMotionDetector;
+import sk.tuke.ms.sedentti.activity_recognition.significant_motion.SignificantMotionListener;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
