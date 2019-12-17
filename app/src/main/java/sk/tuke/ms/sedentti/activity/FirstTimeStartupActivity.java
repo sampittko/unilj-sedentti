@@ -39,7 +39,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
         }
         else {
             Crashlytics.log(Log.DEBUG, TAG, "Requesting missing permissions");
-            requestMissingPermissions();
+            requestPermissions();
         }
     }
 
@@ -48,7 +48,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestMissingPermissions() {
+    private void requestPermissions() {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 PredefinedValues.PERMISSION_REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE);

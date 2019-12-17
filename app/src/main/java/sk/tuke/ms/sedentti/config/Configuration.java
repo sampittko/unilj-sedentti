@@ -39,7 +39,7 @@ public abstract class Configuration {
     //
     // Local Database
     //
-    public static final String LOCAL_DATABASE_NAME = APP_PACKAGE + ".local.db";
+    public static final String LOCAL_DATABASE_NAME = APP_PACKAGE;
     public static final int LOCAL_DATABASE_VERSION = 5;
 
     //
