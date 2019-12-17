@@ -20,6 +20,8 @@ import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.model.Profile;
+import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 
 public class ActivityRecognitionService extends Service {
 
@@ -31,7 +33,6 @@ public class ActivityRecognitionService extends Service {
     private ActivityRecognitionHandler activityRecognitionHandler;
     private ActivityRecognitionBroadcastReceiver receiver;
     private ActivityRecognitionSPHelper activityRecognitionPreferences;
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -103,7 +104,7 @@ public class ActivityRecognitionService extends Service {
         super.onCreate();
 
         this.notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        this.receiver = new ActivityRecognitionBroadcastReceiver();
+        this.receiver = new ActivityRecognitionBroadcastReceiver(getApplicationContext());
         activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
         this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(getApplicationContext());
     }

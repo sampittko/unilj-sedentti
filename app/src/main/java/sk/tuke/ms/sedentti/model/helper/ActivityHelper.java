@@ -4,10 +4,12 @@ import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -105,5 +107,10 @@ public class ActivityHelper {
         );
 
         activityDao.delete(activities);
+    }
+
+    @Contract(pure = true)
+    public static boolean isPassive(int activityType) {
+        return activityType == DetectedActivity.STILL;
     }
 }

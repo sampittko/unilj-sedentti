@@ -70,7 +70,7 @@ public abstract class Configuration {
     public static final File DB_EXPORTER_EXPORT_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS); // TODO set database file export location to the different one (currently Downloads folder)
 
     //
-    // SignificantMovementDetector
+    // SignificantMotionDetector
     //
     public final static int SIG_MOV_TIMEOUT_TIME = 15000;
     public final static int SIG_MOV_COUNTDOWN_UNIT = 300;

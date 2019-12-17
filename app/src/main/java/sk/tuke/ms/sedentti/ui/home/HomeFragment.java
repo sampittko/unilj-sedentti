@@ -124,7 +124,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         TextView username = getActivity().findViewById(R.id.tw_f_home_text_hello);
         StringBuilder sb = new StringBuilder();
         sb.append("Hello ");
-        sb.append(activeProfile.getName());
+        sb.append(activeProfile.getName().split(" ")[0]);
         username.setText(sb.toString());
 
         CircleImageView profilePhoto = getActivity().findViewById(R.id.iw_f_home_profile_image);

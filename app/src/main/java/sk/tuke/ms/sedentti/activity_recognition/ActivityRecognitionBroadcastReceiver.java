@@ -16,28 +16,52 @@ import org.jetbrains.annotations.Contract;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import sk.tuke.ms.sedentti.activity_recognition.significant_movement.SignificantMotionDetector;
+import sk.tuke.ms.sedentti.activity_recognition.significant_movement.SignificantMotionListener;
 import sk.tuke.ms.sedentti.model.Activity;
+import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
-public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
+public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver implements SignificantMotionListener {
     private SessionHelper sessionHelper;
     private ActivityHelper activityHelper;
     private final String TAG = this.getClass().getSimpleName();
+    private SignificantMotionDetector significantMotionDetector;
+
+    public ActivityRecognitionBroadcastReceiver(Context context) {
+        super();
+
+        Profile profile = null;
+
+        try {
+            profile = new ProfileHelper(context).getActive();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        sessionHelper = new SessionHelper(context, profile);
+        activityHelper = new ActivityHelper(context);
+        significantMotionDetector = new SignificantMotionDetector(context, this);
+        significantMotionDetector.start();
+    }
+
+    @Override
+    public void onSignificantMotionDetected() {
+        try {
+            sessionHelper.create(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Crashlytics.log(Log.DEBUG, TAG, "Active session started due to the significant motion");
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (ActivityTransitionResult.hasResult(intent)) {
             ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
-
-            try {
-                performInitialSetup(context);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
             for (ActivityTransitionEvent event : Objects.requireNonNull(intentResult).getTransitionEvents()) {
                 int newActivityType = event.getActivityType();
                 int newActivityTransitionType = event.getTransitionType();
@@ -57,6 +81,14 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                     }
 
                     if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
+                        // TODO verify logic
+                        if (ActivityHelper.isPassive(newActivityType)) {
+                            significantMotionDetector.start();
+                        }
+                        else {
+                            significantMotionDetector.stop();
+                        }
+
                         Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
                         if (hasActivityChanged(newActivityType, lastActivity)) {
                             Crashlytics.log(Log.DEBUG, TAG, "Activity has changed");
@@ -83,19 +115,6 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-    private void performInitialSetup(Context context) throws SQLException {
-        if (activityHelper == null) {
-            activityHelper = new ActivityHelper(context);
-        }
-
-        if (sessionHelper == null) {
-            sessionHelper = new SessionHelper(
-                    context,
-                    new ProfileHelper(context).getActive()
-            );
         }
     }
 

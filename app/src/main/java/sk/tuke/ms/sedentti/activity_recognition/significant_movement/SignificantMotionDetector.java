@@ -6,11 +6,17 @@ import android.hardware.SensorManager;
 import android.hardware.TriggerEvent;
 import android.hardware.TriggerEventListener;
 import android.os.Handler;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
+
+import org.jetbrains.annotations.NotNull;
 
 import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.notification.StopSedentaryNotification;
 
-public class SignificantMovementDetector {
+public class SignificantMotionDetector {
+    private static final String TAG = "SignificantMotionDetector";
     private SensorManager sensorManager;
     private Sensor sensor;
     private Handler countDownHandler;
@@ -19,6 +25,8 @@ public class SignificantMovementDetector {
     private boolean firstMovement;
     private int countdown;
     private Context context;
+    private SignificantMotionListener significantMotionListener;
+    private boolean hasDetectionStarted;
 
     private Runnable movementStateMachineRunnable = new Runnable() {
         @Override
@@ -37,17 +45,34 @@ public class SignificantMovementDetector {
         }
     };
 
-    public SignificantMovementDetector(Context context) {
+    public SignificantMotionDetector(@NotNull Context context, SignificantMotionListener significantMotionListener) {
         this.context = context;
+        this.significantMotionListener = significantMotionListener;
+        this.hasDetectionStarted = false;
+        this.sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        this.sensor = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
     }
 
     public void start() {
-        this.firstMovement = false;
-        this.countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
-        this.countDownHandler = new Handler();
+        if (hasDetectionStarted) {
+            Crashlytics.log(Log.DEBUG, TAG, "Detection has already started");
+            return;
+        }
+        Crashlytics.log(Log.DEBUG, TAG, "Starting detection");
+        initializeValues();
+        setEventListeners();
+        toggleDetectionState();
+    }
 
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
+    private void initializeValues() {
+        Crashlytics.log(Log.DEBUG, TAG, "Initializing values");
+        firstMovement = false;
+        countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
+        countDownHandler = new Handler();
+    }
+
+    private void setEventListeners() {
+        Crashlytics.log(Log.DEBUG, TAG, "Setting event listeners");
 
         firstEventListener = new TriggerEventListener() {
             @Override
@@ -66,6 +91,7 @@ public class SignificantMovementDetector {
                     countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
                     firstMovement = false;
                     new StopSedentaryNotification().createNotification(context,1);
+                    significantMotionListener.onSignificantMotionDetected();
                     stop();
                 }
             }
@@ -73,7 +99,21 @@ public class SignificantMovementDetector {
     }
 
     public void stop() {
+        if (!hasDetectionStarted) {
+            Crashlytics.log(Log.DEBUG, TAG, "Detection has already stopped");
+            return;
+        }
+        Crashlytics.log(Log.DEBUG, TAG, "Stopping detection");
         sensorManager.cancelTriggerSensor(firstEventListener, sensor);
         sensorManager.cancelTriggerSensor(secondEventListener, sensor);
+        toggleDetectionState();
+    }
+
+    private void toggleDetectionState() {
+        hasDetectionStarted = !hasDetectionStarted;
+    }
+
+    public boolean isDetecting() {
+        return hasDetectionStarted;
     }
 }
