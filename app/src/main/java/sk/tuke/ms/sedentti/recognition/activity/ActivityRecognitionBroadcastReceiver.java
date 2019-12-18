@@ -29,9 +29,11 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private SessionHelper sessionHelper;
     private ActivityHelper activityHelper;
     private SignificantMotionDetector significantMotionDetector;
+    private ActivityRecognitionBroadcastListener activityRecognitionBroadcastListener;
 
-    public ActivityRecognitionBroadcastReceiver(Context context) {
+    public ActivityRecognitionBroadcastReceiver(Context context, ActivityRecognitionBroadcastListener listener) {
         super();
+        this.activityRecognitionBroadcastListener = listener;
 
         Profile profile = null;
 
@@ -108,6 +110,11 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
 
                         activityHelper.create(newActivityType, pendingSession);
                         Crashlytics.log(Log.DEBUG, TAG, "New activity created");
+
+                        // lets inform service that there is a change
+                        if (this.activityRecognitionBroadcastListener != null) {
+                            this.activityRecognitionBroadcastListener.onActivityDetected();
+                        }
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

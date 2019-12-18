@@ -10,8 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+
+import java.sql.SQLException;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -20,16 +23,23 @@ import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.model.Profile;
+import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
+import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.notification.StopSedentaryNotification;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionDetector;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionListener;
 
-public class ActivityRecognitionService extends Service implements SignificantMotionListener {
+public class ActivityRecognitionService extends Service implements SignificantMotionListener, ActivityRecognitionBroadcastListener {
 
     private static final int SERVICE_NOTIFICATION_ID = 1;
     private static final int MOTION_NOTIFICATION_ID = 2;
     private static final String CHANNEL_ID = "sk.tuke.ms.sedentti";
     private static final String TAG = "ActivityRecognitionS";
+
+    private final int TIME_STEP = 300;
+    private SessionHelper sessionHelper;
 
     private NotificationManager notificationManager;
     private ActivityRecognitionHandler activityRecognitionHandler;
@@ -37,6 +47,29 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private ActivityRecognitionSPHelper activityRecognitionPreferences;
 
     private SignificantMotionDetector significantMotionDetector;
+    private Session currentSession;
+    private Handler activityHandler;
+    private Runnable activityChanged = new Runnable() {
+        @Override
+        public void run() {
+            // TODO: 12/18/19 get new session from db
+            // TODO: 12/18/19 start new counting
+        }
+    };
+    private long time;
+    private Handler timeHandler;
+    private Runnable countTime = new Runnable() {
+        @Override
+        public void run() {
+            time += TIME_STEP;
+            processTimeDependency();
+            timeHandler.postDelayed(countTime, TIME_STEP);
+        }
+    };
+
+    private void processTimeDependency() {
+        // TODO: 12/18/19 handle notification, sigmov etc
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -110,10 +143,25 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         super.onCreate();
 
         this.notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        this.receiver = new ActivityRecognitionBroadcastReceiver(getApplicationContext());
+        this.receiver = new ActivityRecognitionBroadcastReceiver(getApplicationContext(), this);
         this.activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
         this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(getApplicationContext());
         this.significantMotionDetector = new SignificantMotionDetector(getApplicationContext(), this);
+        this.activityHandler = new Handler();
+
+        initDatabaseForService();
+    }
+
+    private void initDatabaseForService() {
+        Profile profile = null;
+
+        try {
+            profile = new ProfileHelper(getApplicationContext()).getActive();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.sessionHelper = new SessionHelper(getApplicationContext(), profile);
     }
 
     @Override
@@ -181,7 +229,18 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     @Override
     public void onSignificantMotionDetected() {
         Log.i("motion", "haha");
+        // TODO: 12/18/19 create new session
+        // TODO: 12/18/19 change session in this service
         new StopSedentaryNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
+    }
+
+    @Override
+    public void onActivityDetected() {
+        Log.i("activity", "haha");
+        // TODO: 12/18/19 wait a while and then pull from database new session
+        // if active stop sigmov otherwise turn on sigmov
+
+        activityHandler.postDelayed(activityChanged, 500);
     }
 
     /**
