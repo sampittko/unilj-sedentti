@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import sk.tuke.ms.sedentti.activity_recognition.significant_motion.SignificantMotionDetector;
-import sk.tuke.ms.sedentti.activity_recognition.significant_motion.SignificantMotionListener;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
@@ -25,7 +24,7 @@ import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
-public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver implements SignificantMotionListener {
+public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
     private SessionHelper sessionHelper;
     private ActivityHelper activityHelper;
     private final String TAG = this.getClass().getSimpleName();
@@ -44,19 +43,19 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver impl
 
         sessionHelper = new SessionHelper(context, profile);
         activityHelper = new ActivityHelper(context);
-        significantMotionDetector = new SignificantMotionDetector(context, this);
-        significantMotionDetector.start();
+//        significantMotionDetector = new SignificantMotionDetector(context, this);
+//        significantMotionDetector.start();
     }
 
-    @Override
-    public void onSignificantMotionDetected() {
-        try {
-            sessionHelper.create(false);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        Crashlytics.log(Log.DEBUG, TAG, "Active session started due to the significant motion");
-    }
+//    @Override
+//    public void onSignificantMotionDetected() {
+//        try {
+//            sessionHelper.create(false);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        Crashlytics.log(Log.DEBUG, TAG, "Active session started due to the significant motion");
+//    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -81,13 +80,13 @@ public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver impl
                     }
 
                     if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
-                        // TODO verify logic
-                        if (ActivityHelper.isPassive(newActivityType)) {
-                            significantMotionDetector.start();
-                        }
-                        else {
-                            significantMotionDetector.stop();
-                        }
+//                        // TODO verify logic
+//                        if (ActivityHelper.isPassive(newActivityType)) {
+//                            significantMotionDetector.start();
+//                        }
+//                        else {
+//                            significantMotionDetector.stop();
+//                        }
 
                         Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
                         if (hasActivityChanged(newActivityType, lastActivity)) {

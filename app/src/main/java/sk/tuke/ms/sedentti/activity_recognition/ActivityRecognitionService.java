@@ -18,14 +18,16 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
+import sk.tuke.ms.sedentti.activity_recognition.significant_motion.SignificantMotionDetector;
+import sk.tuke.ms.sedentti.activity_recognition.significant_motion.SignificantMotionListener;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
-import sk.tuke.ms.sedentti.model.Profile;
-import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
+import sk.tuke.ms.sedentti.notification.StopSedentaryNotification;
 
-public class ActivityRecognitionService extends Service {
+public class ActivityRecognitionService extends Service implements SignificantMotionListener {
 
-    private static final int NOTIFICATION_ID = 1;
+    private static final int SERVICE_NOTIFICATION_ID = 1;
+    private static final int MOTION_NOTIFICATION_ID = 2;
     private static final String CHANNEL_ID = "sk.tuke.ms.sedentti";
     private static final String TAG = "ActivityRecognitionS";
 
@@ -34,10 +36,12 @@ public class ActivityRecognitionService extends Service {
     private ActivityRecognitionBroadcastReceiver receiver;
     private ActivityRecognitionSPHelper activityRecognitionPreferences;
 
+    private SignificantMotionDetector significantMotionDetector;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int commandResult = processCommand(intent);
-        startForeground(NOTIFICATION_ID, createNotification(commandResult));
+        startForeground(SERVICE_NOTIFICATION_ID, createNotification(commandResult));
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -87,9 +91,11 @@ public class ActivityRecognitionService extends Service {
         if (command.equals(PredefinedValues.COMMAND_START)) {
             registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
             this.activityRecognitionHandler.startTracking();
+            this.significantMotionDetector.start();
             Log.i(TAG, "Sensing service started");
         } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
             this.activityRecognitionHandler.stopTracking();
+            this.significantMotionDetector.stop();
             try {
                 unregisterReceiver(receiver);
             } catch (IllegalArgumentException e) {
@@ -105,8 +111,9 @@ public class ActivityRecognitionService extends Service {
 
         this.notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         this.receiver = new ActivityRecognitionBroadcastReceiver(getApplicationContext());
-        activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
+        this.activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
         this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(getApplicationContext());
+        this.significantMotionDetector = new SignificantMotionDetector(getApplicationContext(), this);
     }
 
     @Override
@@ -168,6 +175,12 @@ public class ActivityRecognitionService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public void onSignificantMotionDetected() {
+        Log.i("motion", "haha");
+        new StopSedentaryNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
     }
 
     /**

@@ -13,7 +13,6 @@ import com.crashlytics.android.Crashlytics;
 import org.jetbrains.annotations.NotNull;
 
 import sk.tuke.ms.sedentti.config.Configuration;
-import sk.tuke.ms.sedentti.notification.StopSedentaryNotification;
 
 public class SignificantMotionDetector {
     private static final String TAG = "SignificantMotionDetector";
@@ -34,11 +33,11 @@ public class SignificantMotionDetector {
             countdown -= Configuration.SIG_MOV_COUNTDOWN_UNIT;
 
             if (countdown <= 0) {
+                // movement not recognized
                 firstMovement = false;
                 sensorManager.cancelTriggerSensor(secondEventListener, sensor);
                 sensorManager.requestTriggerSensor(firstEventListener, sensor);
                 countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
-                // movement not recognized
             } else {
                 countDownHandler.postDelayed(movementStateMachineRunnable, Configuration.SIG_MOV_COUNTDOWN_UNIT);
             }
@@ -77,6 +76,8 @@ public class SignificantMotionDetector {
         firstEventListener = new TriggerEventListener() {
             @Override
             public void onTrigger(TriggerEvent event) {
+//                first movement detected
+//                lets detect second one
                 firstMovement = true;
                 countDownHandler.postDelayed(movementStateMachineRunnable, Configuration.SIG_MOV_COUNTDOWN_UNIT);
                 sensorManager.requestTriggerSensor(secondEventListener, sensor);
@@ -87,10 +88,14 @@ public class SignificantMotionDetector {
             @Override
             public void onTrigger(TriggerEvent triggerEvent) {
                 if (firstMovement){
+//                    check whether we are in limit
+//                    second movement detected here
+//                    reset values
                     countDownHandler.removeCallbacks(movementStateMachineRunnable);
                     countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
                     firstMovement = false;
-                    new StopSedentaryNotification().createNotification(context,1);
+
+//                    fire callback
                     significantMotionListener.onSignificantMotionDetected();
                     stop();
                 }
