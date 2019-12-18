@@ -48,7 +48,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".activity_recognition.ActivityRecognitionService" />
+        <service android:name=".recognition.activity.ActivityRecognitionService" />
     </application>
 
 </manifest>

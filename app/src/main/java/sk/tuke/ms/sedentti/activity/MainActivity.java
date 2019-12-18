@@ -19,7 +19,6 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.work.Constraints;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
@@ -30,7 +29,7 @@ import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
-import sk.tuke.ms.sedentti.activity_recognition.ActivityRecognitionService;
+import sk.tuke.ms.sedentti.recognition.activity.ActivityRecognitionService;
 
 public class MainActivity extends AppCompatActivity {
     private Profile activeProfile;

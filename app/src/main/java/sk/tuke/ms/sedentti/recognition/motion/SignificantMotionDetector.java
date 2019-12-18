@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.activity_recognition.significant_motion;
+package sk.tuke.ms.sedentti.recognition.motion;
 
 import android.content.Context;
 import android.hardware.Sensor;

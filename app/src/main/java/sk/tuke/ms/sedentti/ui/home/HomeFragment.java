@@ -35,13 +35,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import de.hdodenhof.circleimageview.CircleImageView;
 import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.activity_recognition.ActivityRecognitionService;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.dialog.StopSensingDialog;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.recognition.activity.ActivityRecognitionService;
 
 public class HomeFragment extends Fragment implements StopSensingDialog.StopSensingDialogListener {
 
