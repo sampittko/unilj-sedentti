@@ -96,7 +96,9 @@ public class SignificantMotionDetector {
                     firstMovement = false;
 
 //                    fire callback
-                    significantMotionListener.onSignificantMotionDetected();
+                    if (significantMotionListener != null) {
+                        significantMotionListener.onSignificantMotionDetected();
+                    }
                     stop();
                 }
             }
