@@ -1,25 +1,26 @@
 package sk.tuke.ms.sedentti.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import org.jetbrains.annotations.NotNull;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
-import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class FirstTimeStartupActivity extends AppCompatActivity {
 
@@ -35,13 +36,26 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
         Stetho.initializeWithDefaults(this);
 
+        checkSigMovSensor();
+
         if (permissionsGranted()) {
             Crashlytics.log(Log.DEBUG, TAG, "Permissions already granted");
             decideNextStep();
-        }
-        else {
+        } else {
             Crashlytics.log(Log.DEBUG, TAG, "Requesting missing permissions");
             requestPermissions();
+        }
+    }
+
+    private void checkSigMovSensor() {
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
+        if (sensor == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setTitle("App is not supported");
+            builder.setMessage("Your phone is not supported by this app due to missing sensors");
+            builder.setPositiveButton("Okay", (dialog, which) -> finish());
         }
     }
 
@@ -60,8 +74,8 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         if (requestCode == PredefinedValues.PERMISSION_REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Crashlytics.log(Log.DEBUG, TAG, "Permissions were granted successfully");
                 decideNextStep();
             } else {
@@ -81,8 +95,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
-        }
-        else {
+        } else {
             Crashlytics.log(Log.DEBUG, TAG, "Performing first time startup now");
 
             setContentView(R.layout.activity_first_time_startup);
