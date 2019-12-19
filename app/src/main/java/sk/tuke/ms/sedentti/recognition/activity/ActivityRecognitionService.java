@@ -192,6 +192,10 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         return activityHelper;
     }
 
+    private void setCurrentSession(Session session) {
+        currentSession = session;
+    }
+
     private Notification createNotification(int commandResult) {
         // TODO: 12/18/19 move this notification to separate class
 
@@ -301,10 +305,12 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                                 }
 
                                 pendingSession = sessionHelper.create(newActivityType);
+                                setCurrentSession(pendingSession);
                                 Crashlytics.log(Log.DEBUG, TAG, "New session created");
                             } else {
                                 if (pendingSession == null) {
                                     pendingSession = sessionHelper.create(newActivityType);
+                                    setCurrentSession(pendingSession);
                                     Crashlytics.log(Log.DEBUG, TAG, "New session created");
                                 }
                             }
