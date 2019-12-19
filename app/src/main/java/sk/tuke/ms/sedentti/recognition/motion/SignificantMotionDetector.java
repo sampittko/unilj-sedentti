@@ -32,6 +32,7 @@ public class SignificantMotionDetector {
             countdown -= Configuration.SIG_MOV_COUNTDOWN_UNIT;
 
             if (countdown <= 0) {
+                Crashlytics.log(Log.DEBUG, TAG, "Second movement after the first not recognized");
                 // movement not recognized
                 firstMovement = false;
                 sensorManager.cancelTriggerSensor(secondEventListener, sensor);
@@ -76,6 +77,7 @@ public class SignificantMotionDetector {
             public void onTrigger(TriggerEvent event) {
 //                first movement detected
 //                lets detect second one
+                Crashlytics.log(Log.DEBUG, TAG, "First movement recognized");
                 firstMovement = true;
                 countDownHandler.postDelayed(movementStateMachineRunnable, Configuration.SIG_MOV_COUNTDOWN_UNIT);
                 sensorManager.requestTriggerSensor(secondEventListener, sensor);
@@ -89,6 +91,7 @@ public class SignificantMotionDetector {
 //                    check whether we are in limit
 //                    second movement detected here
 //                    reset values
+                    Crashlytics.log(Log.DEBUG, TAG, "Second movement recognized");
                     countDownHandler.removeCallbacks(movementStateMachineRunnable);
                     countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
                     firstMovement = false;

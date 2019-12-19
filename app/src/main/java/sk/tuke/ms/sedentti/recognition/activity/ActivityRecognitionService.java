@@ -9,18 +9,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-
-import java.sql.SQLException;
-import java.util.Objects;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.ActivityTransition;
@@ -30,6 +22,12 @@ import com.google.android.gms.location.DetectedActivity;
 
 import org.jetbrains.annotations.Contract;
 
+import java.sql.SQLException;
+import java.util.Objects;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
@@ -138,6 +136,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         if (command.equals(PredefinedValues.COMMAND_START)) {
             registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
             this.activityRecognitionHandler.startTracking();
+            // TODO: 12/19/19 nie vzyd treba zapnnut 
             this.significantMotionDetector.start();
             Log.i(TAG, "Sensing service started");
         } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
@@ -163,8 +162,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         this.activityRecognitionHandler = new ActivityRecognitionHandler(context);
         this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(context);
         this.significantMotionDetector = new SignificantMotionDetector(context, this);
-        // TODO
-        this.significantMotionDetector.start();
         this.activityHandler = new Handler();
 
         initDatabaseForService(context);
