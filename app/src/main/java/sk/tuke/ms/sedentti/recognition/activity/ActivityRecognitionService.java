@@ -259,7 +259,9 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     public void onSignificantMotionDetected() {
         Crashlytics.log(Log.DEBUG, TAG, "Significant motion detected");
         try {
-            sessionHelper.replacePendingWithNew(false);
+            Session newSession = sessionHelper.createAndReplacePending(false);
+            // TODO do not change the meaning of DetectedActivity.UNKNOWN (temporal solution for handling sessions without activities)
+            activityHelper.create(DetectedActivity.UNKNOWN, newSession);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -296,9 +298,10 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
                         if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
                             Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
-                            if (hasActivityTypeChanged(newActivityType, lastActivity)) {
-                                handleSignificantMotion(newActivityType);
+                            if (isNewSessionRequired(newActivityType, lastActivity)) {
+                                Crashlytics.log(Log.DEBUG, TAG, "New session is required");
 
+                                handleSignificantMotion(newActivityType);
                                 if (pendingSession != null) {
                                     sessionHelper.end(pendingSession);
                                     Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
@@ -308,10 +311,18 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                                 setCurrentSession(pendingSession);
                                 Crashlytics.log(Log.DEBUG, TAG, "New session created");
                             } else {
+                                Crashlytics.log(Log.DEBUG, TAG, "New session is not required");
                                 if (pendingSession == null) {
                                     pendingSession = sessionHelper.create(newActivityType);
                                     setCurrentSession(pendingSession);
                                     Crashlytics.log(Log.DEBUG, TAG, "New session created");
+                                }
+                                else {
+                                    if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
+                                        Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
+                                        lastActivity.setType(newActivityType);
+                                        activityHelper.update(lastActivity);
+                                    }
                                 }
                             }
 
@@ -326,12 +337,10 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         }
 
         @Contract("_, null -> true")
-        private boolean hasActivityTypeChanged(int newActivityType, Activity lastActivity) {
+        private boolean isNewSessionRequired(int newActivityType, Activity lastActivity) {
             if (lastActivity == null) {
-                Crashlytics.log(Log.DEBUG, TAG, "Activity type has changed");
                 return true;
             }
-            Crashlytics.log(Log.DEBUG, TAG, "Activity type has not changed");
             return (newActivityType == DetectedActivity.STILL && lastActivity.getType() != DetectedActivity.STILL)
                     || (lastActivity.getType() == DetectedActivity.STILL && newActivityType != DetectedActivity.STILL);
         }

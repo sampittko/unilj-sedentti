@@ -419,19 +419,18 @@ public class SessionHelper {
 
         sessionDao.create(newSession);
 
-        return newSession;
+        return getPending();
     }
 
     /**
      * @param sedentary Type of the new session
      * @throws SQLException In case that communication with DB was not successful
      */
-    public void replacePendingWithNew(boolean sedentary) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing replacePendingWithNew");
+    public Session createAndReplacePending(boolean sedentary) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing createAndReplacePending");
         Crashlytics.log(Log.DEBUG, TAG, "@sedentary: " + sedentary);
 
-        Session pendingSession = getPending();
-        end(pendingSession);
+        end(getPending());
 
         Session newSession = new Session(
                 sedentary,
@@ -440,6 +439,8 @@ public class SessionHelper {
         );
 
         sessionDao.create(newSession);
+
+        return getPending();
     }
 
     /**
@@ -721,9 +722,12 @@ public class SessionHelper {
     @NotNull
     public static String getStringifiedSessions(@NotNull ArrayList<Session> sessions) {
         StringBuilder sb = new StringBuilder();
-        for (Session session : sessions) {
+        for (int i = 0; i < sessions.size(); i++) {
+            Session session = sessions.get(i);
             sb.append(session.getId());
-            sb.append(",");
+            if (i < sessions.size() - 1) {
+                sb.append(",");
+            }
         }
         return sb.toString();
     }

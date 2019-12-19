@@ -51,7 +51,6 @@ public class SignificantMotionDetector {
         countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
         countDownHandler = new Handler();
 
-
         this.sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         this.sensor = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
         setEventListeners();

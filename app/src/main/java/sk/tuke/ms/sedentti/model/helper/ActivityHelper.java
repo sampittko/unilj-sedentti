@@ -113,4 +113,12 @@ public class ActivityHelper {
     public static boolean isPassive(int activityType) {
         return activityType == DetectedActivity.STILL;
     }
+
+    /**
+     * @param activity
+     * @throws SQLException
+     */
+    public void update(Activity activity) throws SQLException {
+        activityDao.update(activity);
+    }
 }
