@@ -36,18 +36,23 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
         Stetho.initializeWithDefaults(this);
 
-        checkSigMovSensor();
+        boolean hasSensor = checkSigMovSensor();
 
-        if (permissionsGranted()) {
-            Crashlytics.log(Log.DEBUG, TAG, "Permissions already granted");
-            decideNextStep();
+        if (hasSensor) {
+//            continue
+            if (permissionsGranted()) {
+                Crashlytics.log(Log.DEBUG, TAG, "Permissions already granted");
+                decideNextStep();
+            } else {
+                Crashlytics.log(Log.DEBUG, TAG, "Requesting missing permissions");
+                requestPermissions();
+            }
         } else {
-            Crashlytics.log(Log.DEBUG, TAG, "Requesting missing permissions");
-            requestPermissions();
+            finish();
         }
     }
 
-    private void checkSigMovSensor() {
+    private boolean checkSigMovSensor() {
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
         if (sensor == null) {
@@ -55,8 +60,14 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
             builder.setCancelable(false);
             builder.setTitle("App is not supported");
             builder.setMessage("Your phone is not supported by this app due to missing sensors");
-            builder.setPositiveButton("Okay", (dialog, which) -> finish());
+            builder.setPositiveButton("Okay", (dialog, which) -> {
+            });
+
+            builder.show();
+
+            return false;
         }
+        return true;
     }
 
     private boolean permissionsGranted() {
