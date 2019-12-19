@@ -254,10 +254,9 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private void handleSignificantMotion(int newActivityType) {
         Crashlytics.log(Log.DEBUG, TAG, "Handling significant motion");
         if (ActivityHelper.isPassive(newActivityType)) {
-            significantMotionDetector.start();
-        }
-        else {
-            significantMotionDetector.stop();
+            this.significantMotionDetector.start();
+        } else {
+            this.significantMotionDetector.stop();
         }
     }
 

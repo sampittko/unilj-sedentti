@@ -47,26 +47,14 @@ public class SignificantMotionDetector {
     public SignificantMotionDetector(@NotNull Context context, SignificantMotionListener significantMotionListener) {
         this.significantMotionListener = significantMotionListener;
         this.hasDetectionStarted = false;
-        this.sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        this.sensor = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
-    }
-
-    public void start() {
-        if (hasDetectionStarted) {
-            Crashlytics.log(Log.DEBUG, TAG, "Detection has already started");
-            return;
-        }
-        Crashlytics.log(Log.DEBUG, TAG, "Starting detection");
-        initializeValues();
-        setEventListeners();
-        toggleDetectionState();
-    }
-
-    private void initializeValues() {
-        Crashlytics.log(Log.DEBUG, TAG, "Initializing values");
         firstMovement = false;
         countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
         countDownHandler = new Handler();
+
+
+        this.sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        this.sensor = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
+        setEventListeners();
     }
 
     private void setEventListeners() {
@@ -75,8 +63,7 @@ public class SignificantMotionDetector {
         firstEventListener = new TriggerEventListener() {
             @Override
             public void onTrigger(TriggerEvent event) {
-//                first movement detected
-//                lets detect second one
+//                first movement detected, lets detect second one
                 Crashlytics.log(Log.DEBUG, TAG, "First movement recognized");
                 firstMovement = true;
                 countDownHandler.postDelayed(movementStateMachineRunnable, Configuration.SIG_MOV_COUNTDOWN_UNIT);
@@ -88,9 +75,7 @@ public class SignificantMotionDetector {
             @Override
             public void onTrigger(TriggerEvent triggerEvent) {
                 if (firstMovement){
-//                    check whether we are in limit
-//                    second movement detected here
-//                    reset values
+//                    check whether we are in limit, second movement detected here, reset values
                     Crashlytics.log(Log.DEBUG, TAG, "Second movement recognized");
                     countDownHandler.removeCallbacks(movementStateMachineRunnable);
                     countdown = Configuration.SIG_MOV_TIMEOUT_TIME;
@@ -106,6 +91,16 @@ public class SignificantMotionDetector {
         };
     }
 
+    public void start() {
+        if (hasDetectionStarted) {
+            Crashlytics.log(Log.DEBUG, TAG, "Detection has already started");
+            return;
+        }
+        Crashlytics.log(Log.DEBUG, TAG, "Starting detection");
+        sensorManager.requestTriggerSensor(firstEventListener, sensor);
+        toggleDetectionState();
+    }
+
     public void stop() {
         if (!hasDetectionStarted) {
             Crashlytics.log(Log.DEBUG, TAG, "Detection has already stopped");
@@ -118,13 +113,12 @@ public class SignificantMotionDetector {
     }
 
     private void toggleDetectionState() {
-        boolean newDetectionState = !hasDetectionStarted;
-        if (newDetectionState) {
+        hasDetectionStarted = !hasDetectionStarted;
+        if (hasDetectionStarted) {
             Crashlytics.log(Log.DEBUG, TAG, "Detection started");
         }
         else {
             Crashlytics.log(Log.DEBUG, TAG, "Detection stopped");
         }
-        hasDetectionStarted = newDetectionState;
     }
 }
