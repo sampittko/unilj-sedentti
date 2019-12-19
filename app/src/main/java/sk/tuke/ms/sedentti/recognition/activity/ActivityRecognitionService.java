@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,28 +16,40 @@ import android.os.IBinder;
 import android.util.Log;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+
+import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.location.ActivityTransition;
+import com.google.android.gms.location.ActivityTransitionEvent;
+import com.google.android.gms.location.ActivityTransitionResult;
+import com.google.android.gms.location.DetectedActivity;
+
+import org.jetbrains.annotations.Contract;
+
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.notification.StopSedentaryNotification;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionDetector;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionListener;
 
-public class ActivityRecognitionService extends Service implements SignificantMotionListener, ActivityRecognitionBroadcastListener {
+public class ActivityRecognitionService extends Service implements SignificantMotionListener {
 
     private static final int SERVICE_NOTIFICATION_ID = 1;
     private static final int MOTION_NOTIFICATION_ID = 2;
     private static final String CHANNEL_ID = "sk.tuke.ms.sedentti";
-    private static final String TAG = "ActivityRecognitionS";
+    private static final String TAG = "ARService";
 
     private final int TIME_STEP = 300;
     private SessionHelper sessionHelper;
@@ -49,6 +62,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private SignificantMotionDetector significantMotionDetector;
     private Session currentSession;
     private Handler activityHandler;
+    private ActivityHelper activityHelper;
     private Runnable activityChanged = new Runnable() {
         @Override
         public void run() {
@@ -142,26 +156,31 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     public void onCreate() {
         super.onCreate();
 
+        Context context = getApplicationContext();
+
         this.notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        this.receiver = new ActivityRecognitionBroadcastReceiver(getApplicationContext(), this);
-        this.activityRecognitionHandler = new ActivityRecognitionHandler(getApplicationContext());
-        this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(getApplicationContext());
-        this.significantMotionDetector = new SignificantMotionDetector(getApplicationContext(), this);
+        this.receiver = new ActivityRecognitionBroadcastReceiver();
+        this.activityRecognitionHandler = new ActivityRecognitionHandler(context);
+        this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(context);
+        this.significantMotionDetector = new SignificantMotionDetector(context, this);
+        // TODO
+        this.significantMotionDetector.start();
         this.activityHandler = new Handler();
 
-        initDatabaseForService();
+        initDatabaseForService(context);
     }
 
-    private void initDatabaseForService() {
+    private void initDatabaseForService(Context context) {
         Profile profile = null;
 
         try {
-            profile = new ProfileHelper(getApplicationContext()).getActive();
+            profile = new ProfileHelper(context).getActive();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        this.sessionHelper = new SessionHelper(getApplicationContext(), profile);
+        this.sessionHelper = new SessionHelper(context, profile);
+        this.activityHelper = new ActivityHelper(context);
     }
 
     @Override
@@ -175,6 +194,15 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         super.onDestroy();
     }
 
+    @Contract(pure = true)
+    private SessionHelper getSessionHelper() {
+        return sessionHelper;
+    }
+
+    @Contract(pure = true)
+    private ActivityHelper getActivityHelper() {
+        return activityHelper;
+    }
 
     private Notification createNotification(int commandResult) {
         // TODO: 12/18/19 move this notification to separate class
@@ -226,33 +254,93 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    private void handleSignificantMotion(int newActivityType) {
+        Crashlytics.log(Log.DEBUG, TAG, "Handling significant motion");
+        if (ActivityHelper.isPassive(newActivityType)) {
+            significantMotionDetector.start();
+        }
+        else {
+            significantMotionDetector.stop();
+        }
+    }
+
     @Override
     public void onSignificantMotionDetected() {
-        Log.i("motion", "haha");
-        // TODO: 12/18/19 create new session
-        // TODO: 12/18/19 change session in this service
+        Crashlytics.log(Log.DEBUG, TAG, "Significant motion detected");
+        try {
+            sessionHelper.replacePendingWithNew(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         new StopSedentaryNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
     }
 
-    @Override
-    public void onActivityDetected() {
-        Log.i("activity", "haha");
-        // TODO: 12/18/19 wait a while and then pull from database new session
-        // if active stop sigmov otherwise turn on sigmov
+    public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
+        private final String TAG = "ARBroadcastReceiver";
 
-        activityHandler.postDelayed(activityChanged, 500);
-    }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ActivityTransitionResult.hasResult(intent)) {
+                ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
+                for (ActivityTransitionEvent event : Objects.requireNonNull(intentResult).getTransitionEvents()) {
+                    int newActivityType = event.getActivityType();
+                    int newActivityTransitionType = event.getTransitionType();
 
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-    public class LocalBinder extends Binder {
-        public ActivityRecognitionService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return ActivityRecognitionService.this;
+                    Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " and transition " +
+                            newActivityTransitionType + " received");
+
+                    SessionHelper sessionHelper = getSessionHelper();
+                    ActivityHelper activityHelper = getActivityHelper();
+
+                    try {
+                        Activity lastActivity = activityHelper.getLast();
+                        Session pendingSession = null;
+                        try {
+                            pendingSession = sessionHelper.getPending();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        } catch (NullPointerException e) {
+                            Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
+                        }
+
+                        if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
+                            Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
+                            if (hasActivityChanged(newActivityType, lastActivity)) {
+                                handleSignificantMotion(newActivityType);
+
+                                if (pendingSession != null) {
+                                    sessionHelper.end(pendingSession);
+                                    Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
+                                }
+
+                                pendingSession = sessionHelper.create(newActivityType);
+                                Crashlytics.log(Log.DEBUG, TAG, "New session created");
+                            } else {
+                                if (pendingSession == null) {
+                                    pendingSession = sessionHelper.create(newActivityType);
+                                    Crashlytics.log(Log.DEBUG, TAG, "New session created");
+                                }
+                            }
+
+                            activityHelper.create(newActivityType, pendingSession);
+                            Crashlytics.log(Log.DEBUG, TAG, "New activity created");
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
+        @Contract("_, null -> true")
+        private boolean hasActivityChanged(int newActivityType, Activity lastActivity) {
+            if (lastActivity == null) {
+                Crashlytics.log(Log.DEBUG, TAG, "Activity has changed");
+                return true;
+            }
+            Crashlytics.log(Log.DEBUG, TAG, "Activity has not changed");
+            return (newActivityType == DetectedActivity.STILL && lastActivity.getType() != DetectedActivity.STILL)
+                    || (lastActivity.getType() == DetectedActivity.STILL && newActivityType != DetectedActivity.STILL);
+        }
     }
-
 }

@@ -23,7 +23,6 @@ public class SignificantMotionDetector {
     private TriggerEventListener secondEventListener;
     private boolean firstMovement;
     private int countdown;
-    private Context context;
     private SignificantMotionListener significantMotionListener;
     private boolean hasDetectionStarted;
 
@@ -45,7 +44,6 @@ public class SignificantMotionDetector {
     };
 
     public SignificantMotionDetector(@NotNull Context context, SignificantMotionListener significantMotionListener) {
-        this.context = context;
         this.significantMotionListener = significantMotionListener;
         this.hasDetectionStarted = false;
         this.sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -117,10 +115,13 @@ public class SignificantMotionDetector {
     }
 
     private void toggleDetectionState() {
-        hasDetectionStarted = !hasDetectionStarted;
-    }
-
-    public boolean isDetecting() {
-        return hasDetectionStarted;
+        boolean newDetectionState = !hasDetectionStarted;
+        if (newDetectionState) {
+            Crashlytics.log(Log.DEBUG, TAG, "Detection started");
+        }
+        else {
+            Crashlytics.log(Log.DEBUG, TAG, "Detection stopped");
+        }
+        hasDetectionStarted = newDetectionState;
     }
 }

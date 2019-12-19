@@ -425,10 +425,13 @@ public class SessionHelper {
     /**
      * @param sedentary Type of the new session
      * @throws SQLException In case that communication with DB was not successful
-     * @return New session object
      */
-    public Session create(boolean sedentary) throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing create");
+    public void replacePendingWithNew(boolean sedentary) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing replacePendingWithNew");
+        Crashlytics.log(Log.DEBUG, TAG, "@sedentary: " + sedentary);
+
+        Session pendingSession = getPending();
+        end(pendingSession);
 
         Session newSession = new Session(
                 sedentary,
@@ -437,8 +440,6 @@ public class SessionHelper {
         );
 
         sessionDao.create(newSession);
-
-        return newSession;
     }
 
     /**

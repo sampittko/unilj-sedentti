@@ -24,6 +24,8 @@ public class UploadTaskHelper {
     private Dao<UploadTask, Long> uploadTaskDao;
     private QueryBuilder<UploadTask, Long> uploadTaskDaoQueryBuilder;
 
+    private SessionHelper sessionHelper;
+
     private Profile profile;
 
     public UploadTaskHelper(Context context, Profile profile) {
@@ -32,6 +34,8 @@ public class UploadTaskHelper {
         try {
             this.uploadTaskDao = databaseHelper.uploadTaskDao();
             this.uploadTaskDaoQueryBuilder = uploadTaskDao.queryBuilder();
+            this.sessionHelper = new SessionHelper(context, profile);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
