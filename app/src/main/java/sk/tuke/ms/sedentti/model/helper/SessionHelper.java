@@ -713,4 +713,18 @@ public class SessionHelper {
 
         sessionDao.delete(pendingSession);
     }
+
+    /**
+     * @param sessions List of sessions to stringify
+     * @return String containing IDs of the sessions
+     */
+    @NotNull
+    public static String getStringifiedSessions(@NotNull ArrayList<Session> sessions) {
+        StringBuilder sb = new StringBuilder();
+        for (Session session : sessions) {
+            sb.append(session.getId());
+            sb.append(",");
+        }
+        return sb.toString();
+    }
 }

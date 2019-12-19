@@ -17,6 +17,7 @@ public class UploadTask {
     public final static String COLUMN_BYTES_TRANSFERRED = "bytesTransferred";
     public final static String COLUMN_BYTES_TOTAL = "bytesTotal";
     public final static String COLUMN_DB_FILE_PATH = "dbFilePath";
+    public final static String COLUMN_INCLUDED_SESSIONS = "includedSessions";
     public final static String COLUMN_PROCESSED = "processed";
     public final static String COLUMN_ERROR = "error";
     public final static String COLUMN_SESSION_URI_STRING = "sessionUriString";
@@ -38,6 +39,8 @@ public class UploadTask {
     private long bytesTotal;
     @DatabaseField(canBeNull = false, columnName = COLUMN_DB_FILE_PATH)
     private String dbFilePath;
+    @DatabaseField(canBeNull = false, columnName = COLUMN_INCLUDED_SESSIONS)
+    private String includedSessions;
     @DatabaseField(columnName = COLUMN_PROCESSED)
     private boolean processed;
     @DatabaseField(columnName = COLUMN_ERROR)
@@ -51,16 +54,16 @@ public class UploadTask {
 
     }
 
-    public UploadTask(long startTimestamp, long bytesTotal, String dbFilePath, Profile profile) {
+    public UploadTask(long startTimestamp, long bytesTotal, String dbFilePath, String includedSessions, Profile profile) {
         this.startTimestamp = startTimestamp;
         this.date = DateHelper.getNormalized(new Date());
         this.bytesTotal = bytesTotal;
         this.bytesTransferred = 0L;
         this.dbFilePath = dbFilePath;
+        this.includedSessions = includedSessions;
         this.processed = false;
         this.profile = profile;
     }
-
 
     public long getId() {
         return id;
@@ -124,6 +127,14 @@ public class UploadTask {
 
     public void setDbFilePath(String dbFilePath) {
         this.dbFilePath = dbFilePath;
+    }
+
+    public String getIncludedSessions() {
+        return includedSessions;
+    }
+
+    public void setIncludedSessions(String includedSessions) {
+        this.includedSessions = includedSessions;
     }
 
     public boolean isProcessed() {
