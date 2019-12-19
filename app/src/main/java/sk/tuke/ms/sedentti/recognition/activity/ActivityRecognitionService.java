@@ -59,15 +59,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     private SignificantMotionDetector significantMotionDetector;
     private Session currentSession;
-    private Handler activityHandler;
     private ActivityHelper activityHelper;
-    private Runnable activityChanged = new Runnable() {
-        @Override
-        public void run() {
-            // TODO: 12/18/19 get new session from db
-            // TODO: 12/18/19 start new counting
-        }
-    };
     private long time;
     private Handler timeHandler;
     private Runnable countTime = new Runnable() {
@@ -162,7 +154,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         this.activityRecognitionHandler = new ActivityRecognitionHandler(context);
         this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(context);
         this.significantMotionDetector = new SignificantMotionDetector(context, this);
-        this.activityHandler = new Handler();
 
         initDatabaseForService(context);
     }
@@ -271,7 +262,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         new StopSedentaryNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
     }
 
-    public class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
+    private class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
         private final String TAG = "ARBroadcastReceiver";
 
         @Override
@@ -301,7 +292,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
                         if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
                             Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
-                            if (hasActivityChanged(newActivityType, lastActivity)) {
+                            if (hasActivityTypeChanged(newActivityType, lastActivity)) {
                                 handleSignificantMotion(newActivityType);
 
                                 if (pendingSession != null) {
@@ -329,12 +320,12 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         }
 
         @Contract("_, null -> true")
-        private boolean hasActivityChanged(int newActivityType, Activity lastActivity) {
+        private boolean hasActivityTypeChanged(int newActivityType, Activity lastActivity) {
             if (lastActivity == null) {
-                Crashlytics.log(Log.DEBUG, TAG, "Activity has changed");
+                Crashlytics.log(Log.DEBUG, TAG, "Activity type has changed");
                 return true;
             }
-            Crashlytics.log(Log.DEBUG, TAG, "Activity has not changed");
+            Crashlytics.log(Log.DEBUG, TAG, "Activity type has not changed");
             return (newActivityType == DetectedActivity.STILL && lastActivity.getType() != DetectedActivity.STILL)
                     || (lastActivity.getType() == DetectedActivity.STILL && newActivityType != DetectedActivity.STILL);
         }

@@ -93,6 +93,9 @@ public class UploadTaskHelper {
                 new Date().getTime(),
                 dbFile.length(),
                 dbFile.getPath(),
+                SessionHelper.getStringifiedSessions(
+                        sessionHelper.getExportedNotUploaded()
+                ),
                 profile
         );
 
