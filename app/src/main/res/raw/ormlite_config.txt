@@ -1,5 +1,5 @@
 #
-# generated on 2019/12/19 10:20:15
+# generated on 2019/12/20 11:15:07
 #
 # --table-start--
 dataClass=sk.tuke.ms.sedentti.model.PersonalityTest
@@ -223,6 +223,7 @@ columnName=processed
 # --field-start--
 fieldName=error
 columnName=error
+defaultValue=
 # --field-end--
 # --field-start--
 fieldName=sessionUriString

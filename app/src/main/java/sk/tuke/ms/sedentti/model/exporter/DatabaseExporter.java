@@ -44,19 +44,26 @@ public class DatabaseExporter {
      * @return
      * @throws SQLException
      */
-    public String generateFile() throws SQLException {
+    public String generateFile(boolean regenerate) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing generateFile");
-        ArrayList<Session> sessions = sessionHelper.getNotExportedFinished();
-        String dbFilePath = generateFile(sessions);
-        sessionHelper.setExported(sessions);
-        Crashlytics.log(Log.DEBUG, TAG, "File generated");
-        return dbFilePath;
-    }
+        Crashlytics.log(Log.DEBUG, TAG, "@regenerate: " + regenerate);
 
-    public String regenerateFile() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing regenerateFile");
-        ArrayList<Session> sessions = sessionHelper.getExportedNotUploaded();
-        String dbFilePath = generateFile(sessions);
+        String dbFilePath;
+        ArrayList<Session> sessions;
+
+        if (!regenerate) {
+            sessions = sessionHelper.getNotExportedFinished();
+        }
+        else {
+            sessions = sessionHelper.getExportedNotUploaded();
+        }
+
+        dbFilePath = generateFile(sessions);
+
+        if (regenerate) {
+            sessionHelper.setExported(sessions);
+        }
+
         Crashlytics.log(Log.DEBUG, TAG, "File generated");
         return dbFilePath;
     }

@@ -77,7 +77,7 @@ public class UploadWorker extends Worker {
                 Crashlytics.log(Log.DEBUG, TAG, "File for upload not found");
                 try {
                     Crashlytics.log(Log.DEBUG, TAG, "Regenerating file");
-                    dbFilePath = new DatabaseExporter(getApplicationContext(), profile).regenerateFile();
+                    dbFilePath = new DatabaseExporter(getApplicationContext(), profile).generateFile(true);
                 } catch (SQLException ex) {
                     Crashlytics.log(Log.DEBUG, TAG, "Work failure and will be retried later on");
                     ex.printStackTrace();
@@ -101,7 +101,7 @@ public class UploadWorker extends Worker {
 
                 String dbFilePath;
                 try {
-                    dbFilePath = new DatabaseExporter(getApplicationContext(), profile).generateFile();
+                    dbFilePath = new DatabaseExporter(getApplicationContext(), profile).generateFile(false);
                 } catch (SQLException e) {
                     Crashlytics.log(Log.DEBUG, TAG, "Work failure and will be retried later on");
                     e.printStackTrace();

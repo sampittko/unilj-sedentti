@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <receiver
-            android:enabled="true" android:name=".system_boot.SystemBootBroadcastReceiver"
+            android:enabled="true" android:name=".startup.SystemBootBroadcastReceiver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
         >
             <intent-filter>

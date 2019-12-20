@@ -44,6 +44,15 @@ public class UploadTaskHelper {
     }
 
     /**
+     * @param uploadTask
+     * @return
+     */
+    public static boolean wasSuccessful(@NotNull UploadTask uploadTask) {
+        return uploadTask.isProcessed() && uploadTask.getError().equals("") &&
+                uploadTask.getBytesTransferred() == uploadTask.getBytesTotal();
+    }
+
+    /**
      * @return
      * @throws SQLException
      */

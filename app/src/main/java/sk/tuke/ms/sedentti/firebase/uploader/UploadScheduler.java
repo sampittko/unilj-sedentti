@@ -39,12 +39,12 @@ public class UploadScheduler {
                 return 0L;
             }
             else {
-                Crashlytics.log(Log.DEBUG, TAG, "Perform upload work in UPLOAD_WORK_WAITING_MINUTES");
-                return Configuration.UPLOAD_WORK_WAITING_MINUTES;
+                Crashlytics.log(Log.DEBUG, TAG, "Perform upload work in UPLOAD_WORK_WAITING_MILLIS");
+                return Configuration.UPLOAD_WORK_WAITING_MILLIS;
             }
         }
 
-        if (!latestUploadTask.isProcessed()) {
+        if (!UploadTaskHelper.wasSuccessful(latestUploadTask)) {
             Crashlytics.log(Log.DEBUG, TAG, "Last upload task was not successful so it will retry immediately");
             return 0L;
         }
@@ -61,7 +61,7 @@ public class UploadScheduler {
         dueDate.setTimeInMillis(latestUploadTask.getStartTimestamp());
 
         while (dueDate.before(currentDate)) {
-            dueDate.add(Calendar.MINUTE, Configuration.UPLOAD_WORK_WAITING_MINUTES);
+            dueDate.add(Calendar.MILLISECOND, Configuration.UPLOAD_WORK_WAITING_MILLIS);
         }
 
         return dueDate.getTimeInMillis() - currentDate.getTimeInMillis();

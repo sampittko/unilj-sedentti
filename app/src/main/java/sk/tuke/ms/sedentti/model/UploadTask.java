@@ -43,8 +43,8 @@ public class UploadTask {
     private String includedSessions;
     @DatabaseField(columnName = COLUMN_PROCESSED)
     private boolean processed;
-    @DatabaseField(columnName = COLUMN_ERROR)
-    private String error;
+    @DatabaseField(columnName = COLUMN_ERROR, defaultValue = "")
+    private String error = "";
     @DatabaseField(columnName = COLUMN_SESSION_URI_STRING)
     private String sessionUriString;
     @DatabaseField(canBeNull = false, foreign = true, columnName = COLUMN_PROFILE_ID)
@@ -64,6 +64,7 @@ public class UploadTask {
         this.processed = false;
         this.profile = profile;
     }
+
 
     public long getId() {
         return id;

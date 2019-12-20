@@ -8,6 +8,8 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.sql.SQLException;
 
 import sk.tuke.ms.sedentti.config.Configuration;
@@ -117,5 +119,15 @@ public class ProfileHelper {
                 Configuration.PROFILE_ARTIFICIAL_PHOTO_URL,
                 Configuration.PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID
         );
+    }
+
+    /**
+     * @param profile
+     */
+    public void setCrashlyticsUser(@NotNull Profile profile) {
+        Crashlytics.setUserIdentifier(profile.getFirebaseAuthUid());
+        Crashlytics.setUserEmail(profile.getEmail());
+        Crashlytics.setUserName(profile.getName());
+        Crashlytics.log(Log.DEBUG, TAG, "Crashlytics set up successfully");
     }
 }

@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -68,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void finalizeActiveProfileUpdate() {
-        setUpCrashlytics();
+        profileHelper.setCrashlyticsUser(activeProfile);
         startFollowingActivity();
     }
 
@@ -94,8 +93,7 @@ public class LoginActivity extends AppCompatActivity {
         Crashlytics.log(Log.DEBUG, TAG, "FirebaseUI resulted");
 
         if (requestCode == PredefinedValues.FIREBASE_CODE_SIGN_IN) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-
+            // IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 assert user != null;
@@ -115,13 +113,6 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         }
-    }
-
-    private void setUpCrashlytics() {
-        Crashlytics.setUserIdentifier(activeProfile.getFirebaseAuthUid());
-        Crashlytics.setUserEmail(activeProfile.getEmail());
-        Crashlytics.setUserName(activeProfile.getName());
-        Crashlytics.log(Log.DEBUG, TAG, "Crashlytics set up successfully");
     }
 
     private void startFollowingActivity() {
