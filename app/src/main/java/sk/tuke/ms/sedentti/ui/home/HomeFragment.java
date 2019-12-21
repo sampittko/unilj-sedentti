@@ -139,6 +139,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         DecoView activeSessionGraph = root.findViewById(R.id.graph_f_home_session);
         DecoView activeTime = root.findViewById(R.id.graph_f_home_active);
         DecoView sedentaryTime = root.findViewById(R.id.graph_f_home_sedentary);
+        DecoView vehicleTime = root.findViewById(R.id.graph_f_home_vehicle);
 
         activeSessionGraph.addSeries(new SeriesItem.Builder(Color.argb(255, 218, 218, 218))
                 .setRange(0, 100, 100)
@@ -153,6 +154,12 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
                 .build());
 
         sedentaryTime.addSeries(new SeriesItem.Builder(Color.argb(255, 218, 218, 218))
+                .setRange(0, 100, 100)
+                .setInitialVisibility(true)
+                .setLineWidth(20f)
+                .build());
+
+        vehicleTime.addSeries(new SeriesItem.Builder(Color.argb(255, 218, 218, 218))
                 .setRange(0, 100, 100)
                 .setInitialVisibility(true)
                 .setLineWidth(20f)
@@ -173,9 +180,15 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
                 .setLineWidth(20f)
                 .build();
 
-        int series1Index = activeSessionGraph.addSeries(sessionItem);
-        int series2Index = activeTime.addSeries(activeItem);
-        int series3Index = sedentaryTime.addSeries(sedentaryItem);
+        SeriesItem vehicleItem = new SeriesItem.Builder(ResourcesCompat.getColor(getResources(), R.color.colorAccentOther, null))
+                .setRange(0, 100, 0)
+                .setLineWidth(20f)
+                .build();
+
+        int activeSessionIndex = activeSessionGraph.addSeries(sessionItem);
+        int activeTimeIndex = activeTime.addSeries(activeItem);
+        int sedentaryTimeIndex = sedentaryTime.addSeries(sedentaryItem);
+        int vehicleTimeIndex = vehicleTime.addSeries(vehicleItem);
 
         TextView graphTimeValue = root.findViewById(R.id.tw_f_home_graph_time);
         TextView sessionActivity = root.findViewById(R.id.tw_f_home_graph_session_activity);
@@ -194,25 +207,34 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
                     sessionActivity.setText("Active");
                     sessionItem.setColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null));
                 }
-                activeSessionGraph.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series1Index).setDelay(4000).build());
+                activeSessionGraph.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(activeSessionIndex).setDelay(4000).build());
             } else {
                 updateSessionGraphStateUI(this.state);
             }
         });
 
-        TextView activeTimeValue = root.findViewById(R.id.tw_f_home_value_active);
         TextView sedentaryTimeValue = root.findViewById(R.id.tw_f_home_value_sedentary);
         homeViewModel.getDailySedentaryDuration().observe(this, value -> {
             sedentaryTimeValue.setText(TimeHelper.formatTimeString(value));
             // TODO: 11/10/19 set sedentary time goal
             int normalizedValue = getNormalizedValue(value, 8L * 3600L * 1000L);
-            sedentaryTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series2Index).setDelay(4000).build());
+            sedentaryTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(activeTimeIndex).setDelay(4000).build());
         });
+
+        TextView activeTimeValue = root.findViewById(R.id.tw_f_home_value_active);
         homeViewModel.getDailyActiveDuration().observe(this, value -> {
             activeTimeValue.setText(TimeHelper.formatTimeString(value));
             // TODO: 11/10/19 set activity time goal
             int normalizedValue = getNormalizedValue(value, 8 * 3600 * 1000);
-            activeTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(series3Index).setDelay(4000).build());
+            activeTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(sedentaryTimeIndex).setDelay(4000).build());
+        });
+
+        TextView vehicleTimeValue = root.findViewById(R.id.tw_f_home_value_vehicle);
+        homeViewModel.getDailyVehicleDuration().observe(this, value -> {
+            vehicleTimeValue.setText(TimeHelper.formatTimeString(value));
+            // TODO: 11/10/19 set vehicle time goal
+            int normalizedValue = getNormalizedValue(value, 8 * 3600 * 1000);
+            vehicleTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(vehicleTimeIndex).setDelay(4000).build());
         });
     }
 
@@ -294,7 +316,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
             updateSessionGraphStateUI(this.state);
         } else {
 //            turn it off
-
             StopSensingDialog dialog = new StopSensingDialog();
             dialog.setCallback(this);
             dialog.show(getFragmentManager(), STOP_SENSING_DIALOG);

@@ -29,6 +29,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     private MutableLiveData<Long> dailySedentaryDuration;
     private MutableLiveData<Long> dailyActiveDuration;
+    private MutableLiveData<Long> dailyVehicleDuration;
     private SessionHelper sessionHelper;
 
     private Handler tickHandler;
@@ -142,6 +143,19 @@ public class HomeViewModel extends AndroidViewModel {
 
     private void loadDailyActiveTime() {
         new loadDailyActiveTimeAsyncTask().execute();
+    }
+
+    public MutableLiveData<Long> getDailyVehicleDuration() {
+        if (this.dailyVehicleDuration == null) {
+            this.dailyVehicleDuration = new MutableLiveData<Long>();
+            loadDailyVehicleTime();
+        }
+
+        return this.dailyVehicleDuration;
+    }
+
+    private void loadDailyVehicleTime() {
+        new loadDailyVehicleTimeAsyncTask().execute();
     }
 
     public MutableLiveData<Integer> getFinishedCount() {
@@ -260,6 +274,23 @@ public class HomeViewModel extends AndroidViewModel {
         protected Long doInBackground(Void... voids) {
             try {
                 return sessionHelper.getDailyActiveDuration();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            dailyActiveDuration.postValue(result);
+        }
+    }
+
+    private class loadDailyVehicleTimeAsyncTask extends AsyncTask<Void, Void, Long> {
+        @Override
+        protected Long doInBackground(Void... voids) {
+            try {
+                return sessionHelper.getDailyInVehicleDuration();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

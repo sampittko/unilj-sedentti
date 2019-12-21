@@ -100,7 +100,7 @@
                         style="@android:style/TextAppearance.Material.Large"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="09:87:45"
+                        android:text="00:00:00"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
                     <TextView
@@ -174,7 +174,7 @@
                     style="@android:style/TextAppearance.Material.Headline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="7" />
+                    android:text="0" />
             </LinearLayout>
 
             <LinearLayout
@@ -262,7 +262,7 @@
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
                             android:layout_width="120dp"
                             android:layout_height="wrap_content"
-                            android:text="3 hours 51 min" />
+                            android:text="0 min" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -271,7 +271,7 @@
                     android:id="@+id/f_home_layout_sedentary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
+                    android:layout_marginEnd="16dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -304,11 +304,52 @@
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
                             android:layout_width="120dp"
                             android:layout_height="wrap_content"
-                            android:text="8 hours 20 min" />
+                            android:text="0 min" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/f_home_layout_vehicle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:orientation="horizontal">
+
+                        <com.hookedonplay.decoviewlib.DecoView
+                            android:id="@+id/graph_f_home_vehicle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tw_f_home_text_vehicle"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="On the move" />
+
+                        <TextView
+                            android:id="@+id/tw_f_home_value_vehicle"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="0 min" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-
         </HorizontalScrollView>
 
         <TextView
