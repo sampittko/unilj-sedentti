@@ -137,7 +137,6 @@ public class SessionHelper {
         if (!countSessionsInVehicle) {
             sessionDaoQueryBuilder
                     .where()
-                    .and()
                     .eq(Session.COLUMN_IN_VEHICLE, false)
                     .prepare();
         }
@@ -770,21 +769,25 @@ public class SessionHelper {
      * @return
      * @throws SQLException
      */
-    public ArrayList<Session> getNotExportedFinished() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getNotExportedFinished");
+    public ArrayList<Session> getNotExportedFinishedForUploadWorker() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getNotExportedFinishedForUploadWorker");
 
         sessionDaoQueryBuilder.reset();
 
-        return new ArrayList<>(
+        ArrayList<Session> sessions = new ArrayList<>(
                 sessionDaoQueryBuilder
-                        .where()
-                        .eq(Session.COLUMN_EXPORTED, false)
-                        .and()
-                        .ne(Session.COLUMN_END_TIMESTAMP, 0L)
-                        .and()
-                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                        .query()
+                    .orderBy(Session.COLUMN_START_TIMESTAMP, false)
+                    .where()
+                    .eq(Session.COLUMN_EXPORTED, false)
+                    .and()
+                    .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                    .query()
         );
+
+        // TODO test - do not upload last 2 sessions
+        sessions.remove(0);
+
+        return sessions;
     }
 
     /**
