@@ -52,7 +52,7 @@ public class DatabaseExporter {
         ArrayList<Session> sessions;
 
         if (!regenerate) {
-            sessions = sessionHelper.getNotExportedFinished();
+            sessions = sessionHelper.getNotExportedFinishedForUploadWorker();
         }
         else {
             sessions = sessionHelper.getExportedNotUploaded();
