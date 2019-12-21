@@ -6,14 +6,13 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.sql.SQLException;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
-import java.sql.SQLException;
-
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.startup.StartupTasksExecutor;
 
@@ -37,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setBottomMenu() {
         BottomNavigationView navView = findViewById(R.id.nav_view);
+        navView.setOnNavigationItemReselectedListener(menuItem -> {
+        });
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.navigation_statistics, R.id.navigation_profile)
                 .build();

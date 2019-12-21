@@ -2,6 +2,20 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\bbran\\.android\\release.keystore')
+            storePassword 'abcdefgh1773'
+            keyAlias = 'AndroidReleaseKey'
+            keyPassword 'abcdefgh1773'
+        }
+        debug {
+            storeFile file('C:\\Users\\bbran\\.android\\debug.keystore')
+            storePassword 'android'
+            keyAlias = 'AndroidDebugKey'
+            keyPassword 'android'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "sk.tuke.ms.sedentti"
