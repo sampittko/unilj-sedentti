@@ -402,11 +402,13 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     public void onDialogPositiveClick(DialogFragment dialog) {
         // TODO: 12/13/19 save pending activity to database
         stopSensing();
+        this.homeViewModel.savePendingSession();
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         // TODO: 12/13/19 discard pending activity
         stopSensing();
+        this.homeViewModel.discardPendingSession();
     }
 }
