@@ -7,7 +7,7 @@
 
 
     <string name="home_timeline_name_sedentary">Sedentary</string>
-    <string name="home_timeline_name_activity">Active</string>
+    <string name="home_timeline_name_active">Active</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -25,4 +25,5 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
     <string name="default_web_client_id" translatable="false">137652915710-hnu3118va0bhsgeuvg7q77fvk294el02.apps.googleusercontent.com</string>
+    <string name="home_timeline_name_invehicle">In vehicle</string>
 </resources>

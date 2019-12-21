@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true"
@@ -15,13 +16,12 @@
             android:id="@+id/iw_f_home_profile_image"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="32dp"
             android:src="@drawable/ic_people_black_24dp"
             app:civ_border_color="#FF000000"
             app:civ_border_width="1dp"
             app:layout_constraintBottom_toBottomOf="@+id/tw_f_home_text_hello"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tw_f_home_text_hello" />
+            app:layout_constraintTop_toTopOf="@+id/tw_f_home_text_hello"
+            tools:layout_editor_absoluteX="331dp" />
 
         <TextView
             android:id="@+id/tw_f_home_text_hello"

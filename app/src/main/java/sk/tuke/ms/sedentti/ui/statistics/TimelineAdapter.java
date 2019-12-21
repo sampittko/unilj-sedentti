@@ -73,7 +73,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 sessionName = context.getResources().getString(R.string.home_timeline_name_sedentary);
                 sessionHolder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_sedentarry));
             } else {
-                sessionName = context.getResources().getString(R.string.home_timeline_name_activity);
+                sessionName = context.getResources().getString(R.string.home_timeline_name_active);
                 sessionHolder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_active));
             }
             sessionHolder.activityName.setText(sessionName);

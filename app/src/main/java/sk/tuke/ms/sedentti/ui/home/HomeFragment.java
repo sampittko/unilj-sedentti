@@ -360,9 +360,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     private void makeTimeline(ArrayList<Session> sessions) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
-        int index_sedentary = 1;
-        int index_active = 1;
-
         // handles activity naming
         for (int i = 0; i < sessions.size(); i++) {
             Session session = sessions.get(i);
@@ -371,12 +368,13 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
             String sessionName;
 
             if (session.isSedentary()) {
-                sessionName = getResources().getString(R.string.home_timeline_name_sedentary) + " " + index_sedentary;
-                index_sedentary++;
+                sessionName = getResources().getString(R.string.home_timeline_name_sedentary);
                 dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_sedentarry));
+            } else if (session.isInVehicle()) {
+                sessionName = getResources().getString(R.string.home_timeline_name_invehicle);
+                dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_invehicle));
             } else {
-                sessionName = getResources().getString(R.string.home_timeline_name_activity) + " " + index_active;
-                index_active++;
+                sessionName = getResources().getString(R.string.home_timeline_name_active);
                 dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_active));
             }
             TextView activityName = view.findViewById(R.id.tw_f_home_timeline_session_activity_name);
