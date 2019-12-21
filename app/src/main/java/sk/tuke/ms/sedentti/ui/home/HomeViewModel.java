@@ -85,7 +85,7 @@ public class HomeViewModel extends AndroidViewModel {
 
 
     private void loadStreak() {
-        new loadStreakAsyncTask(this.sessionHelper).execute();
+        new loadStreakAsyncTask().execute();
     }
 
     public LiveData<Integer> getSuccess() {
@@ -97,7 +97,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void loadSuccess() {
-        new loadSuccessAsyncTask(this.sessionHelper).execute();
+        new loadSuccessAsyncTask().execute();
     }
 
     public LiveData<Session> getPendingSession() {
@@ -109,7 +109,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void loadPendingSessionDuration() {
-        new loadPendingSessionDurationAsyncTask(this.sessionHelper).execute();
+        new loadPendingSessionDurationAsyncTask().execute();
     }
 
     public LiveData<ArrayList<Session>> getHomeTimelineSessions() {
@@ -129,7 +129,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void loadDailySedentaryTime() {
-        new loadDailySedentaryTimeAsyncTask(this.sessionHelper).execute();
+        new loadDailySedentaryTimeAsyncTask().execute();
     }
 
     public LiveData<Long> getDailyActiveDuration() {
@@ -141,7 +141,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void loadDailyActiveTime() {
-        new loadDailyActiveTimeAsyncTask(this.sessionHelper).execute();
+        new loadDailyActiveTimeAsyncTask().execute();
     }
 
     public MutableLiveData<Integer> getFinishedCount() {
@@ -153,21 +153,22 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void loadFinishedCount() {
-        new loadFinishedCountAsyncTask(this.sessionHelper).execute();
+        new loadFinishedCountAsyncTask().execute();
     }
 
     private void loadSessions() {
-        new loadSessionsAsyncTask(this.sessionHelper).execute();
+        new loadSessionsAsyncTask().execute();
+    }
+
+    public void savePendingSession() {
+        new savePendingSessionAsyncTask().execute();
+    }
+
+    public void discardPendingSession() {
+        new discardPendingSessionAsyncTask().execute();
     }
 
     private class loadSessionsAsyncTask extends AsyncTask<Void, Void, ArrayList<Session>> {
-
-        private SessionHelper sessionHelper;
-
-        loadSessionsAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected ArrayList<Session> doInBackground(Void... voids) {
             try {
@@ -185,16 +186,10 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private class loadStreakAsyncTask extends AsyncTask<Void, Void, Integer> {
-        private SessionHelper sessionHelper;
-
-        loadStreakAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected Integer doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getStreak();
+                return sessionHelper.getStreak();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -208,16 +203,10 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private class loadSuccessAsyncTask extends AsyncTask<Void, Void, Integer> {
-        private SessionHelper sessionHelper;
-
-        loadSuccessAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected Integer doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getSuccessRate(false);
+                return sessionHelper.getSuccessRate(false);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -231,16 +220,10 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private class loadPendingSessionDurationAsyncTask extends AsyncTask<Void, Void, Session> {
-        private SessionHelper sessionHelper;
-
-        loadPendingSessionDurationAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected Session doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getPending();
+                return sessionHelper.getPending();
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch (NullPointerException e) {
@@ -256,16 +239,10 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private class loadDailySedentaryTimeAsyncTask extends AsyncTask<Void, Void, Long> {
-        private SessionHelper sessionHelper;
-
-        public loadDailySedentaryTimeAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected Long doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getDailySedentaryDuration();
+                return sessionHelper.getDailySedentaryDuration();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -279,16 +256,10 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private class loadDailyActiveTimeAsyncTask extends AsyncTask<Void, Void, Long> {
-        private SessionHelper sessionHelper;
-
-        public loadDailyActiveTimeAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected Long doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getDailyActiveDuration();
+                return sessionHelper.getDailyActiveDuration();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -302,16 +273,10 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private class loadFinishedCountAsyncTask extends AsyncTask<Void, Void, Integer> {
-        private SessionHelper sessionHelper;
-
-        public loadFinishedCountAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected Integer doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getFinishedCount();
+                return sessionHelper.getFinishedCount();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -323,4 +288,29 @@ public class HomeViewModel extends AndroidViewModel {
             finishedCount.postValue(result);
         }
     }
+
+    private class savePendingSessionAsyncTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                sessionHelper.endPending();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+    private class discardPendingSessionAsyncTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                sessionHelper.discardPending();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
 }
