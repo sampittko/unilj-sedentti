@@ -754,12 +754,20 @@ public class SessionHelper {
      */
     public void discardPending() throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing discard");
-
         Session pendingSession = getPending();
-
         activityHelper.discardCorresponding(pendingSession);
-
         sessionDao.delete(pendingSession);
+    }
+
+    /**
+     * @throws SQLException
+     */
+    public void discardPendingAndUndoPrevious() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing discard");
+        discardPending();
+        Session latestSession = getLatest(1, false).get(0);
+        latestSession.setEndTimestamp(0L);
+        update(latestSession);
     }
 
     /**

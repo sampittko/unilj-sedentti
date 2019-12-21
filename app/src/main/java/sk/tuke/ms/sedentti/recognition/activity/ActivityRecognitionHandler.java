@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
@@ -44,11 +45,11 @@ public class ActivityRecognitionHandler {
                 .requestActivityTransitionUpdates(request, pendingIntent);
 
         task.addOnSuccessListener(
-                result -> Log.i(TAG, "Activity tracking started")
+                result -> Crashlytics.log(Log.DEBUG, TAG, "Activity tracking started")
         );
 
         task.addOnFailureListener(
-                e -> Log.i(TAG, "Activity tracking error starting" + e)
+                e -> Crashlytics.log(Log.DEBUG, TAG, "Activity tracking error starting" + e)
         );
 
     }
@@ -60,12 +61,12 @@ public class ActivityRecognitionHandler {
         task.addOnSuccessListener(
                 result -> {
                     pendingIntent.cancel();
-                    Log.i(TAG, "Activity tracking stopped");
+                    Crashlytics.log(Log.DEBUG, TAG, "Activity tracking stopped");
                 }
         );
 
         task.addOnFailureListener(
-                e -> Log.i(TAG, "Activity tracking error stop" + e)
+                e -> Crashlytics.log(Log.DEBUG, TAG, "Activity tracking error stop" + e)
         );
     }
 

@@ -128,7 +128,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         if (command.equals(PredefinedValues.COMMAND_START)) {
             registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
             this.activityRecognitionHandler.startTracking();
-            // TODO: 12/19/19 nie vzyd treba zapnnut 
+            // TODO: 12/19/19 nie vzyd treba zapnnut
             this.significantMotionDetector.start();
             Crashlytics.log(Log.DEBUG, TAG, "Sensing service started");
         } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
