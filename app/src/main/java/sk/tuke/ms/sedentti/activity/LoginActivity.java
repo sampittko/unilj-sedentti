@@ -3,6 +3,7 @@ package sk.tuke.ms.sedentti.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
@@ -50,15 +51,13 @@ public class LoginActivity extends AppCompatActivity {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             Crashlytics.log(Log.DEBUG, TAG, "Using the real profile");
             try {
                 if (!profileHelper.realProfileExists()) {
                     Crashlytics.log(Log.DEBUG, TAG, "Requesting profile information");
                     handleFirebaseAuthUI();
-                }
-                else {
+                } else {
                     Crashlytics.log(Log.DEBUG, TAG, "Existing profile is being used");
                     activeProfile = profileHelper.getRealProfile();
                     finalizeActiveProfileUpdate();
@@ -96,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         Crashlytics.log(Log.DEBUG, TAG, "FirebaseUI resulted");
 
         if (requestCode == PredefinedValues.FIREBASE_CODE_SIGN_IN) {
-             IdpResponse response = IdpResponse.fromResultIntent(data);
+            IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 assert user != null;
@@ -117,8 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
                     Crashlytics.log(Log.DEBUG, TAG, "Offline mode");
                     handleUserOffline();
-                }
-                else {
+                } else {
                     Crashlytics.log(Log.ERROR, TAG, "Login not successful and quitting app as a consequence");
                     finish();
                 }
@@ -132,10 +130,10 @@ public class LoginActivity extends AppCompatActivity {
         try {
             Profile profile = profileHelper.getRealProfile();
             if (profile == null) {
+                Toast.makeText(this, "For the initial start of Sedentti you have to be online", Toast.LENGTH_LONG).show();
                 Crashlytics.log(Log.ERROR, TAG, "There is no existing user, quitting app as a consequence");
                 finish();
-            }
-            else {
+            } else {
                 Crashlytics.log(Log.DEBUG, TAG, "Using existing user");
                 activeProfile = profile;
                 finalizeActiveProfileUpdate();
@@ -152,8 +150,7 @@ public class LoginActivity extends AppCompatActivity {
         if (activeProfile.getPersonalityTest() != null) {
             Crashlytics.log(Log.DEBUG, TAG, "Starting main activity");
             intent = new Intent(this, MainActivity.class);
-        }
-        else {
+        } else {
             Crashlytics.log(Log.DEBUG, TAG, "Starting personality test");
             intent = new Intent(this, PersonalityTestActivity.class);
         }
