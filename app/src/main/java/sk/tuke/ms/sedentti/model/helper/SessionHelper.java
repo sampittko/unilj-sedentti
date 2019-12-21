@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -122,16 +121,26 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        return new ArrayList<>(
-                sessionDaoQueryBuilder
-                        .limit(limit == 0L ? null : limit)
-                        .orderBy(Session.COLUMN_START_TIMESTAMP, false)
-                        .where()
-                        .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
-                        .and()
-                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                        .query()
-        );
+        sessionDaoQueryBuilder
+                .limit(limit == 0L ? null : limit)
+                .orderBy(Session.COLUMN_START_TIMESTAMP, false)
+                .where()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                .prepare();
+
+        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+
+        return new ArrayList<>(sessionDaoQueryBuilder.query());
+    }
+
+    private void prepareQueryForSessionsInVehicle(boolean countSessionsInVehicle) throws SQLException {
+        if (!countSessionsInVehicle) {
+            sessionDaoQueryBuilder
+                    .where()
+                    .and()
+                    .eq(Session.COLUMN_IN_VEHICLE, false)
+                    .prepare();
+        }
     }
 
     /**
@@ -214,16 +223,18 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        return (int) sessionDaoQueryBuilder
+        sessionDaoQueryBuilder
                 .where()
                 .gt(Session.COLUMN_START_TIMESTAMP, lastUnsuccessful.getStartTimestamp())
                 .and()
                 .ne(Session.COLUMN_END_TIMESTAMP, 0L)
                 .and()
-                .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
-                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .countOf();
+                .prepare();
+
+        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+
+        return (int) sessionDaoQueryBuilder.countOf();
     }
 
     /**
@@ -249,7 +260,7 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        List<Session> successfulSessions = sessionDaoQueryBuilder
+        sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
@@ -257,14 +268,16 @@ public class SessionHelper {
                 .and()
                 .eq(Session.COLUMN_SUCCESSFUL, true)
                 .and()
-                .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
-                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .query();
+                .prepare();
+
+        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+
+        List<Session> successfulSessions = sessionDaoQueryBuilder.query();
 
         sessionDaoQueryBuilder.reset();
 
-        List<Session> unsuccessfulSessions = sessionDaoQueryBuilder
+        sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
@@ -272,10 +285,12 @@ public class SessionHelper {
                 .and()
                 .eq(Session.COLUMN_SUCCESSFUL, false)
                 .and()
-                .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
-                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .query();
+
+        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+
+        List<Session> unsuccessfulSessions = sessionDaoQueryBuilder.query();
 
         return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
     }
@@ -536,18 +551,18 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        List<Session> sessions = sessionDaoQueryBuilder
+        sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
                 .eq(Session.COLUMN_SEDENTARY, sedentary)
                 .and()
-                .eq(Session.COLUMN_IN_VEHICLE, false)
-                .and()
-                .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
-                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .query();
+                .prepare();
+
+        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+
+        List<Session> sessions = sessionDaoQueryBuilder.query();
 
         return getTotalDuration(sessions);
     }
@@ -606,8 +621,15 @@ public class SessionHelper {
     private ArrayList<Session> getSuccessful(@NotNull ArrayList<Session> sessionsOfDay, boolean countSessionsInVehicle) {
         ArrayList<Session> successfulSessions = new ArrayList<>();
         for (Session session : sessionsOfDay) {
-            if (session.isSuccessful() && session.isInVehicle() == countSessionsInVehicle) {
-                successfulSessions.add(session);
+            if (countSessionsInVehicle) {
+                if (session.isSuccessful()) {
+                    successfulSessions.add(session);
+                }
+            }
+            else {
+                if (session.isSuccessful() && !session.isInVehicle()) {
+                    successfulSessions.add(session);
+                }
             }
         }
         return successfulSessions;
@@ -616,8 +638,15 @@ public class SessionHelper {
     private ArrayList<Session> getUnsuccessful(@NotNull ArrayList<Session> sessionsOfDay, boolean countSessionsInVehicle) {
         ArrayList<Session> unsuccessfulSessions = new ArrayList<>();
         for (Session session : sessionsOfDay) {
-            if (!session.isSuccessful() && session.isInVehicle() == countSessionsInVehicle) {
-                unsuccessfulSessions.add(session);
+            if (countSessionsInVehicle) {
+                if (!session.isSuccessful()) {
+                    unsuccessfulSessions.add(session);
+                }
+            }
+            else {
+                if (!session.isSuccessful() && !session.isInVehicle()) {
+                    unsuccessfulSessions.add(session);
+                }
             }
         }
         return unsuccessfulSessions;
