@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -94,7 +95,7 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getHomeTimelineSessions() throws SQLException {
-        return getLatest(HOME_TIMELINE_SESSIONS_LIMIT);
+        return getLatest(HOME_TIMELINE_SESSIONS_LIMIT, true);
     }
 
     /**
@@ -102,7 +103,11 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public ArrayList<Session> getLatest() throws SQLException {
-        return getLatest(0);
+        return getLatest(0, true);
+    }
+
+    public ArrayList<Session> getLatest(boolean countSessionsInVehicle) throws SQLException {
+        return getLatest(0, countSessionsInVehicle);
     }
 
     /**
@@ -110,9 +115,10 @@ public class SessionHelper {
      * @return List of the latest sessions (potentioal pending session included)
      * @throws SQLException In case that communication with DB was not successful
      */
-    public ArrayList<Session> getLatest(long limit) throws SQLException {
+    public ArrayList<Session> getLatest(long limit, boolean countSessionsInVehicle) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getLatest");
         Crashlytics.log(Log.DEBUG, TAG, "@limit: " + limit);
+        Crashlytics.log(Log.DEBUG, TAG, "@countSessionsInVehicle: " + countSessionsInVehicle);
 
         sessionDaoQueryBuilder.reset();
 
@@ -121,6 +127,8 @@ public class SessionHelper {
                         .limit(limit == 0L ? null : limit)
                         .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                         .where()
+                        .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
+                        .and()
                         .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                         .query()
         );
@@ -167,7 +175,7 @@ public class SessionHelper {
 
         if (lastUnsuccessful == null) {
             Crashlytics.log(Log.DEBUG, TAG, "Last unsuccessful session not found");
-            int latestSessionsCount = getLatest().size();
+            int latestSessionsCount = getLatest(false).size();
 
             if (pendingExists()) {
                 Crashlytics.log(Log.DEBUG, TAG, "Returning the amount of all sessions minus pending session");
@@ -180,7 +188,7 @@ public class SessionHelper {
         }
 
         Crashlytics.log(Log.DEBUG, TAG, "Last unsuccessful session found successfully");
-        return getConsequentSuccessfulCount(lastUnsuccessful);
+        return getConsequentSuccessfulCount(lastUnsuccessful, false);
     }
 
     private Session getLastUnsuccessful() throws SQLException {
@@ -199,9 +207,10 @@ public class SessionHelper {
                 .queryForFirst();
     }
 
-    private int getConsequentSuccessfulCount(@NotNull Session lastUnsuccessful) throws SQLException {
+    private int getConsequentSuccessfulCount(@NotNull Session lastUnsuccessful, boolean countSessionsInVehicle) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getConsequentSuccessfulCount");
         Crashlytics.log(Log.DEBUG, TAG, "@lastUnsuccessful ID: " + lastUnsuccessful.getId());
+        Crashlytics.log(Log.DEBUG, TAG, "@countSessionsInVehicle: " + countSessionsInVehicle);
 
         sessionDaoQueryBuilder.reset();
 
@@ -211,6 +220,8 @@ public class SessionHelper {
                 .and()
                 .ne(Session.COLUMN_END_TIMESTAMP, 0L)
                 .and()
+                .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
+                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .countOf();
     }
@@ -219,18 +230,20 @@ public class SessionHelper {
      * @return Integer value representing the sessions success ratio in the current day
      * @throws SQLException In case that communication with DB was not successful
      */
-    public int getSuccessRate() throws SQLException {
-        return getSuccessRate(new Date());
+    public int getSuccessRate(boolean countSessionsInVehicle) throws SQLException {
+        return getSuccessRate(new Date(), countSessionsInVehicle);
     }
 
     /**
      * @param date Date object representing the day in which to calculate the success rate
+     * @param countSessionsInVehicle
      * @return Integer value representing the sessions success ratio in the spectified day
      * @throws SQLException In case that communication with DB was not successful
      */
-    public int getSuccessRate(Date date) throws SQLException {
+    public int getSuccessRate(Date date, boolean countSessionsInVehicle) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getSuccessRate");
         Crashlytics.log(Log.DEBUG, TAG, "@date: " + date);
+        Crashlytics.log(Log.DEBUG, TAG, "@countSessionsInVehicle: " + countSessionsInVehicle);
 
         Date normalizedDate = DateHelper.getNormalized(date);
 
@@ -244,6 +257,8 @@ public class SessionHelper {
                 .and()
                 .eq(Session.COLUMN_SUCCESSFUL, true)
                 .and()
+                .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
+                .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .query();
 
@@ -256,6 +271,8 @@ public class SessionHelper {
                 .gt(Session.COLUMN_END_TIMESTAMP, 0)
                 .and()
                 .eq(Session.COLUMN_SUCCESSFUL, false)
+                .and()
+                .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .query();
@@ -330,7 +347,11 @@ public class SessionHelper {
             return session.getDuration() <= appSPHelper.getSedentarySecondsLimit();
         }
         else {
-            Crashlytics.log(Log.DEBUG, TAG, "Session is not sedentary");
+            if (session.isInVehicle()) {
+                Crashlytics.log(Log.DEBUG, TAG, "Session is successful due to being in a vehicle");
+                return true;
+            }
+            Crashlytics.log(Log.DEBUG, TAG, "Session is active");
             return session.getDuration() >= appSPHelper.getActiveSecondsLimit();
         }
     }
@@ -413,6 +434,7 @@ public class SessionHelper {
 
         Session newSession = new Session(
                 isSedentary(activityType),
+                activityType == DetectedActivity.IN_VEHICLE,
                 new Date().getTime(),
                 profile
         );
@@ -434,6 +456,7 @@ public class SessionHelper {
 
         Session newSession = new Session(
                 sedentary,
+                false,
                 new Date().getTime(),
                 profile
         );
@@ -457,7 +480,7 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public long getDailySedentaryDuration(Date date) throws SQLException {
-        return getDailyDuration(date, true);
+        return getDailyDuration(date, true, false);
     }
 
     /**
@@ -474,13 +497,31 @@ public class SessionHelper {
      * @throws SQLException In case that communication with DB was not successful
      */
     public long getDailyActiveDuration(Date date) throws SQLException {
-        return getDailyDuration(date, false);
+        return getDailyDuration(date, false, false);
     }
 
-    private long getDailyDuration(Date date, boolean sedentary) throws SQLException {
+    /**
+     * @return
+     * @throws SQLException
+     */
+    public long getDailyInVehicleDuration() throws SQLException {
+        return getDailyInVehicleDuration(new Date());
+    }
+
+    /**
+     * @param date
+     * @return
+     * @throws SQLException
+     */
+    public long getDailyInVehicleDuration(Date date) throws SQLException {
+        return getDailyDuration(date, false, true);
+    }
+
+    private long getDailyDuration(Date date, boolean sedentary, boolean countSessionsInVehicle) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getDailyDuration");
         Crashlytics.log(Log.DEBUG, TAG, "@date: " + date);
         Crashlytics.log(Log.DEBUG, TAG, "@sedentary: " + sedentary);
+        Crashlytics.log(Log.DEBUG, TAG, "@countSessionsInVehicle: " + countSessionsInVehicle);
 
         Date normalizedDate = DateHelper.getNormalized(date);
 
@@ -491,6 +532,10 @@ public class SessionHelper {
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
                 .eq(Session.COLUMN_SEDENTARY, sedentary)
+                .and()
+                .eq(Session.COLUMN_IN_VEHICLE, false)
+                .and()
+                .eq(Session.COLUMN_IN_VEHICLE, countSessionsInVehicle)
                 .and()
                 .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                 .query();
@@ -541,28 +586,28 @@ public class SessionHelper {
     public int getDaySuccessRate(ArrayList<Session> sessionsOfDay) {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getDaySuccessRate");
 
-        ArrayList<Session> successfulSessions = getSuccessful(sessionsOfDay);
+        ArrayList<Session> successfulSessions = getSuccessful(sessionsOfDay, false);
 
-        ArrayList<Session> unsuccessfulSessions = getUnsuccessful(sessionsOfDay);
+        ArrayList<Session> unsuccessfulSessions = getUnsuccessful(sessionsOfDay, false);
 
         return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
     }
 
-    @Contract("_ -> param1")
-    private ArrayList<Session> getSuccessful(@NotNull ArrayList<Session> sessionsOfDay) {
+    @Contract("_, _ -> param1")
+    private ArrayList<Session> getSuccessful(@NotNull ArrayList<Session> sessionsOfDay, boolean countSessionsInVehicle) {
         ArrayList<Session> successfulSessions = new ArrayList<>();
         for (Session session : sessionsOfDay) {
-            if (session.isSuccessful()) {
+            if (session.isSuccessful() && session.isInVehicle() == countSessionsInVehicle) {
                 successfulSessions.add(session);
             }
         }
         return successfulSessions;
     }
 
-    private ArrayList<Session> getUnsuccessful(@NotNull ArrayList<Session> sessionsOfDay) {
+    private ArrayList<Session> getUnsuccessful(@NotNull ArrayList<Session> sessionsOfDay, boolean countSessionsInVehicle) {
         ArrayList<Session> unsuccessfulSessions = new ArrayList<>();
         for (Session session : sessionsOfDay) {
-            if (!session.isSuccessful()) {
+            if (!session.isSuccessful() && session.isInVehicle() == countSessionsInVehicle) {
                 unsuccessfulSessions.add(session);
             }
         }
@@ -594,7 +639,9 @@ public class SessionHelper {
 
         for (Session session : sessionsOfDay) {
             if (session.getDuration() != 0L && session.isSedentary() == sedentary) {
-                totalDuration += session.getDuration();
+                if (sedentary && !session.isInVehicle()) {
+                    totalDuration += session.getDuration();
+                }
             }
         }
 

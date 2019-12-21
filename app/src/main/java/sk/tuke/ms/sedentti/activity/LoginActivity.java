@@ -6,12 +6,15 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
 import sk.tuke.ms.sedentti.config.Configuration;
@@ -93,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
         Crashlytics.log(Log.DEBUG, TAG, "FirebaseUI resulted");
 
         if (requestCode == PredefinedValues.FIREBASE_CODE_SIGN_IN) {
-            // IdpResponse response = IdpResponse.fromResultIntent(data);
+             IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 assert user != null;
@@ -109,9 +112,36 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else {
-                Crashlytics.log(Log.ERROR, TAG, "Login not successful and quitting app as a consequence");
+                assert response != null;
+                // No internet connection error
+                if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    Crashlytics.log(Log.DEBUG, TAG, "Offline mode");
+                    handleUserOffline();
+                }
+                else {
+                    Crashlytics.log(Log.ERROR, TAG, "Login not successful and quitting app as a consequence");
+                    finish();
+                }
+
+            }
+        }
+    }
+
+    private void handleUserOffline() {
+        Crashlytics.log(Log.DEBUG, TAG, "Handling user offline");
+        try {
+            Profile profile = profileHelper.getRealProfile();
+            if (profile == null) {
+                Crashlytics.log(Log.ERROR, TAG, "There is no existing user, quitting app as a consequence");
                 finish();
             }
+            else {
+                Crashlytics.log(Log.DEBUG, TAG, "Using existing user");
+                activeProfile = profile;
+                finalizeActiveProfileUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

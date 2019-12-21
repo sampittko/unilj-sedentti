@@ -40,11 +40,13 @@
             </intent-filter>
         </activity>
         <receiver
-            android:enabled="true" android:name=".startup.SystemBootBroadcastReceiver"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:enabled="true"
+            android:exported="true"
+            android:name=".startup.SystemBootBroadcastReceiver"
         >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

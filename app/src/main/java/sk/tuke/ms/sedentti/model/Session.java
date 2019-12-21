@@ -14,6 +14,7 @@ import sk.tuke.ms.sedentti.model.helper.DateHelper;
 public class Session extends DayModel {
     public final static String COLUMN_ID = "id";
     public final static String COLUMN_SEDENTARY = "sedentary";
+    public final static String COLUMN_IN_VEHICLE = "inVehicle";
     public final static String COLUMN_START_TIMESTAMP = "startTimestamp";
     public final static String COLUMN_END_TIMESTAMP = "endTimestamp";
     public final static String COLUMN_DATE = "date";
@@ -27,6 +28,8 @@ public class Session extends DayModel {
     private long id;
     @DatabaseField(canBeNull = false, columnName = COLUMN_SEDENTARY)
     private boolean sedentary;
+    @DatabaseField(canBeNull = false, columnName = COLUMN_IN_VEHICLE)
+    private boolean inVehicle;
     @DatabaseField(canBeNull = false, columnName = COLUMN_START_TIMESTAMP)
     private long startTimestamp;
     @DatabaseField(columnName = COLUMN_END_TIMESTAMP)
@@ -48,8 +51,9 @@ public class Session extends DayModel {
 
     }
 
-    public Session(boolean sedentary, long startTimestamp, Profile profile) {
+    public Session(boolean sedentary, boolean inVehicle, long startTimestamp, Profile profile) {
         this.sedentary = sedentary;
+        this.inVehicle = inVehicle;
         this.startTimestamp = startTimestamp;
         this.date = DateHelper.getNormalized(new Date());
         this.uploaded = false;
@@ -71,6 +75,14 @@ public class Session extends DayModel {
 
     public void setSedentary(boolean sedentary) {
         this.sedentary = sedentary;
+    }
+
+    public boolean isInVehicle() {
+        return inVehicle;
+    }
+
+    public void setInVehicle(boolean inVehicle) {
+        this.inVehicle = inVehicle;
     }
 
     public long getStartTimestamp() {

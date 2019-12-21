@@ -1,5 +1,5 @@
 #
-# generated on 2019/12/20 11:15:07
+# generated on 2019/12/21 10:51:36
 #
 # --table-start--
 dataClass=sk.tuke.ms.sedentti.model.PersonalityTest
@@ -98,6 +98,11 @@ generatedId=true
 # --field-start--
 fieldName=sedentary
 columnName=sedentary
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=inVehicle
+columnName=inVehicle
 canBeNull=false
 # --field-end--
 # --field-start--

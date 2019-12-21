@@ -130,7 +130,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             this.activityRecognitionHandler.startTracking();
             // TODO: 12/19/19 nie vzyd treba zapnnut 
             this.significantMotionDetector.start();
-            Log.i(TAG, "Sensing service started");
+            Crashlytics.log(Log.DEBUG, TAG, "Sensing service started");
         } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
             this.activityRecognitionHandler.stopTracking();
             this.significantMotionDetector.stop();
@@ -139,7 +139,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
-            Log.i(TAG, "Sensing service stopped");
+            Crashlytics.log(Log.DEBUG, TAG, "Sensing service stopped");
         }
     }
 
@@ -341,6 +341,16 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             if (lastActivity == null) {
                 return true;
             }
+
+            // IN_VEHICLE handling
+            if ((newActivityType == DetectedActivity.IN_VEHICLE &&
+                lastActivity.getType() != DetectedActivity.IN_VEHICLE) || (
+                newActivityType != DetectedActivity.IN_VEHICLE &&
+                lastActivity.getType() == DetectedActivity.IN_VEHICLE
+            )) {
+                return true;
+            }
+
             return (newActivityType == DetectedActivity.STILL && lastActivity.getType() != DetectedActivity.STILL)
                     || (lastActivity.getType() == DetectedActivity.STILL && newActivityType != DetectedActivity.STILL);
         }

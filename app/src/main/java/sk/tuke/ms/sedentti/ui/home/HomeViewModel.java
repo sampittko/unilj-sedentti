@@ -217,7 +217,7 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         protected Integer doInBackground(Void... voids) {
             try {
-                return this.sessionHelper.getSuccessRate();
+                return this.sessionHelper.getSuccessRate(false);
             } catch (SQLException e) {
                 e.printStackTrace();
             }

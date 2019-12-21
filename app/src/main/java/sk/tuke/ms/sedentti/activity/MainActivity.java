@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             setBottomMenu();
         } catch (SQLException e) {
             e.printStackTrace();
-            Crashlytics.log(Log.DEBUG, TAG, "Unable to execute startup tasks, quitting application as a consequence");
+            Crashlytics.log(Log.ERROR, TAG, "Unable to execute startup tasks, quitting application as a consequence");
             finish();
         }
     }
