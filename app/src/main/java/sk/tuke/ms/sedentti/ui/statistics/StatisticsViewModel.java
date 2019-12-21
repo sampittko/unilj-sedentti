@@ -35,6 +35,7 @@ public class StatisticsViewModel extends AndroidViewModel {
         try {
             activeProfile = profileHelper.getActive();
         } catch (SQLException e) {
+            // TODO: 12/21/19 wtf what was that
             Toast.makeText(this.getApplication(), "Error, no profile", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
@@ -52,17 +53,10 @@ public class StatisticsViewModel extends AndroidViewModel {
     }
 
     private void loadSessions() {
-        new loadSessionsAsyncTask(this.sessionHelper).execute();
+        new loadSessionsAsyncTask().execute();
     }
 
     private class loadSessionsAsyncTask extends AsyncTask<Void, Void, ArrayList<Session>> {
-
-        private SessionHelper sessionHelper;
-
-        loadSessionsAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected ArrayList<Session> doInBackground(Void... voids) {
             try {
@@ -88,17 +82,10 @@ public class StatisticsViewModel extends AndroidViewModel {
     }
 
     private void loadDayModels() {
-        new loadDayModelsAsyncTask(this.sessionHelper).execute();
+        new loadDayModelsAsyncTask().execute();
     }
 
     private class loadDayModelsAsyncTask extends AsyncTask<Void, Void, ArrayList<DayOverview>> {
-
-        private SessionHelper sessionHelper;
-
-        public loadDayModelsAsyncTask(SessionHelper sessionHelper) {
-            this.sessionHelper = sessionHelper;
-        }
-
         @Override
         protected ArrayList<DayOverview> doInBackground(Void... voids) {
             try {

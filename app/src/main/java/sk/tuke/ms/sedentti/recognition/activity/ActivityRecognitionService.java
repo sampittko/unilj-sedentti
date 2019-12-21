@@ -67,6 +67,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         public void run() {
             time += TIME_STEP;
             processTimeDependency();
+
             timeHandler.postDelayed(countTime, TIME_STEP);
         }
     };
