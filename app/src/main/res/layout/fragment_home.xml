@@ -255,7 +255,7 @@
                             style="@style/TextAppearance.MaterialComponents.Subtitle1"
                             android:layout_width="120dp"
                             android:layout_height="wrap_content"
-                            android:text="Active" />
+                            android:text="@string/home_timeline_name_active" />
 
                         <TextView
                             android:id="@+id/tw_f_home_value_active"
@@ -297,7 +297,7 @@
                             style="@style/TextAppearance.MaterialComponents.Subtitle1"
                             android:layout_width="120dp"
                             android:layout_height="wrap_content"
-                            android:text="Sedentary" />
+                            android:text="@string/home_timeline_name_sedentary" />
 
                         <TextView
                             android:id="@+id/tw_f_home_value_sedentary"
@@ -339,7 +339,7 @@
                             style="@style/TextAppearance.MaterialComponents.Subtitle1"
                             android:layout_width="120dp"
                             android:layout_height="wrap_content"
-                            android:text="On the move" />
+                            android:text="@string/home_timeline_name_invehicle" />
 
                         <TextView
                             android:id="@+id/tw_f_home_value_vehicle"
