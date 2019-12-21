@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true"
@@ -16,12 +15,13 @@
             android:id="@+id/iw_f_home_profile_image"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_marginEnd="32dp"
             android:src="@drawable/ic_people_black_24dp"
             app:civ_border_color="#FF000000"
             app:civ_border_width="1dp"
             app:layout_constraintBottom_toBottomOf="@+id/tw_f_home_text_hello"
-            app:layout_constraintTop_toTopOf="@+id/tw_f_home_text_hello"
-            tools:layout_editor_absoluteX="331dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tw_f_home_text_hello" />
 
         <TextView
             android:id="@+id/tw_f_home_text_hello"
@@ -253,15 +253,17 @@
                         <TextView
                             android:id="@+id/tw_f_home_text_active"
                             style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:layout_width="120dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:minWidth="100dp"
                             android:text="@string/home_timeline_name_active" />
 
                         <TextView
                             android:id="@+id/tw_f_home_value_active"
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:layout_width="120dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:minWidth="100dp"
                             android:text="0 min" />
                     </LinearLayout>
 
@@ -295,15 +297,17 @@
                         <TextView
                             android:id="@+id/tw_f_home_text_sedentary"
                             style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:layout_width="120dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:minWidth="100dp"
                             android:text="@string/home_timeline_name_sedentary" />
 
                         <TextView
                             android:id="@+id/tw_f_home_value_sedentary"
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:layout_width="120dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:minWidth="100dp"
                             android:text="0 min" />
                     </LinearLayout>
                 </LinearLayout>
@@ -337,15 +341,17 @@
                         <TextView
                             android:id="@+id/tw_f_home_text_vehicle"
                             style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:layout_width="120dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:minWidth="100dp"
                             android:text="@string/home_timeline_name_invehicle" />
 
                         <TextView
                             android:id="@+id/tw_f_home_value_vehicle"
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:layout_width="120dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:minWidth="100dp"
                             android:text="0 min" />
                     </LinearLayout>
                 </LinearLayout>
