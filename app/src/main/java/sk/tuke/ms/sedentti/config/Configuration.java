@@ -59,14 +59,15 @@ public abstract class Configuration {
     public static final String DB_EXPORTER_CSV_HEADER_COLUMN_1 = "USER";
     public static final String DB_EXPORTER_CSV_HEADER_COLUMN_2 = "SESSION";
     public static final String DB_EXPORTER_CSV_HEADER_COLUMN_3 = "SESSION_SEDENTARY";
-    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_4 = "SESSION_START_TIMESTAMP";
-    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_5 = "SESSION_END_TIMESTAMP";
-    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_6 = "SESSION_DURATION";
-    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_7 = "SESSION_SUCCESSFUL";
-    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_8 = "SESSION_DATE";
-    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_9 = "ACTIVITY";
-    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_10 = "ACTIVITY_TYPE";
-    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_11 = "ACTIVITY_TIMESTAMP";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_4 = "SESSION_IN_VEHICLE";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_5 = "SESSION_START_TIMESTAMP";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_6 = "SESSION_END_TIMESTAMP";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_7 = "SESSION_DURATION";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_8 = "SESSION_SUCCESSFUL";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_9 = "SESSION_DATE";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_10 = "ACTIVITY";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_11 = "ACTIVITY_TYPE";
+    public static final String DB_EXPORTER_CSV_HEADER_COLUMN_12 = "ACTIVITY_TIMESTAMP";
     public static final File DB_EXPORTER_EXPORT_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS); // TODO set database file export location to the different one (currently Downloads folder)
 
     //

@@ -330,6 +330,15 @@ public class SessionHelper {
         update(session);
     }
 
+    /**
+     * @throws SQLException
+     */
+    public void endPending() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing endPending");
+        Session pendingSession= getPending();
+        end(pendingSession);
+    }
+
     private long getDuration(long startTimestamp, long endTimestamp) {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getDuration");
         Crashlytics.log(Log.DEBUG, TAG, "@startTimestamp: " + startTimestamp);

@@ -107,7 +107,8 @@ public class DatabaseExporter {
                 Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_8 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                 Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_9 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                 Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_10 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
-                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_11;
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_11 + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                Configuration.DB_EXPORTER_CSV_HEADER_COLUMN_12;
 
         printWriter.println(CSVHeader);
         Crashlytics.log(Log.DEBUG, TAG, "CSV header: " + CSVHeader);
@@ -129,7 +130,8 @@ public class DatabaseExporter {
                     record =
                         profile.getFirebaseAuthUid() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         getGloballyUniqueIdentifierOf(session.getId()) + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
-                        session.isSuccessful() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        session.isSedentary() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
+                        session.isInVehicle() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         session.getStartTimestamp() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         session.getEndTimestamp() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
                         session.getDuration() + PredefinedValues.DB_EXPORTER_CSV_DATA_SEPARATOR +
