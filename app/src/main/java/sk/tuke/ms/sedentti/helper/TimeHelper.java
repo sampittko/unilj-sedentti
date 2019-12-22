@@ -35,7 +35,7 @@ public class TimeHelper {
 
         String duration = "";
 
-        if (MM > 0 || HH > 0) {
+        if (MM > 0 || HH > 0 || timestamp > 0) {
             duration = "lasted ";
             if (HH > 1) {
                 duration += HH + " hours ";
