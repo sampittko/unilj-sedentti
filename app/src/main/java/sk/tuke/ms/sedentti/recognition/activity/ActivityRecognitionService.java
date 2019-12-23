@@ -79,6 +79,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     };
 
     private void processTimeDependency() {
+        // TODO: 12/18/19 handle notification, sigmov etc
         int activeLimit = this.appPreferences.getActiveLimit();
 
         if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
@@ -99,7 +100,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             notificationManager.cancel(MOTION_NOTIFICATION_ID);
         }
 
-        // TODO: 12/23/19 add more notification 
+        // TODO: 12/23/19 add more notification
     }
 
     private void startTicking() {
@@ -109,13 +110,12 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     private void updateCurrentSession() {
         try {
-            Session session = sessionHelper.getPending();
-            if (session != null) {
-                this.currentSession = session;
-                this.time = this.sessionHelper.getDuration(session);
-            }
+            this.currentSession = sessionHelper.getPending();
+            this.time = currentSession.getDuration();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            Crashlytics.log(Log.DEBUG, TAG, "There is no pending session at the moment");
         }
     }
 
