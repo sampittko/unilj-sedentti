@@ -30,7 +30,7 @@ public class SessionHelper {
     private final int HIGHEST_SUCCESS_RATE = 100;
     private final int LOWEST_SUCCESS_RATE = 0;
 
-    private final String TAG = "SessionHelper";
+    private final static String TAG = "SessionHelper";
 
     public enum SessionsInterval {
         LAST_MONTH,
@@ -427,7 +427,7 @@ public class SessionHelper {
     @Contract("_ -> param1")
     private Session getPendingWithDuration(Session pendingSession) {
         try {
-            pendingSession.setDuration(new Date().getTime() - pendingSession.getStartTimestamp());
+            pendingSession.setDuration(getDuration(pendingSession));
         }
         catch (NullPointerException e) {
             pendingSession.setDuration(0L);
@@ -819,6 +819,9 @@ public class SessionHelper {
      */
     @NotNull
     public static String getStringifiedSessions(@NotNull ArrayList<Session> sessions) {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getStringifiedSessions");
+        Crashlytics.log(Log.DEBUG, TAG, "@sessions SIZE: " + sessions.size());
+
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < sessions.size(); i++) {
             Session session = sessions.get(i);
@@ -835,6 +838,8 @@ public class SessionHelper {
      * @throws SQLException
      */
     public boolean isPendingReal() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing isPendingReal");
+
         Session pendingSession = getPending();
         return pendingSession != null && isReal(pendingSession);
     }
@@ -845,6 +850,9 @@ public class SessionHelper {
      * @throws SQLException
      */
     public boolean isReal(@NotNull Session session) throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing isReal");
+        Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
+
         ArrayList<Activity> activities = activityHelper.getCorresponding(session);
         return activities.size() != 1 || activities.get(0).getType() != DetectedActivity.UNKNOWN;
     }
@@ -854,6 +862,9 @@ public class SessionHelper {
      * @return
      */
     public long getDuration(@NotNull Session session) {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getDuration");
+        Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
+
         return session.getEndTimestamp() == 0L ? new Date().getTime() - session.getStartTimestamp() : session.getDuration();
     }
 }

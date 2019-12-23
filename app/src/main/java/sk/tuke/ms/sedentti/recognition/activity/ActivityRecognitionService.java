@@ -82,24 +82,26 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         // TODO: 12/18/19 handle notification, sigmov etc
         int activeLimit = this.appPreferences.getActiveLimit();
 
-        Log.d("note", "Processing time, current time " + time + " limit " + activeLimit);
-        Log.d("note", "Sedentary " + this.currentSession.isSedentary() + " In Vehicle " + this.currentSession.isInVehicle() + " Active time passed " + isActiveTimePassed);
-        if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
-            Log.d("note", "To be turned off");
-            this.isActiveTimePassed = true;
-            try {
-                if (!this.sessionHelper.isPendingReal()) {
-                    Log.d("note", "To be created new");
+        if (currentSession != null) {
+            Crashlytics.log(Log.DEBUG, "note", "Processing time, current time " + time + " limit " + activeLimit);
+            Crashlytics.log(Log.DEBUG, "note", "Sedentary " + this.currentSession.isSedentary() + " In Vehicle " + this.currentSession.isInVehicle() + " Active time passed " + isActiveTimePassed);
+            if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
+                Crashlytics.log(Log.DEBUG, "note", "To be turned off");
+                this.isActiveTimePassed = true;
+                try {
+                    if (!this.sessionHelper.isPendingReal()) {
+                        Crashlytics.log(Log.DEBUG, "note", "To be created new");
 //                    je umela ukonci a zacni novu sedentary
-                    Session newSession = sessionHelper.createAndReplacePending(true);
-                    activityHelper.create(DetectedActivity.STILL, newSession);
-                    handleSignificantMotion(DetectedActivity.STILL);
-                    setCurrentSession(newSession);
+                        Session newSession = sessionHelper.createAndReplacePending(true);
+                        activityHelper.create(DetectedActivity.STILL, newSession);
+                        handleSignificantMotion(DetectedActivity.STILL);
+                        setCurrentSession(newSession);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
+                notificationManager.cancel(MOTION_NOTIFICATION_ID);
             }
-            notificationManager.cancel(MOTION_NOTIFICATION_ID);
         }
     }
 
@@ -110,13 +112,12 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     private void updateCurrentSession() {
         try {
-            Session session = sessionHelper.getPending();
-            if (session != null) {
-                this.currentSession = session;
-                this.time = this.sessionHelper.getDuration(session);
-            }
+            this.currentSession = sessionHelper.getPending();
+            this.time = currentSession.getDuration();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            Crashlytics.log(Log.DEBUG, TAG, "There is no pending session at the moment");
         }
     }
 

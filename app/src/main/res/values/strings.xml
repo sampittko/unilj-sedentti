@@ -5,25 +5,28 @@
     <string name="menu_title_profile">Profile</string>
     <string name="title_activity_settings">Settings</string>
 
-
     <string name="home_timeline_name_sedentary">Sedentary</string>
     <string name="home_timeline_name_active">Active</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-
     <string name="default_web_client_id" translatable="false">137652915710-hnu3118va0bhsgeuvg7q77fvk294el02.apps.googleusercontent.com</string>
     <string name="home_timeline_name_invehicle">In vehicle</string>
+
+    <string-array name="sync_intervals">
+        <item>4 hours</item>
+        <item>8 hours</item>
+        <item>12 hours</item>
+        <item>16 hours</item>
+        <item>20 hours</item>
+        <item>24 hours</item>
+    </string-array>
+
+    <integer-array name="sync_intervals_values">
+        <item>4</item>
+        <item>8</item>
+        <item>12</item>
+        <item>16</item>
+        <item>20</item>
+        <item>24</item>
+    </integer-array>
 </resources>
+
