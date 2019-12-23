@@ -781,16 +781,14 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        ArrayList<Session> sessions = new ArrayList<>(
+        return new ArrayList<>(
                 sessionDaoQueryBuilder
-                    .where()
-                    .eq(Session.COLUMN_EXPORTED, false)
-                    .and()
-                    .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                    .query()
+                        .where()
+                        .eq(Session.COLUMN_EXPORTED, false)
+                        .and()
+                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                        .query()
         );
-
-        return sessions;
     }
 
     /**

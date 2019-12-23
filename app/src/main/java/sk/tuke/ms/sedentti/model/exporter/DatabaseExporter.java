@@ -60,7 +60,7 @@ public class DatabaseExporter {
 
         dbFilePath = generateFile(sessions);
 
-        if (regenerate) {
+        if (!regenerate) {
             sessionHelper.setExported(sessions);
         }
 
