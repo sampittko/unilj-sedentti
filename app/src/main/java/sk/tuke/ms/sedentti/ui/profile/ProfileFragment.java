@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
-
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MotivateMeActivity;
 import sk.tuke.ms.sedentti.activity.StatusActivity;
@@ -35,7 +34,6 @@ public class ProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
     }
 
     @Override
@@ -58,7 +56,6 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.action_motivate_me:
                 startActivity(new Intent(getContext(), MotivateMeActivity.class));

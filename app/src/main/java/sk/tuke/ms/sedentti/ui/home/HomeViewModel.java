@@ -37,7 +37,7 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         public void run() {
             tickHandler.postDelayed(timeUpdater, 1000);
-            loadPendingSessionDuration();
+            loadPendingSession();
         }
     };
 
@@ -57,6 +57,18 @@ public class HomeViewModel extends AndroidViewModel {
         startTicker();
     }
 
+    public void updateModel() {
+        loadDailyActiveTime();
+        loadDailySedentaryTime();
+        loadDailyVehicleTime();
+        loadFinishedCount();
+        // TODO: 12/23/19 now updated by handler ticker, should be made more elegant
+//        loadPendingSession();
+        loadSessions();
+        loadStreak();
+        loadSuccess();
+    }
+    
     private void startTicker() {
         this.tickHandler.removeCallbacks(timeUpdater);
         this.tickHandler.postDelayed(timeUpdater, 1000);
@@ -104,13 +116,13 @@ public class HomeViewModel extends AndroidViewModel {
     public LiveData<Session> getPendingSession() {
         if (this.pendingSession == null) {
             this.pendingSession = new MutableLiveData<Session>();
-            loadPendingSessionDuration();
+            loadPendingSession();
         }
         return this.pendingSession;
     }
 
-    private void loadPendingSessionDuration() {
-        new loadPendingSessionDurationAsyncTask().execute();
+    private void loadPendingSession() {
+        new loadPendingSessionAsyncTask().execute();
     }
 
     public LiveData<ArrayList<Session>> getHomeTimelineSessions() {
@@ -233,7 +245,7 @@ public class HomeViewModel extends AndroidViewModel {
         }
     }
 
-    private class loadPendingSessionDurationAsyncTask extends AsyncTask<Void, Void, Session> {
+    private class loadPendingSessionAsyncTask extends AsyncTask<Void, Void, Session> {
         @Override
         protected Session doInBackground(Void... voids) {
             try {

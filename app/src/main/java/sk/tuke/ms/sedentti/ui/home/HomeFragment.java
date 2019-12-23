@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -55,20 +58,39 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     private ActivityRecognitionSPHelper activityRecognitionSettings;
     private AppSPHelper appSettings;
     private int state;
-    private boolean startUp = true;
+    private boolean startUp;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         this.activityRecognitionSettings = new ActivityRecognitionSPHelper(getContext());
         this.state = this.activityRecognitionSettings.getActivityRecognitionState();
 
         this.appSettings = new AppSPHelper(getContext());
+        this.startUp = true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.home_activity_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                this.homeViewModel.updateModel();
+                return true;
+            case R.id.action_settings:
+                return false;
+        }
+        return false;
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        this.homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -76,11 +98,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
 
         TextView sensingOffCompletedSessionText = root.findViewById(R.id.tw_f_home_sensing_off_completed_sessions);
         homeViewModel.getFinishedCount().observe(this, count -> {
-            if (count > 0) {
-                startUp = false;
-            } else {
-                startUp = true;
-            }
+            this.startUp = count <= 0;
 
             StringBuilder sb = new StringBuilder();
             sb.append("You've completed ");
@@ -266,7 +284,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
             LinearLayout sessionTextLayout = getActivity().findViewById(R.id.f_home_layout_session_text);
             DecoView sessionGraph = getActivity().findViewById(R.id.graph_f_home_session);
 
-
             if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED || state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN) {
                 if (startUp) {
                     // first time text visible and nothing else
@@ -366,9 +383,10 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     private void makeTimeline(ArrayList<Session> sessions) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
+        this.timelineLayout.removeAllViews();
+
         // handles activity naming
-        for (int i = 0; i < sessions.size(); i++) {
-            Session session = sessions.get(i);
+        for (Session session : sessions) {
             View view = inflater.inflate(R.layout.item_timeline_home, this.timelineLayout, false);
             TextView dot = view.findViewById(R.id.tw_f_home_timeline_dot);
             String sessionName;
