@@ -18,9 +18,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.PersonalityTestActivity" />
-        <activity android:name=".activity.LoginActivity" />
-        <activity android:name=".activity.FirstTimeStartupActivity">
+
+        <activity
+            android:name=".activity.PersonalityTestActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.FirstTimeStartupActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,25 +35,34 @@
         </activity>
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.StatusActivity" />
-        <activity android:name=".activity.SessionHistoryActivity" />
-        <activity android:name=".activity.MotivateMeActivity" />
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.StatusActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SessionHistoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MotivateMeActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
+
         <receiver
-            android:enabled="true"
-            android:exported="true"
             android:name=".startup.SystemBootBroadcastReceiver"
-        >
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
