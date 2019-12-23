@@ -32,6 +32,7 @@ import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
@@ -57,11 +58,13 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private ActivityRecognitionBroadcastReceiver receiver;
     private ActivityRecognitionSPHelper activityRecognitionPreferences;
 
+    private AppSPHelper appPreferences;
+
     private SignificantMotionDetector significantMotionDetector;
     private Session currentSession;
     private ActivityHelper activityHelper;
 
-    private boolean isTimeTicking;
+    private boolean isActiveTimePassed;
 
     private long time;
     private Handler timeHandler;
@@ -77,22 +80,44 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     private void processTimeDependency() {
         // TODO: 12/18/19 handle notification, sigmov etc
+        int activeLimit = this.appPreferences.getActiveLimit();
+
+        Log.d("note", "Processing time, current time " + time + " limit " + activeLimit);
+        Log.d("note", "Sedentary " + this.currentSession.isSedentary() + " In Vehicle " + this.currentSession.isInVehicle() + " Active time passed " + isActiveTimePassed);
+        if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
+            Log.d("note", "To be turned off");
+            this.isActiveTimePassed = true;
+            try {
+                if (!this.sessionHelper.isPendingReal()) {
+                    Log.d("note", "To be created new");
+//                    je umela ukonci a zacni novu sedentary
+                    this.sessionHelper.endPending();
+                    Session newSession = this.sessionHelper.create(DetectedActivity.STILL);
+                    handleSignificantMotion(DetectedActivity.STILL);
+                    setCurrentSession(newSession);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            notificationManager.cancel(MOTION_NOTIFICATION_ID);
+        }
     }
 
     private void startTicking() {
-        Session session = null;
+        this.timeHandler.post(countTime);
+    }
+
+    private void updateCurrentSession() {
         try {
-            session = sessionHelper.getPending();
+            Session session = sessionHelper.getPending();
+            if (session != null) {
+                this.currentSession = session;
+                this.time = this.sessionHelper.getDuration(session);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        if (session != null) {
-            this.currentSession = session;
-            this.time = this.sessionHelper.getDuration(session);
-        }
-
-        this.timeHandler.post(countTime);
     }
 
     private void stopTicking() {
@@ -152,9 +177,15 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         if (command.equals(PredefinedValues.COMMAND_START)) {
             registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
             this.activityRecognitionHandler.startTracking();
+            updateCurrentSession();
             startTicking();
-            // TODO: 12/19/19 nie vzyd treba zapnnut
-            this.significantMotionDetector.start();
+            if (this.currentSession != null) {
+                if (this.currentSession.isSedentary()) {
+                    this.significantMotionDetector.start();
+                } else {
+                    this.significantMotionDetector.stop();
+                }
+            }
             Crashlytics.log(Log.DEBUG, TAG, "Sensing service started");
         } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
             this.activityRecognitionHandler.stopTracking();
@@ -180,6 +211,8 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         this.activityRecognitionHandler = new ActivityRecognitionHandler(context);
         this.activityRecognitionPreferences = new ActivityRecognitionSPHelper(context);
         this.significantMotionDetector = new SignificantMotionDetector(context, this);
+        this.timeHandler = new Handler();
+        this.appPreferences = new AppSPHelper(context);
 
         initDatabaseForService(context);
     }
@@ -221,6 +254,8 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private void setCurrentSession(Session session) {
         this.currentSession = session;
         this.time = this.sessionHelper.getDuration(session);
+
+        this.isActiveTimePassed = false;
     }
 
     private Notification createNotification(int commandResult) {
@@ -273,9 +308,9 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private void handleSignificantMotion(int newActivityType) {
+    private void handleSignificantMotion(int detectedActivity) {
         Crashlytics.log(Log.DEBUG, TAG, "Handling significant motion");
-        if (ActivityHelper.isPassive(newActivityType)) {
+        if (ActivityHelper.isPassive(detectedActivity)) {
             this.significantMotionDetector.start();
         } else {
             this.significantMotionDetector.stop();
@@ -289,6 +324,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             Session newSession = sessionHelper.createAndReplacePending(false);
             // TODO do not change the meaning of DetectedActivity.UNKNOWN (temporal solution for handling sessions without activities)
             activityHelper.create(DetectedActivity.UNKNOWN, newSession);
+            setCurrentSession(newSession);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -343,12 +379,10 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                                     pendingSession = sessionHelper.create(newActivityType);
                                     setCurrentSession(pendingSession);
                                     Crashlytics.log(Log.DEBUG, TAG, "New session created");
-                                } else {
-                                    if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
-                                        Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
-                                        lastActivity.setType(newActivityType);
-                                        activityHelper.update(lastActivity);
-                                    }
+                                } else if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
+                                    Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
+                                    lastActivity.setType(newActivityType);
+                                    activityHelper.update(lastActivity);
                                 }
                             }
 
