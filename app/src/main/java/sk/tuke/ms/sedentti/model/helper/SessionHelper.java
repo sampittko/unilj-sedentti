@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
+import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
@@ -827,5 +828,15 @@ public class SessionHelper {
             }
         }
         return sb.toString();
+    }
+
+    public boolean isPendingReal() throws SQLException {
+        Session pendingSession = getPending();
+        return pendingSession != null && isReal(pendingSession);
+    }
+
+    public boolean isReal(@NotNull Session session) throws SQLException {
+        ArrayList<Activity> activities = activityHelper.getCorresponding(session);
+        return activities.size() != 1 || activities.get(0).getType() != DetectedActivity.UNKNOWN;
     }
 }
