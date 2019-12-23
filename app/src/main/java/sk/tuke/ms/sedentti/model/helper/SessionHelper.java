@@ -776,23 +776,19 @@ public class SessionHelper {
      * @return
      * @throws SQLException
      */
-    public ArrayList<Session> getNotExportedFinishedForUploadWorker() throws SQLException {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing getNotExportedFinishedForUploadWorker");
+    public ArrayList<Session> getNotExportedFinished() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getNotExportedFinished");
 
         sessionDaoQueryBuilder.reset();
 
         ArrayList<Session> sessions = new ArrayList<>(
                 sessionDaoQueryBuilder
-                    .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                     .where()
                     .eq(Session.COLUMN_EXPORTED, false)
                     .and()
                     .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                     .query()
         );
-
-        // TODO test - do not upload last 2 sessions
-        sessions.remove(0);
 
         return sessions;
     }
