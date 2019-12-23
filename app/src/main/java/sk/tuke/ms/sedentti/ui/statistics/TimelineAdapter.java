@@ -61,6 +61,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             dayHolder.activeTime.setText(TimeHelper.formatTimeString(day.getActiveTime()));
             dayHolder.sedentaryTime.setText(TimeHelper.formatTimeString(day.getSedentaryTime()));
+            dayHolder.inVehicleTime.setText("ahoj");
 
         } else if (dayModelsList.get(position) instanceof Session) {
 //            doing session item
@@ -71,7 +72,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             String sessionName;
             if (session.isSedentary()) {
                 sessionName = context.getResources().getString(R.string.home_timeline_name_sedentary);
-                sessionHolder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_sedentarry));
+                sessionHolder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_sedentary));
             } else if (session.isInVehicle()) {
                 sessionName = context.getResources().getString(R.string.home_timeline_name_invehicle);
                 sessionHolder.dot.setBackground(context.getDrawable(R.drawable.shape_timeline_circle_invehicle));
@@ -142,6 +143,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private TextView success;
         private TextView activeTime;
         private TextView sedentaryTime;
+        private TextView inVehicleTime;
 
         public DayHolder(@NonNull View itemView) {
             super(itemView);
@@ -150,6 +152,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             success = itemView.findViewById(R.id.tw_f_home_timeline_day_value_success);
             activeTime = itemView.findViewById(R.id.tw_f_home_timeline_day_value_active);
             sedentaryTime = itemView.findViewById(R.id.tw_f_home_timeline_day_value_sedentary);
+            inVehicleTime = itemView.findViewById(R.id.tw_f_home_timeline_day_value_invehicle);
         }
     }
 }

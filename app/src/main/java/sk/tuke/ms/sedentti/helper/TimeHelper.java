@@ -67,13 +67,24 @@ public class TimeHelper {
 
         String duration = "";
 
-        if (MM > 0 || HH > 0) {
-            if (HH > 1) {
-                duration += HH + " hours ";
-            } else if (HH == 1) {
-                duration += HH + " hour ";
-            }
+//        if (MM > 0 || HH > 0) {
+//            if (HH > 1) {
+//                duration += HH + " hours ";
+//            } else if (HH == 1) {
+//                duration += HH + " hour ";
+//            }
+//
+//            if (MM > 1) {
+//                duration += MM + " mins";
+//            } else if (MM == 1) {
+//                duration += MM + " min";
+//            }
+//        }
 
+        if (MM > 0 || HH > 0) {
+            if (HH > 0) {
+                duration += HH + " h ";
+            }
             if (MM > 1) {
                 duration += MM + " mins";
             } else if (MM == 1) {
@@ -82,7 +93,7 @@ public class TimeHelper {
         }
 
         if (duration.equals("")) {
-            return "0 minutes";
+            return "0 min";
         }
         return duration;
     }

@@ -10,7 +10,7 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginStart="32dp"
-        android:background="@drawable/shape_timeline_circle_sedentarry" />
+        android:background="@drawable/shape_timeline_circle_sedentary" />
 
     <LinearLayout
         android:layout_width="match_parent"

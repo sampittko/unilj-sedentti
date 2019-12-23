@@ -369,7 +369,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
 
             if (session.isSedentary()) {
                 sessionName = getResources().getString(R.string.home_timeline_name_sedentary);
-                dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_sedentarry));
+                dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_sedentary));
             } else if (session.isInVehicle()) {
                 sessionName = getResources().getString(R.string.home_timeline_name_invehicle);
                 dot.setBackground(getActivity().getDrawable(R.drawable.shape_timeline_circle_invehicle));
