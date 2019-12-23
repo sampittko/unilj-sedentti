@@ -16,10 +16,10 @@ public abstract class PredefinedValues {
     //
     // Shared Preferences - App settings
     public static final String APP_SHARED_PREFERENCES = "app_settings";
-    public static final String APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT = "active_limit";
-    public static final int APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT_DEFAULT = Settings.ACTIVE_MILLISECONDS_LIMIT;
-    public static final String APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT = "sedentary_limit";
-    public static final int APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT_DEFAULT = Settings.SEDENTARY_MILLISECONDS_LIMIT;
+    public static final String APP_SHARED_PREFERENCES_ACTIVE_LIMIT = "active_limit";
+    public static final int APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT = Settings.ACTIVE_MILLISECONDS_LIMIT;
+    public static final String APP_SHARED_PREFERENCES_SEDENTARY_LIMIT = "sedentary_limit";
+    public static final int APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT = Settings.SEDENTARY_MILLISECONDS_LIMIT;
     public static final String APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED = "first_time_startup_performed";
     public static final boolean APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT = Configuration.FIRST_TIME_STARTUP_PERFORMED;
 

@@ -196,7 +196,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
             if (session != null) {
                 graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(session.getDuration()));
                 // TODO: 11/11/19 set session limit
-                // long limit = new SharedPreferencesHelper(getContext()).getSedentarySecondsLimit() * 1000L;
+                // long limit = new SharedPreferencesHelper(getContext()).getSedentaryLimit() * 1000L;
 
                 int normalizedValue = getNormalizedValue(session.getDuration(), 30L * 60L * 1000L);
 

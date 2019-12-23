@@ -19,36 +19,36 @@ public class AppSPHelper {
      * Sets default settings for the app
      */
     public void setAppDefaultSettings() {
-        updateActiveSecondsLimit();
-        updateSedentarySecondsLimit();
+        updateActiveLimit();
+        updateSedentaryLimit();
     }
 
     /**
      * Updates sedentary seconds limit to default value
      */
-    public void updateSedentarySecondsLimit() {
-        updateSedentarySecondsLimit(Settings.SEDENTARY_MILLISECONDS_LIMIT);
+    public void updateSedentaryLimit() {
+        updateSedentaryLimit(Settings.SEDENTARY_MILLISECONDS_LIMIT);
     }
 
     /**
      * @param value Sedentary seconds limit value to set
      */
-    public void updateSedentarySecondsLimit(int value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT, value);
+    public void updateSedentaryLimit(int value) {
+        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT, value);
     }
 
     /**
      * Updates active seconds limit to default value
      */
-    public void updateActiveSecondsLimit() {
-        updateActiveSecondsLimit(Settings.ACTIVE_MILLISECONDS_LIMIT);
+    public void updateActiveLimit() {
+        updateActiveLimit(Settings.ACTIVE_MILLISECONDS_LIMIT);
     }
 
     /**
      * @param value Active seconds limit value to set
      */
-    public void updateActiveSecondsLimit(int value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT, value);
+    public void updateActiveLimit(int value) {
+        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_LIMIT, value);
     }
 
     private void updateAppSetting(String setting, int value) {
@@ -66,20 +66,20 @@ public class AppSPHelper {
     /**
      * @return Sedentary seconds limit
      */
-    public int getSedentarySecondsLimit() {
+    public int getSedentaryLimit() {
         return appSharedPreferences.getInt(
-                PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT,
-                PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_SECONDS_LIMIT_DEFAULT
+                PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT,
+                PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT
         );
     }
 
     /**
      * @return Active seconds limit
      */
-    public int getActiveSecondsLimit() {
+    public int getActiveLimit() {
         return appSharedPreferences.getInt(
-                PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT,
-                PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_SECONDS_LIMIT_DEFAULT
+                PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_LIMIT,
+                PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT
         );
     }
 

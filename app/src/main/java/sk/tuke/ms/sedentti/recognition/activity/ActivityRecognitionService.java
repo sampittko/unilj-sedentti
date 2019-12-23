@@ -60,6 +60,9 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private SignificantMotionDetector significantMotionDetector;
     private Session currentSession;
     private ActivityHelper activityHelper;
+
+    private boolean isTimeTicking;
+
     private long time;
     private Handler timeHandler;
     private Runnable countTime = new Runnable() {
@@ -74,6 +77,26 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     private void processTimeDependency() {
         // TODO: 12/18/19 handle notification, sigmov etc
+    }
+
+    private void startTicking() {
+        Session session = null;
+        try {
+            session = sessionHelper.getPending();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (session != null) {
+            this.currentSession = session;
+            this.time = this.sessionHelper.getDuration(session);
+        }
+
+        this.timeHandler.post(countTime);
+    }
+
+    private void stopTicking() {
+        this.timeHandler.removeCallbacks(countTime);
     }
 
     @Override
@@ -129,11 +152,13 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         if (command.equals(PredefinedValues.COMMAND_START)) {
             registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
             this.activityRecognitionHandler.startTracking();
+            startTicking();
             // TODO: 12/19/19 nie vzyd treba zapnnut
             this.significantMotionDetector.start();
             Crashlytics.log(Log.DEBUG, TAG, "Sensing service started");
         } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
             this.activityRecognitionHandler.stopTracking();
+            stopTicking();
             this.significantMotionDetector.stop();
             try {
                 unregisterReceiver(receiver);
@@ -194,7 +219,8 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     }
 
     private void setCurrentSession(Session session) {
-        currentSession = session;
+        this.currentSession = session;
+        this.time = this.sessionHelper.getDuration(session);
     }
 
     private Notification createNotification(int commandResult) {
@@ -317,8 +343,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                                     pendingSession = sessionHelper.create(newActivityType);
                                     setCurrentSession(pendingSession);
                                     Crashlytics.log(Log.DEBUG, TAG, "New session created");
-                                }
-                                else {
+                                } else {
                                     if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
                                         Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
                                         lastActivity.setType(newActivityType);
@@ -345,9 +370,9 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
             // IN_VEHICLE handling
             if ((newActivityType == DetectedActivity.IN_VEHICLE &&
-                lastActivity.getType() != DetectedActivity.IN_VEHICLE) || (
-                newActivityType != DetectedActivity.IN_VEHICLE &&
-                lastActivity.getType() == DetectedActivity.IN_VEHICLE
+                    lastActivity.getType() != DetectedActivity.IN_VEHICLE) || (
+                    newActivityType != DetectedActivity.IN_VEHICLE &&
+                            lastActivity.getType() == DetectedActivity.IN_VEHICLE
             )) {
                 return true;
             }

@@ -367,7 +367,7 @@ public class SessionHelper {
 
         if (session.isSedentary()) {
             Crashlytics.log(Log.DEBUG, TAG, "Session is sedentary");
-            return session.getDuration() <= appSPHelper.getSedentarySecondsLimit();
+            return session.getDuration() <= appSPHelper.getSedentaryLimit();
         }
         else {
             if (session.isInVehicle()) {
@@ -375,7 +375,7 @@ public class SessionHelper {
                 return true;
             }
             Crashlytics.log(Log.DEBUG, TAG, "Session is active");
-            return session.getDuration() >= appSPHelper.getActiveSecondsLimit();
+            return session.getDuration() >= appSPHelper.getActiveLimit();
         }
     }
 
