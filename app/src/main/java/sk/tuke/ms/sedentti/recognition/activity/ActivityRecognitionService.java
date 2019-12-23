@@ -79,18 +79,15 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     };
 
     private void processTimeDependency() {
-        // TODO: 12/18/19 handle notification, sigmov etc
         int activeLimit = this.appPreferences.getActiveLimit();
 
-        Log.d("note", "Processing time, current time " + time + " limit " + activeLimit);
-        Log.d("note", "Sedentary " + this.currentSession.isSedentary() + " In Vehicle " + this.currentSession.isInVehicle() + " Active time passed " + isActiveTimePassed);
         if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
-            Log.d("note", "To be turned off");
+            Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
             this.isActiveTimePassed = true;
             try {
                 if (!this.sessionHelper.isPendingReal()) {
-                    Log.d("note", "To be created new");
-//                    je umela ukonci a zacni novu sedentary
+                    Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
+
                     Session newSession = sessionHelper.createAndReplacePending(true);
                     activityHelper.create(DetectedActivity.STILL, newSession);
                     handleSignificantMotion(DetectedActivity.STILL);
@@ -101,6 +98,8 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             }
             notificationManager.cancel(MOTION_NOTIFICATION_ID);
         }
+
+        // TODO: 12/23/19 add more notification 
     }
 
     private void startTicking() {
