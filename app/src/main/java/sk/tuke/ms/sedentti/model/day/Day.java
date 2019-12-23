@@ -9,14 +9,16 @@ public class Day extends DayModel {
     private int numberOfSessions;
     private long sedentaryTime;
     private long activeTime;
+    private long inVehicleTime;
 
-    public Day(Date date, int streak, int successRate, int numberOfSessions, long sedentaryTime, long activeTime) {
+    public Day(Date date, int streak, int successRate, int numberOfSessions, long sedentaryTime, long activeTime, long inVehicleTime) {
         this.date = date;
         this.streak = streak;
         this.successRate = successRate;
         this.numberOfSessions = numberOfSessions;
         this.sedentaryTime = sedentaryTime;
         this.activeTime = activeTime;
+        this.inVehicleTime = inVehicleTime;
     }
 
     public Day() {
@@ -64,6 +66,14 @@ public class Day extends DayModel {
 
     public long getActiveTime() {
         return activeTime;
+    }
+
+    public long getInVehicleTime() {
+        return inVehicleTime;
+    }
+
+    public void setInVehicleTime(long inVehicleTime) {
+        this.inVehicleTime = inVehicleTime;
     }
 
     public void setActiveTime(long activeTime) {

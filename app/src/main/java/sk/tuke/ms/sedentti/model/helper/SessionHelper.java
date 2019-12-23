@@ -475,7 +475,13 @@ public class SessionHelper {
         Crashlytics.log(Log.DEBUG, TAG, "Executing createAndReplacePending");
         Crashlytics.log(Log.DEBUG, TAG, "@sedentary: " + sedentary);
 
-        end(getPending());
+
+        try {
+            Session pendingSession = getPending();
+            end(pendingSession);
+        } catch (NullPointerException e) {
+            Crashlytics.log(Log.DEBUG, TAG, "Pending session does not exist");
+        }
 
         Session newSession = new Session(
                 sedentary,
@@ -656,7 +662,7 @@ public class SessionHelper {
      * @return
      */
     public long getDaySedentaryTime(ArrayList<Session> sessionsOfDay) {
-        return getDayTotalDuration(sessionsOfDay, true);
+        return getDayTotalDuration(sessionsOfDay, true, false);
     }
 
     /**
@@ -664,19 +670,24 @@ public class SessionHelper {
      * @return
      */
     public long getDayActiveTime(ArrayList<Session> sessionsOfDay) {
-        return getDayTotalDuration(sessionsOfDay, false);
+        return getDayTotalDuration(sessionsOfDay, false, false);
     }
 
-    private long getDayTotalDuration(@NotNull List<Session> sessionsOfDay, boolean sedentary) {
+    public long getDayInVehicleTime(ArrayList<Session> sessionsOfDay) {
+        return getDayTotalDuration(sessionsOfDay, false, true);
+    }
+
+    private long getDayTotalDuration(@NotNull List<Session> sessionsOfDay, boolean sedentary, boolean countInVehicleTimeOnly) {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getDayTotalDuration");
         Crashlytics.log(Log.DEBUG, TAG, "@sessions SIZE: " + sessionsOfDay.size());
         Crashlytics.log(Log.DEBUG, TAG, "@sedentary: " + sedentary);
+        Crashlytics.log(Log.DEBUG, TAG, "@countInVehicleTimeOnly: " + countInVehicleTimeOnly);
 
         long totalDuration = 0L;
 
         for (Session session : sessionsOfDay) {
             if (session.getDuration() != 0L && session.isSedentary() == sedentary) {
-                if (sedentary && !session.isInVehicle()) {
+                if (session.isInVehicle() == countInVehicleTimeOnly) {
                     totalDuration += session.getDuration();
                 }
             }

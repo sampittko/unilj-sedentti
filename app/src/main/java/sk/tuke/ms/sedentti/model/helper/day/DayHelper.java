@@ -17,7 +17,8 @@ public class DayHelper {
         int numberOfSessions = sessionsOfDay.size();
         long sedentaryTime = sessionHelper.getDaySedentaryTime(sessionsOfDay);
         long activeTime = sessionHelper.getDayActiveTime(sessionsOfDay);
+        long inVehicleTime = sessionHelper.getDayInVehicleTime(sessionsOfDay);
 
-        return new Day(date, streak, successRate, numberOfSessions, sedentaryTime, activeTime);
+        return new Day(date, streak, successRate, numberOfSessions, sedentaryTime, activeTime, inVehicleTime);
     }
 }
