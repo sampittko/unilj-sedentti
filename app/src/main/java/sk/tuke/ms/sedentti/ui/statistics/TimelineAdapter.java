@@ -61,7 +61,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             dayHolder.activeTime.setText(TimeHelper.formatTimeString(day.getActiveTime()));
             dayHolder.sedentaryTime.setText(TimeHelper.formatTimeString(day.getSedentaryTime()));
-            dayHolder.inVehicleTime.setText("ahoj");
+            dayHolder.inVehicleTime.setText(TimeHelper.formatTimeString(day.getInVehicleTime()));
 
         } else if (dayModelsList.get(position) instanceof Session) {
 //            doing session item
