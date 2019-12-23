@@ -91,8 +91,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                 if (!this.sessionHelper.isPendingReal()) {
                     Log.d("note", "To be created new");
 //                    je umela ukonci a zacni novu sedentary
-                    this.sessionHelper.endPending();
-                    Session newSession = new Session();
+                    Session newSession = sessionHelper.createAndReplacePending(true);
                     activityHelper.create(DetectedActivity.STILL, newSession);
                     handleSignificantMotion(DetectedActivity.STILL);
                     setCurrentSession(newSession);
