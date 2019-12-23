@@ -92,19 +92,20 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                     Log.d("note", "To be created new");
 //                    je umela ukonci a zacni novu sedentary
                     this.sessionHelper.endPending();
-                    Session newSession = this.sessionHelper.create(DetectedActivity.STILL);
+                    Session newSession = new Session();
+                    activityHelper.create(DetectedActivity.STILL, newSession);
                     handleSignificantMotion(DetectedActivity.STILL);
                     setCurrentSession(newSession);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
             notificationManager.cancel(MOTION_NOTIFICATION_ID);
         }
     }
 
     private void startTicking() {
+        stopTicking();
         this.timeHandler.post(countTime);
     }
 
