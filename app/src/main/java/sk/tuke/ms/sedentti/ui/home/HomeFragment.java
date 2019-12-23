@@ -39,6 +39,7 @@ import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.dialog.StopSensingDialog;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
+import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.recognition.activity.ActivityRecognitionService;
@@ -51,16 +52,19 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     private HomeViewModel homeViewModel;
     private final int TIMELINE_ITEM_HEIGHT = 60;
     private LinearLayout timelineLayout;
-    private ActivityRecognitionSPHelper activityRecognitionSPHelper;
+    private ActivityRecognitionSPHelper activityRecognitionSettings;
+    private AppSPHelper appSettings;
     private int state;
     private boolean startUp = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
-        this.activityRecognitionSPHelper = new ActivityRecognitionSPHelper(getContext());
-        this.state = this.activityRecognitionSPHelper.getActivityRecognitionState();
         super.onCreate(savedInstanceState);
+
+        this.activityRecognitionSettings = new ActivityRecognitionSPHelper(getContext());
+        this.state = this.activityRecognitionSettings.getActivityRecognitionState();
+
+        this.appSettings = new AppSPHelper(getContext());
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -198,12 +202,14 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
                 // TODO: 11/11/19 set session limit
                 // long limit = new SharedPreferencesHelper(getContext()).getSedentaryLimit() * 1000L;
 
-                int normalizedValue = getNormalizedValue(session.getDuration(), 30L * 60L * 1000L);
 
+                int normalizedValue;
                 if (session.isSedentary()) {
+                    normalizedValue = getNormalizedValue(session.getDuration(), appSettings.getSedentaryLimit());
                     sessionActivity.setText("Sedentary");
                     sessionItem.setColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
                 } else {
+                    normalizedValue = getNormalizedValue(session.getDuration(), appSettings.getActiveLimit());
                     sessionActivity.setText("Active");
                     sessionItem.setColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null));
                 }
