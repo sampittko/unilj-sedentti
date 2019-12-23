@@ -68,16 +68,16 @@ public class Day extends DayModel {
         return activeTime;
     }
 
+    public void setActiveTime(long activeTime) {
+        this.activeTime = activeTime;
+    }
+
     public long getInVehicleTime() {
         return inVehicleTime;
     }
 
     public void setInVehicleTime(long inVehicleTime) {
         this.inVehicleTime = inVehicleTime;
-    }
-
-    public void setActiveTime(long activeTime) {
-        this.activeTime = activeTime;
     }
 
     @Override

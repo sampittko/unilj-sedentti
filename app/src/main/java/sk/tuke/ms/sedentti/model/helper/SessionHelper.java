@@ -7,7 +7,9 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -121,25 +123,25 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        sessionDaoQueryBuilder
+        Where<Session, Long> where = sessionDaoQueryBuilder
                 .limit(limit == 0L ? null : limit)
                 .orderBy(Session.COLUMN_START_TIMESTAMP, false)
                 .where()
-                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .prepare();
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId());
 
-        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+        PreparedQuery<Session> preparedQuery = prepareQueryWithInVehicleConsidered(countSessionsInVehicle, where);
 
-        return new ArrayList<>(sessionDaoQueryBuilder.query());
+        return new ArrayList<>(sessionDao.query(preparedQuery));
     }
 
-    private void prepareQueryForSessionsInVehicle(boolean countSessionsInVehicle) throws SQLException {
+    private PreparedQuery<Session> prepareQueryWithInVehicleConsidered(boolean countSessionsInVehicle, Where<Session, Long> where) throws SQLException {
         if (!countSessionsInVehicle) {
-            sessionDaoQueryBuilder
-                    .where()
+            return where
+                    .and()
                     .eq(Session.COLUMN_IN_VEHICLE, false)
                     .prepare();
         }
+        return where.prepare();
     }
 
     /**
@@ -222,18 +224,17 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        sessionDaoQueryBuilder
+        Where<Session, Long> where = sessionDaoQueryBuilder
                 .where()
                 .gt(Session.COLUMN_START_TIMESTAMP, lastUnsuccessful.getStartTimestamp())
                 .and()
                 .ne(Session.COLUMN_END_TIMESTAMP, 0L)
                 .and()
-                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .prepare();
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId());
 
-        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+        PreparedQuery<Session> preparedQuery = prepareQueryWithInVehicleConsidered(countSessionsInVehicle, where);
 
-        return (int) sessionDaoQueryBuilder.countOf();
+        return sessionDao.query(preparedQuery).size();
     }
 
     /**
@@ -259,7 +260,7 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        sessionDaoQueryBuilder
+        Where<Session, Long> where = sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
@@ -267,16 +268,15 @@ public class SessionHelper {
                 .and()
                 .eq(Session.COLUMN_SUCCESSFUL, true)
                 .and()
-                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .prepare();
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId());
 
-        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+        PreparedQuery<Session> preparedQuery = prepareQueryWithInVehicleConsidered(countSessionsInVehicle, where);
 
-        List<Session> successfulSessions = sessionDaoQueryBuilder.query();
+        List<Session> successfulSessions = sessionDao.query(preparedQuery);
 
         sessionDaoQueryBuilder.reset();
 
-        sessionDaoQueryBuilder
+        Where<Session, Long> where2 = sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
@@ -284,12 +284,11 @@ public class SessionHelper {
                 .and()
                 .eq(Session.COLUMN_SUCCESSFUL, false)
                 .and()
-                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .query();
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId());
 
-        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+        PreparedQuery<Session> preparedQuery2 = prepareQueryWithInVehicleConsidered(countSessionsInVehicle, where2);
 
-        List<Session> unsuccessfulSessions = sessionDaoQueryBuilder.query();
+        List<Session> unsuccessfulSessions = sessionDao.query(preparedQuery2);
 
         return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
     }
@@ -556,18 +555,17 @@ public class SessionHelper {
 
         sessionDaoQueryBuilder.reset();
 
-        sessionDaoQueryBuilder
+        Where<Session, Long> where = sessionDaoQueryBuilder
                 .where()
                 .eq(Session.COLUMN_DATE, normalizedDate)
                 .and()
                 .eq(Session.COLUMN_SEDENTARY, sedentary)
                 .and()
-                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                .prepare();
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId());
 
-        prepareQueryForSessionsInVehicle(countSessionsInVehicle);
+        PreparedQuery<Session> preparedQuery = prepareQueryWithInVehicleConsidered(countSessionsInVehicle, where);
 
-        List<Session> sessions = sessionDaoQueryBuilder.query();
+        List<Session> sessions = sessionDao.query(preparedQuery);
 
         return getTotalDuration(sessions);
     }
@@ -686,10 +684,8 @@ public class SessionHelper {
         long totalDuration = 0L;
 
         for (Session session : sessionsOfDay) {
-            if (session.getDuration() != 0L && session.isSedentary() == sedentary) {
-                if (session.isInVehicle() == countInVehicleTimeOnly) {
-                    totalDuration += session.getDuration();
-                }
+            if (session.getDuration() != 0L && session.isSedentary() == sedentary && session.isInVehicle() == countInVehicleTimeOnly) {
+                totalDuration += session.getDuration();
             }
         }
 
