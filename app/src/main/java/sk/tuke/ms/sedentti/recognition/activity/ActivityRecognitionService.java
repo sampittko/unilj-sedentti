@@ -80,24 +80,26 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     private void processTimeDependency() {
         // TODO: 12/18/19 handle notification, sigmov etc
-        int activeLimit = this.appPreferences.getActiveLimit();
+        if (this.currentSession != null) {
+            int activeLimit = this.appPreferences.getActiveLimit();
 
-        if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
-            Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
-            this.isActiveTimePassed = true;
-            try {
-                if (!this.sessionHelper.isPendingReal()) {
-                    Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
+            if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
+                Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
+                this.isActiveTimePassed = true;
+                try {
+                    if (!this.sessionHelper.isPendingReal()) {
+                        Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
 
-                    Session newSession = sessionHelper.createAndReplacePending(true);
-                    activityHelper.create(DetectedActivity.STILL, newSession);
-                    handleSignificantMotion(DetectedActivity.STILL);
-                    setCurrentSession(newSession);
+                        Session newSession = sessionHelper.createAndReplacePending(true);
+                        activityHelper.create(DetectedActivity.STILL, newSession);
+                        handleSignificantMotion(DetectedActivity.STILL);
+                        setCurrentSession(newSession);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
+                notificationManager.cancel(MOTION_NOTIFICATION_ID);
             }
-            notificationManager.cancel(MOTION_NOTIFICATION_ID);
         }
 
         // TODO: 12/23/19 add more notification
