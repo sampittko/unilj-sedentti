@@ -830,13 +830,30 @@ public class SessionHelper {
         return sb.toString();
     }
 
+    /**
+     * @return
+     * @throws SQLException
+     */
     public boolean isPendingReal() throws SQLException {
         Session pendingSession = getPending();
         return pendingSession != null && isReal(pendingSession);
     }
 
+    /**
+     * @param session
+     * @return
+     * @throws SQLException
+     */
     public boolean isReal(@NotNull Session session) throws SQLException {
         ArrayList<Activity> activities = activityHelper.getCorresponding(session);
         return activities.size() != 1 || activities.get(0).getType() != DetectedActivity.UNKNOWN;
+    }
+
+    /**
+     * @param session
+     * @return
+     */
+    public long getDuration(@NotNull Session session) {
+        return session.getEndTimestamp() == 0L ? new Date().getTime() - session.getStartTimestamp() : session.getDuration();
     }
 }
