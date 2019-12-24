@@ -12,21 +12,27 @@
     <string name="home_timeline_name_invehicle">In vehicle</string>
 
     <string-array name="sync_intervals">
-        <item>4 hours</item>
-        <item>8 hours</item>
+        <item>6 hours</item>
         <item>12 hours</item>
-        <item>16 hours</item>
-        <item>20 hours</item>
         <item>24 hours</item>
     </string-array>
 
     <integer-array name="sync_intervals_values">
-        <item>4</item>
-        <item>8</item>
+        <item>6</item>
         <item>12</item>
-        <item>16</item>
-        <item>20</item>
         <item>24</item>
+    </integer-array>
+
+    <string-array name="first_notif_time">
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+    </string-array>
+
+    <integer-array name="first_notif_time_values">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
     </integer-array>
 </resources>
 

@@ -776,6 +776,8 @@ public class SessionHelper {
                         .where()
                         .eq(Session.COLUMN_EXPORTED, false)
                         .and()
+                        .ne(Session.COLUMN_END_TIMESTAMP, 0L)
+                        .and()
                         .eq(Session.COLUMN_PROFILE_ID, profile.getId())
                         .query()
         );
