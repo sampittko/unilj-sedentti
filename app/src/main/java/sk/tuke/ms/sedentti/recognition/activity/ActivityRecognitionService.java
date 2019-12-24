@@ -33,7 +33,7 @@ import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.notification.ServiceNotification;
-import sk.tuke.ms.sedentti.notification.StopSedentaryNotification;
+import sk.tuke.ms.sedentti.notification.movement.MovementNotification;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionDetector;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionListener;
 
@@ -279,7 +279,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        new StopSedentaryNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
+        new MovementNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
     }
 
     private class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {

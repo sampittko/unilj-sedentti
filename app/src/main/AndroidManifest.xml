@@ -67,6 +67,24 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".notification.movement.receiver.MovementReceiverYes"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="sk.tuke.ms.sedentti.activity.recognition.ACTION_YES" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".notification.movement.receiver.MovementReceiverNo"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="sk.tuke.ms.sedentti.activity.recognition.ACTION_NO" />
+            </intent-filter>
+        </receiver>
+
         <service android:name=".recognition.activity.ActivityRecognitionService" />
     </application>
 

@@ -14,6 +14,13 @@ public abstract class PredefinedValues {
     public static final String COMMAND_INIT = "sk.tuke.ms.sedentti.activity.recognition.ACTION_INIT";
 
     //
+    // Notification
+    //
+    public static final String NOTIFICATION_MOVEMENT_ACTION_YES = "sk.tuke.ms.sedentti.activity.recognition.ACTION_YES";
+    public static final String NOTIFICATION_MOVEMENT_ACTION_NO = "sk.tuke.ms.sedentti.activity.recognition.ACTION_NO";
+    public static final String NOTIFICATION_MOVEMENT_EXTRA_ID = "sk.tuke.ms.sedentti.activity.recognition.EXTRA_ID";
+
+    //
     // Shared Preferences - App settings
     public static final String APP_SHARED_PREFERENCES = "app_settings";
     public static final String APP_SHARED_PREFERENCES_ACTIVE_LIMIT = "active_limit";
