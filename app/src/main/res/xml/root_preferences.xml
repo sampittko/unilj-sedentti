@@ -8,10 +8,29 @@
         app:title="Notifications"
         >
         <SwitchPreferenceCompat
-            app:key="notifications"
+            app:key="sig_mov_notif_state"
             app:title="Show significant motion notification"
             android:summary="Notification with undo functionality"
-            />
+        />
+        <SwitchPreferenceCompat
+            app:key="first_notif_state"
+            app:title="First notification"
+            android:summary="1st interruption of sedentary session"
+        />
+        <MultiSelectListPreference
+            android:dialogTitle="First notification time"
+            android:key="first_notif_time"
+            android:summary="How much in advance you wish to be notified"
+            android:title="First notification time"
+            android:entries="@array/first_notif_time"
+            android:entryValues="@array/first_notif_time_values"
+            android:defaultValue="10"
+        />
+        <SwitchPreferenceCompat
+            app:key="second_notif_state"
+            app:title="Second notification"
+            android:summary="2nd interruption of sedentary session"
+        />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -25,6 +44,7 @@
             android:title="Sync interval"
             android:entries="@array/sync_intervals"
             android:entryValues="@array/sync_intervals_values"
-            />
+            android:defaultValue="6"
+        />
     </PreferenceCategory>
-</PreferenceScreen>
+    </PreferenceScreen>

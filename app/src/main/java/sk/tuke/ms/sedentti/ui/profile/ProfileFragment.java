@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MotivateMeActivity;
+import sk.tuke.ms.sedentti.activity.SettingsActivity;
 import sk.tuke.ms.sedentti.activity.StatusActivity;
 
 public class ProfileFragment extends Fragment {
@@ -61,7 +62,8 @@ public class ProfileFragment extends Fragment {
                 startActivity(new Intent(getContext(), MotivateMeActivity.class));
                 return true;
             case R.id.action_settings:
-                return false;
+                startActivity(new Intent(getContext(), SettingsActivity.class));
+                return true;
         }
         return false;
     }
