@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.home_activity_menu, menu);
+        inflater.inflate(R.menu.refresh_menu, menu);
     }
 
     @Override

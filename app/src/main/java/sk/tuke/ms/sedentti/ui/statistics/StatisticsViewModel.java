@@ -2,7 +2,6 @@ package sk.tuke.ms.sedentti.ui.statistics;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ public class StatisticsViewModel extends AndroidViewModel {
 
     private final DayOverviewHelper dayOverviewHelper;
     private MutableLiveData<ArrayList<DayModel>> dayModels;
-    private SessionHelper sessionHelper;
 
     public StatisticsViewModel(@NonNull Application application) {
         super(application);
@@ -35,42 +33,14 @@ public class StatisticsViewModel extends AndroidViewModel {
         try {
             activeProfile = profileHelper.getActive();
         } catch (SQLException e) {
-            // TODO: 12/21/19 wtf what was that
-            Toast.makeText(this.getApplication(), "Error, no profile", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-        this.sessionHelper = new SessionHelper(this.getApplication(), activeProfile);
+        SessionHelper sessionHelper = new SessionHelper(this.getApplication(), activeProfile);
         this.dayOverviewHelper = new DayOverviewHelper(sessionHelper);
     }
 
-
-    public LiveData<ArrayList<Session>> getSessions() {
-        if (this.sessions == null) {
-            this.sessions = new MutableLiveData<ArrayList<Session>>();
-            loadSessions();
-        }
-        return this.sessions;
-    }
-
-    private void loadSessions() {
-        new loadSessionsAsyncTask().execute();
-    }
-
-    private class loadSessionsAsyncTask extends AsyncTask<Void, Void, ArrayList<Session>> {
-        @Override
-        protected ArrayList<Session> doInBackground(Void... voids) {
-            try {
-                return sessionHelper.getLatest();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Session> result) {
-            sessions.postValue(result);
-        }
+    public void updateModel() {
+        loadDayModels();
     }
 
     public LiveData<ArrayList<DayModel>> getDayModels() {
