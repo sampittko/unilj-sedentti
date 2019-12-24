@@ -11,6 +11,7 @@ import android.os.Bundle;
 import java.sql.SQLException;
 
 import sk.tuke.ms.sedentti.model.Profile;
+import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.recognition.activity.ActivityRecognitionService;
@@ -61,12 +62,15 @@ public class MovementReceiverNo extends BroadcastReceiver {
 
                         sessionHelper.discardPendingAndUndoPrevious();
 
-                        Intent intent = new Intent(context, ActivityRecognitionService.class);
-                        intent.setAction(COMMAND_TURN_ON_SIGMOV);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            context.startForegroundService(intent);
-                        } else {
-                            context.startService(intent);
+                        Session session = sessionHelper.getPending();
+                        if (session.isSedentary()) {
+                            Intent intent = new Intent(context, ActivityRecognitionService.class);
+                            intent.setAction(COMMAND_TURN_ON_SIGMOV);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                context.startForegroundService(intent);
+                            } else {
+                                context.startService(intent);
+                            }
                         }
 
                     } catch (SQLException e) {
