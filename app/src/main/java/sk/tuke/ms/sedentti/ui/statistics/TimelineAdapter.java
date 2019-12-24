@@ -58,6 +58,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             dayHolder.date.setText(TimeHelper.formatDate(day.getDate()));
             dayHolder.completed.setText(String.valueOf(day.getNumberOfSessions()));
+            dayHolder.success.setText(day.getSuccessRate() + " %");
 
             dayHolder.activeTime.setText(TimeHelper.formatTimeString(day.getActiveTime()));
             dayHolder.sedentaryTime.setText(TimeHelper.formatTimeString(day.getSedentaryTime()));
@@ -65,7 +66,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         } else if (dayModelsList.get(position) instanceof Session) {
 //            doing session item
-
             SessionHolder sessionHolder = (SessionHolder) holder;
             Session session = (Session) dayModelsList.get(position);
 
@@ -85,8 +85,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //            handles the startTime and adds date if needed
             String startTime = TimeHelper.formatDateTime(session.getStartTimestamp());
             sessionHolder.startTime.setText(startTime);
-
-
 
 //            handles duration
             if (session.getDuration() > 0L) {
