@@ -155,11 +155,11 @@ public class SessionHelper {
         sessionDaoQueryBuilder.reset();
 
         return (int) sessionDaoQueryBuilder
-                        .where()
-                        .ne(Session.COLUMN_END_TIMESTAMP, 0L)
-                        .and()
-                        .eq(Session.COLUMN_PROFILE_ID, profile.getId())
-                        .countOf();
+                .where()
+                .ne(Session.COLUMN_END_TIMESTAMP, 0L)
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId())
+                .countOf();
     }
 
     private Date getStartDate(@NotNull SessionsInterval interval) {
@@ -191,8 +191,7 @@ public class SessionHelper {
             if (pendingExists()) {
                 Crashlytics.log(Log.DEBUG, TAG, "Returning the amount of all sessions minus pending session");
                 return latestSessionsCount - 1;
-            }
-            else {
+            } else {
                 Crashlytics.log(Log.DEBUG, TAG, "Returning the amount of all sessions");
                 return latestSessionsCount;
             }
@@ -247,7 +246,7 @@ public class SessionHelper {
     }
 
     /**
-     * @param date Date object representing the day in which to calculate the success rate
+     * @param date                   Date object representing the day in which to calculate the success rate
      * @param countSessionsInVehicle
      * @return Integer value representing the sessions success ratio in the spectified day
      * @throws SQLException In case that communication with DB was not successful
@@ -301,11 +300,9 @@ public class SessionHelper {
 
         if (unsuccessfulSessions.size() == 0 && successfulSessions.size() != 0) {
             return HIGHEST_SUCCESS_RATE;
-        }
-        else if (successfulSessions.size() == 0) {
+        } else if (successfulSessions.size() == 0) {
             return LOWEST_SUCCESS_RATE;
-        }
-        else {
+        } else {
             float totalSessions = successfulSessions.size() + unsuccessfulSessions.size();
             float successRate = successfulSessions.size() / totalSessions * 100F;
             return (int) successRate;
@@ -349,7 +346,7 @@ public class SessionHelper {
      */
     public void endPending() throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing endPending");
-        Session pendingSession= getPending();
+        Session pendingSession = getPending();
         end(pendingSession);
     }
 
@@ -368,8 +365,7 @@ public class SessionHelper {
         if (session.isSedentary()) {
             Crashlytics.log(Log.DEBUG, TAG, "Session is sedentary");
             return session.getDuration() <= appSPHelper.getSedentaryLimit();
-        }
-        else {
+        } else {
             if (session.isInVehicle()) {
                 Crashlytics.log(Log.DEBUG, TAG, "Session is successful due to being in a vehicle");
                 return true;
@@ -385,11 +381,9 @@ public class SessionHelper {
             getPending();
             Crashlytics.log(Log.DEBUG, TAG, "Session exists");
             return true;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             Crashlytics.log(Log.DEBUG, TAG, "Session does not exist");
         }
         return false;
@@ -414,8 +408,7 @@ public class SessionHelper {
 
         if (pendingSession == null) {
             throw new NullPointerException();
-        }
-        else {
+        } else {
             return getPendingWithDuration(pendingSession);
         }
     }
@@ -428,8 +421,7 @@ public class SessionHelper {
     private Session getPendingWithDuration(Session pendingSession) {
         try {
             pendingSession.setDuration(getDuration(pendingSession));
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             pendingSession.setDuration(0L);
         }
 
@@ -449,8 +441,8 @@ public class SessionHelper {
 
     /**
      * @param activityType Type of activity to create session for
-     * @throws SQLException In case that communication with DB was not successful
      * @return New session object
+     * @throws SQLException In case that communication with DB was not successful
      */
     public Session create(int activityType) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing create");
@@ -598,8 +590,7 @@ public class SessionHelper {
         for (Session session : sessionsOfDay) {
             if (session.isSuccessful()) {
                 streak += 1;
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -629,8 +620,7 @@ public class SessionHelper {
                 if (session.isSuccessful()) {
                     successfulSessions.add(session);
                 }
-            }
-            else {
+            } else {
                 if (session.isSuccessful() && !session.isInVehicle()) {
                     successfulSessions.add(session);
                 }
@@ -646,8 +636,7 @@ public class SessionHelper {
                 if (!session.isSuccessful()) {
                     unsuccessfulSessions.add(session);
                 }
-            }
-            else {
+            } else {
                 if (!session.isSuccessful() && !session.isInVehicle()) {
                     unsuccessfulSessions.add(session);
                 }

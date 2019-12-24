@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -58,7 +59,17 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     private ActivityRecognitionSPHelper activityRecognitionSettings;
     private AppSPHelper appSettings;
     private int state;
+    private Session previousSession;
+
     private boolean startUp;
+    private Handler refreshHandler;
+
+    private Runnable refresh = new Runnable() {
+        @Override
+        public void run() {
+            homeViewModel.updateModel();
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +78,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
 
         this.activityRecognitionSettings = new ActivityRecognitionSPHelper(getContext());
         this.state = this.activityRecognitionSettings.getActivityRecognitionState();
+        this.refreshHandler = new Handler();
 
         this.appSettings = new AppSPHelper(getContext());
         this.startUp = true;
@@ -214,18 +226,19 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
 
         TextView graphTimeValue = root.findViewById(R.id.tw_f_home_graph_time);
         TextView sessionActivity = root.findViewById(R.id.tw_f_home_graph_session_activity);
-        homeViewModel.getPendingSession().observe(this, session -> {
+        this.homeViewModel.getPendingSession().observe(this, session -> {
             if (session != null) {
                 graphTimeValue.setText(TimeHelper.formatTimeWithSeconds(session.getDuration()));
-                // TODO: 11/11/19 set session limit
-                // long limit = new SharedPreferencesHelper(getContext()).getSedentaryLimit() * 1000L;
-
 
                 int normalizedValue;
                 if (session.isSedentary()) {
                     normalizedValue = getNormalizedValue(session.getDuration(), appSettings.getSedentaryLimit());
                     sessionActivity.setText("Sedentary");
                     sessionItem.setColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
+                } else if (session.isInVehicle()) {
+                    normalizedValue = 100;
+                    sessionActivity.setText("In Vehicle");
+                    sessionItem.setColor(ResourcesCompat.getColor(getResources(), R.color.colorAccentOther, null));
                 } else {
                     normalizedValue = getNormalizedValue(session.getDuration(), appSettings.getActiveLimit());
                     sessionActivity.setText("Active");
@@ -238,7 +251,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         });
 
         TextView sedentaryTimeValue = root.findViewById(R.id.tw_f_home_value_sedentary);
-        homeViewModel.getDailySedentaryDuration().observe(this, value -> {
+        this.homeViewModel.getDailySedentaryDuration().observe(this, value -> {
             sedentaryTimeValue.setText(TimeHelper.formatTimeString(value));
             // TODO: 11/10/19 set sedentary time goal
             int normalizedValue = getNormalizedValue(value, 8L * 3600L * 1000L);
@@ -246,7 +259,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         });
 
         TextView activeTimeValue = root.findViewById(R.id.tw_f_home_value_active);
-        homeViewModel.getDailyActiveDuration().observe(this, value -> {
+        this.homeViewModel.getDailyActiveDuration().observe(this, value -> {
             activeTimeValue.setText(TimeHelper.formatTimeString(value));
             // TODO: 11/10/19 set activity time goal
             int normalizedValue = getNormalizedValue(value, 8 * 3600 * 1000);
@@ -254,7 +267,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         });
 
         TextView vehicleTimeValue = root.findViewById(R.id.tw_f_home_value_vehicle);
-        homeViewModel.getDailyVehicleDuration().observe(this, value -> {
+        this.homeViewModel.getDailyVehicleDuration().observe(this, value -> {
             vehicleTimeValue.setText(TimeHelper.formatTimeString(value));
             // TODO: 11/10/19 set vehicle time goal
             int normalizedValue = getNormalizedValue(value, 8 * 3600 * 1000);
@@ -337,6 +350,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
             startForegroundService(PredefinedValues.COMMAND_START);
             updateSensingStateUI(this.state);
             updateSessionGraphStateUI(this.state);
+            refreshHandler.postDelayed(refresh, 100);
         } else {
 //            turn it off
             StopSensingDialog dialog = new StopSensingDialog();
@@ -446,6 +460,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         // TODO: 12/13/19 save pending activity to database
         stopSensing();
         this.homeViewModel.savePendingSession();
+        refreshHandler.postDelayed(refresh, 100);
     }
 
     @Override
@@ -453,5 +468,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         // TODO: 12/13/19 discard pending activity
         stopSensing();
         this.homeViewModel.discardPendingSession();
+        refreshHandler.postDelayed(refresh, 100);
     }
 }

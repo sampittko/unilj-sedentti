@@ -157,4 +157,13 @@ public class Session extends DayModel {
                 ", date=" + date +
                 '}';
     }
+
+    /**
+     * @param session1
+     * @param session2
+     * @return boole
+     */
+    public boolean isEqual(@NotNull Session session) {
+        return this.getId() == session.getId();
+    }
 }

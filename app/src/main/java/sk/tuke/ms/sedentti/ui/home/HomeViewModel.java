@@ -21,6 +21,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     private Profile activeProfile;
     private MutableLiveData<ArrayList<Session>> sessions;
+    private Session previousSession;
     private MutableLiveData<Session> pendingSession;
 
     private MutableLiveData<Integer> success;
@@ -260,6 +261,15 @@ public class HomeViewModel extends AndroidViewModel {
 
         @Override
         protected void onPostExecute(Session result) {
+            if (previousSession == null) {
+                previousSession = result;
+            }
+
+            if (!result.isEqual(previousSession)) {
+                previousSession = result;
+                updateModel();
+            }
+
             pendingSession.postValue(result);
         }
     }
