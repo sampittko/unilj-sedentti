@@ -72,7 +72,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="sk.tuke.ms.sedentti.activity.recognition.ACTION_YES" />
+                <action android:name="sk.tuke.ms.sedentti.notification.receiver.ACTION_YES" />
             </intent-filter>
         </receiver>
 
@@ -81,7 +81,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="sk.tuke.ms.sedentti.activity.recognition.ACTION_NO" />
+                <action android:name="sk.tuke.ms.sedentti.notification.receiver.ACTION_NO" />
             </intent-filter>
         </receiver>
 
