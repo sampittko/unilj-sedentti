@@ -4,12 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -59,14 +57,20 @@ public class ActivityHelper {
      * @return Activity with the highest timestamp
      * @throws SQLException In case that communication with DB was not successful
      */
-    public Activity getLast() throws SQLException {
+    public Activity getLast() throws SQLException, NullPointerException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getLast");
 
         activityDaoQueryBuilder.reset();
 
-        return activityDaoQueryBuilder
+        Activity activity = activityDaoQueryBuilder
                 .orderBy(Activity.COLUMN_TIMESTAMP, false)
                 .queryForFirst();
+
+        if (activity == null) {
+            throw new NullPointerException();
+        } else {
+            return activity;
+        }
     }
 
     /**
@@ -109,10 +113,10 @@ public class ActivityHelper {
         activityDao.delete(activities);
     }
 
-    @Contract(pure = true)
-    public static boolean isPassive(int activityType) {
-        return activityType == DetectedActivity.STILL;
-    }
+//    @Contract(pure = true)
+//    public static boolean isPassive(int activityType) {
+//        return activityType == DetectedActivity.STILL;
+//    }
 
     /**
      * @param activity

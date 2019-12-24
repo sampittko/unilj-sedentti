@@ -28,6 +28,7 @@ import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.SessionType;
 import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
@@ -87,11 +88,11 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                         activityHelper.create(DetectedActivity.STILL, newSession);
                         handleSignificantMotion(DetectedActivity.STILL);
                         setCurrentSession(newSession);
+                        notificationManager.cancel(MOTION_NOTIFICATION_ID);
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                notificationManager.cancel(MOTION_NOTIFICATION_ID);
             }
         }
 
@@ -260,7 +261,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     private void handleSignificantMotion(int detectedActivity) {
         Crashlytics.log(Log.DEBUG, TAG, "Handling significant motion");
-        if (ActivityHelper.isPassive(detectedActivity)) {
+        if (sessionHelper.getSessionType(detectedActivity) == SessionType.SEDENTARY) {
             this.significantMotionDetector.start();
         } else {
             this.significantMotionDetector.stop();
@@ -288,54 +289,82 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         public void onReceive(Context context, Intent intent) {
             if (ActivityTransitionResult.hasResult(intent)) {
                 ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
+
                 for (ActivityTransitionEvent event : Objects.requireNonNull(intentResult).getTransitionEvents()) {
+
                     int newActivityType = event.getActivityType();
                     int newActivityTransitionType = event.getTransitionType();
 
                     Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " and transition " +
                             newActivityTransitionType + " received");
 
-                    SessionHelper sessionHelper = getSessionHelper();
-                    ActivityHelper activityHelper = getActivityHelper();
+//                    SessionHelper sessionHelper = getSessionHelper();
+//                    ActivityHelper activityHelper = getActivityHelper();
 
                     try {
-                        Activity lastActivity = activityHelper.getLast();
+//                        getting last activity, if no, reamins null
+                        Activity lastActivity = null;
+                        try {
+                            lastActivity = activityHelper.getLast();
+                        } catch (NullPointerException e) {
+                            Crashlytics.log(Log.DEBUG, TAG, "There is no last activity");
+                        }
+
+//                        getting last session, if no, remains null
                         Session pendingSession = null;
                         try {
                             pendingSession = sessionHelper.getPending();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
                         } catch (NullPointerException e) {
                             Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
                         }
 
                         if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
                             Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
-                            if (isNewSessionRequired(newActivityType, lastActivity)) {
+
+                            if (pendingSession == null) {
+//                                no session yet, creating first one
+                                pendingSession = createNewSession(newActivityType);
+                            } else if (isNewSessionRequired(newActivityType, lastActivity)) {
+//                                session types do not match, new session created
                                 Crashlytics.log(Log.DEBUG, TAG, "New session is required");
-
                                 handleSignificantMotion(newActivityType);
-                                if (pendingSession != null) {
-                                    sessionHelper.end(pendingSession);
-                                    Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
-                                }
-
-                                pendingSession = sessionHelper.create(newActivityType);
-                                setCurrentSession(pendingSession);
-                                Crashlytics.log(Log.DEBUG, TAG, "New session created");
-                            } else {
-                                Crashlytics.log(Log.DEBUG, TAG, "New session is not required");
-                                if (pendingSession == null) {
-                                    pendingSession = sessionHelper.create(newActivityType);
-                                    setCurrentSession(pendingSession);
-                                    Crashlytics.log(Log.DEBUG, TAG, "New session created");
-                                } else if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
-                                    Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
-                                    lastActivity.setType(newActivityType);
-                                    activityHelper.update(lastActivity);
-                                }
+                                sessionHelper.end(pendingSession);
+                                Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
+                                pendingSession = createNewSession(newActivityType);
                             }
 
+                            if (lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
+//                                SIGMOV produces UNKNOWN activity type
+//                                if following acitivity is active, change it
+                                Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
+                                lastActivity.setType(newActivityType);
+                                activityHelper.update(lastActivity);
+                                // dismiss notification for sensing if the activity is real
+                                notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                            }
+
+//                            if (isNewSessionRequired(newActivityType, lastActivity)) {
+//                                Crashlytics.log(Log.DEBUG, TAG, "New session is required");
+//
+//                                handleSignificantMotion(newActivityType);
+//                                if (pendingSession != null) {
+//                                    sessionHelper.end(pendingSession);
+//                                    Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
+//                                }
+//                                pendingSession = createNewSession(newActivityType);
+//                            } else {
+//                                Crashlytics.log(Log.DEBUG, TAG, "New session is not required");
+//
+//                                if (pendingSession == null) {
+//                                    pendingSession = createNewSession(newActivityType);
+//                                } else if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
+//                                    Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
+//                                    lastActivity.setType(newActivityType);
+//                                    activityHelper.update(lastActivity);
+//                                }
+//                            }
+
+//                            add new activity to database with coresponding session
                             activityHelper.create(newActivityType, pendingSession);
                             Crashlytics.log(Log.DEBUG, TAG, "New activity created");
                         }
@@ -346,23 +375,35 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             }
         }
 
+        private Session createNewSession(int detectedActivity) throws SQLException {
+            Session pendingSession = sessionHelper.create(detectedActivity);
+            setCurrentSession(pendingSession);
+            Crashlytics.log(Log.DEBUG, TAG, "New session created");
+            return pendingSession;
+        }
+
         @Contract("_, null -> true")
-        private boolean isNewSessionRequired(int newActivityType, Activity lastActivity) {
+        /**
+         * returns true, if activity does NOT match or is null
+         */
+        private boolean isNewSessionRequired(int detectedActivityType, Activity lastActivity) {
             if (lastActivity == null) {
                 return true;
             }
 
-            // IN_VEHICLE handling
-            if ((newActivityType == DetectedActivity.IN_VEHICLE &&
-                    lastActivity.getType() != DetectedActivity.IN_VEHICLE) || (
-                    newActivityType != DetectedActivity.IN_VEHICLE &&
-                            lastActivity.getType() == DetectedActivity.IN_VEHICLE
-            )) {
-                return true;
-            }
+            return sessionHelper.getSessionType(detectedActivityType) != sessionHelper.getSessionType(lastActivity);
 
-            return (newActivityType == DetectedActivity.STILL && lastActivity.getType() != DetectedActivity.STILL)
-                    || (lastActivity.getType() == DetectedActivity.STILL && newActivityType != DetectedActivity.STILL);
+//            // IN_VEHICLE handling
+//            if ((detectedActivityType == DetectedActivity.IN_VEHICLE &&
+//                    lastActivity.getType() != DetectedActivity.IN_VEHICLE) || (
+//                    detectedActivityType != DetectedActivity.IN_VEHICLE &&
+//                            lastActivity.getType() == DetectedActivity.IN_VEHICLE
+//            )) {
+//                return true;
+//            }
+//
+//            return (detectedActivityType == DetectedActivity.STILL && lastActivity.getType() != DetectedActivity.STILL)
+//                    || (lastActivity.getType() == DetectedActivity.STILL && detectedActivityType != DetectedActivity.STILL);
         }
     }
 }

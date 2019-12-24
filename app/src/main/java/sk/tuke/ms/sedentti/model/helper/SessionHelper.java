@@ -23,7 +23,16 @@ import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
+import sk.tuke.ms.sedentti.model.SessionType;
 import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
+
+import static com.google.android.gms.location.DetectedActivity.IN_VEHICLE;
+import static com.google.android.gms.location.DetectedActivity.ON_BICYCLE;
+import static com.google.android.gms.location.DetectedActivity.ON_FOOT;
+import static com.google.android.gms.location.DetectedActivity.RUNNING;
+import static com.google.android.gms.location.DetectedActivity.STILL;
+import static com.google.android.gms.location.DetectedActivity.UNKNOWN;
+import static com.google.android.gms.location.DetectedActivity.WALKING;
 
 public class SessionHelper {
     private final Long HOME_TIMELINE_SESSIONS_LIMIT = 3L;
@@ -322,6 +331,26 @@ public class SessionHelper {
         return activityType == DetectedActivity.STILL;
     }
 
+    public SessionType getSessionType(@NotNull Activity activity) {
+        return getSessionType(activity.getType());
+    }
+
+    public SessionType getSessionType(int detectedActivity) {
+        switch (detectedActivity) {
+            case IN_VEHICLE:
+            case ON_BICYCLE:
+                return SessionType.IN_VEHICLE;
+            case ON_FOOT:
+            case WALKING:
+            case RUNNING:
+            case UNKNOWN:
+                return SessionType.ACTIVE;
+            case STILL:
+            default:
+                return SessionType.SEDENTARY;
+        }
+    }
+
     /**
      * @param session Session to update as the ended one
      * @throws SQLException In case that communication with DB was not successful
@@ -449,7 +478,7 @@ public class SessionHelper {
 
         Session newSession = new Session(
                 isSedentary(activityType),
-                activityType == DetectedActivity.IN_VEHICLE,
+                activityType == IN_VEHICLE,
                 new Date().getTime(),
                 profile
         );

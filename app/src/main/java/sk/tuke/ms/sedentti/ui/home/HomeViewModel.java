@@ -69,7 +69,7 @@ public class HomeViewModel extends AndroidViewModel {
         loadStreak();
         loadSuccess();
     }
-    
+
     private void startTicker() {
         this.tickHandler.removeCallbacks(timeUpdater);
         this.tickHandler.postDelayed(timeUpdater, 1000);
@@ -261,6 +261,12 @@ public class HomeViewModel extends AndroidViewModel {
 
         @Override
         protected void onPostExecute(Session result) {
+            pendingSession.postValue(result);
+
+            if (result == null) {
+                return;
+            }
+
             if (previousSession == null) {
                 previousSession = result;
             }
@@ -269,8 +275,6 @@ public class HomeViewModel extends AndroidViewModel {
                 previousSession = result;
                 updateModel();
             }
-
-            pendingSession.postValue(result);
         }
     }
 
