@@ -27,9 +27,9 @@ public class StorageHelper {
     @NotNull
     public String getPath() throws SQLException {
         return PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
-                profile.getFirebaseAuthUid() +
-                PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
                 Configuration.EVALUATION_SESSION_NUMBER +
+                PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
+                profile.getFirebaseAuthUid() +
                 PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
                 getPathDate() +
                 PredefinedValues.CLOUD_STORAGE_FOLDER_SEPARATOR +
