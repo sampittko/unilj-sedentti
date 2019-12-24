@@ -1,15 +1,11 @@
 package sk.tuke.ms.sedentti.recognition.activity;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -26,10 +22,6 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
-import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.activity.MainActivity;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
@@ -39,6 +31,7 @@ import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.helper.ActivityHelper;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
+import sk.tuke.ms.sedentti.notification.ServiceNotification;
 import sk.tuke.ms.sedentti.notification.StopSedentaryNotification;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionDetector;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionListener;
@@ -128,7 +121,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int commandResult = processCommand(intent);
-        startForeground(SERVICE_NOTIFICATION_ID, createNotification(commandResult));
+        startForeground(SERVICE_NOTIFICATION_ID, new ServiceNotification().createNotification(getApplicationContext(), commandResult, SERVICE_NOTIFICATION_ID));
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -257,50 +250,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         this.time = this.sessionHelper.getDuration(session);
 
         this.isActiveTimePassed = false;
-    }
-
-    private Notification createNotification(int commandResult) {
-        // TODO: 12/18/19 move this notification to separate class
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            od Orea vyssie
-            CharSequence channelName = getString(R.string.app_name);
-
-            if (notificationManager != null) {
-                NotificationChannel notificationChannel = notificationManager.getNotificationChannel(CHANNEL_ID);
-
-                if (notificationChannel == null) {
-                    notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-                    notificationManager.createNotificationChannel(notificationChannel);
-                }
-            }
-        }
-//            Nougat a nizsie
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setSmallIcon(R.drawable.ic_person_outline_black_24dp)
-                .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
-                .setShowWhen(false);
-
-
-        Intent openingIntent = new Intent(this, MainActivity.class);
-        openingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent openingPendingIntent = PendingIntent.getActivity(this, 0, openingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(openingPendingIntent);
-
-        builder.setContentTitle("Sedentti");
-
-        String state = null;
-        if (commandResult == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
-            state = "Sedentti is tracking your sitting";
-        } else if (commandResult == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
-            state = "Sedentti is not active";
-        }
-        if (state != null) {
-            builder.setContentText(state);
-        }
-
-        return builder.build();
     }
 
     @Nullable
