@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import java.sql.SQLException;
@@ -12,7 +13,9 @@ import java.sql.SQLException;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
+import sk.tuke.ms.sedentti.recognition.activity.ActivityRecognitionService;
 
+import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_TURN_ON_SIGMOV;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.NOTIFICATION_MOVEMENT_ACTION_NO;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.NOTIFICATION_MOVEMENT_EXTRA_ID;
 
@@ -40,6 +43,10 @@ public class MovementReceiverNo extends BroadcastReceiver {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            if (intent.getAction() == null) {
+                return null;
+            }
+
             if (intent.getAction().equals(NOTIFICATION_MOVEMENT_ACTION_NO)) {
                 if (intent.hasExtra(NOTIFICATION_MOVEMENT_EXTRA_ID)) {
                     Bundle bundle = intent.getExtras();
@@ -53,6 +60,15 @@ public class MovementReceiverNo extends BroadcastReceiver {
                         SessionHelper sessionHelper = new SessionHelper(context, profile);
 
                         sessionHelper.discardPendingAndUndoPrevious();
+
+                        Intent intent = new Intent(context, ActivityRecognitionService.class);
+                        intent.setAction(COMMAND_TURN_ON_SIGMOV);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            context.startForegroundService(intent);
+                        } else {
+                            context.startService(intent);
+                        }
+
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

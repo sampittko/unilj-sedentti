@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
-import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Activity;
@@ -37,8 +36,18 @@ import sk.tuke.ms.sedentti.notification.movement.MovementNotification;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionDetector;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionListener;
 
+import static sk.tuke.ms.sedentti.config.PredefinedValues.ACTIVITY_RECOGNITION_COMMAND;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_INIT;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_START;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_STOP;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_TURN_ON_SIGMOV;
+
 public class ActivityRecognitionService extends Service implements SignificantMotionListener {
 
+    private int commandResult;
     private static final int SERVICE_NOTIFICATION_ID = 1;
     private static final int MOTION_NOTIFICATION_ID = 2;
     private static final String CHANNEL_ID = "sk.tuke.ms.sedentti";
@@ -121,8 +130,19 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int commandResult = processCommand(intent);
-        startForeground(SERVICE_NOTIFICATION_ID, new ServiceNotification().createNotification(getApplicationContext(), commandResult, SERVICE_NOTIFICATION_ID));
+        if (intent.getAction() == null) {
+            return super.onStartCommand(intent, flags, startId);
+        }
+
+
+        if (intent.getAction().equals(COMMAND_TURN_ON_SIGMOV)) {
+            if (significantMotionDetector != null) {
+                this.significantMotionDetector.start();
+            }
+        } else {
+            this.commandResult = processCommand(intent);
+        }
+        startForeground(SERVICE_NOTIFICATION_ID, new ServiceNotification().createNotification(getApplicationContext(), this.commandResult, SERVICE_NOTIFICATION_ID));
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -130,47 +150,47 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private int processCommand(Intent intent) {
 //        if state is unknown, service is only started without sensing
         if (intent == null || intent.getAction() == null) {
-            return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
+            return ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
         }
 
         switch (intent.getAction()) {
-            case PredefinedValues.COMMAND_INIT:
+            case COMMAND_INIT:
                 // this is called  each time app is opened
                 int state = this.activityRecognitionPreferences.getActivityRecognitionState();
 
-                if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
+                if (state == ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
                     // if the service was running and it was saved in shared preferences and make sure it runs
-                    serviceToggle(PredefinedValues.COMMAND_START);
-                } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+                    serviceToggle(COMMAND_START);
+                } else if (state == ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
                     // if the service was running and it was saved in shared preferences and make sure it has stopped
-                    serviceToggle(PredefinedValues.COMMAND_STOP);
+                    serviceToggle(COMMAND_STOP);
                 } else {
                     // otherwise, first time run, some problem etc
                     // TODO: 12/11/19 check this line
                     // register receiver just avoid the case when there is no registered register
 //                    registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
-                    serviceToggle(PredefinedValues.COMMAND_STOP);
-                    this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
+                    serviceToggle(COMMAND_STOP);
+                    this.activityRecognitionPreferences.saveStateToSharedPreferences(ACTIVITY_RECOGNITION_SERVICE_STOPPED);
                 }
 
                 return state;
-            case PredefinedValues.COMMAND_START:
-                serviceToggle(PredefinedValues.COMMAND_START);
-                this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING);
+            case COMMAND_START:
+                serviceToggle(COMMAND_START);
+                this.activityRecognitionPreferences.saveStateToSharedPreferences(ACTIVITY_RECOGNITION_SERVICE_RUNNING);
 
-                return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
-            case PredefinedValues.COMMAND_STOP:
-                serviceToggle(PredefinedValues.COMMAND_STOP);
-                this.activityRecognitionPreferences.saveStateToSharedPreferences(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
+                return ACTIVITY_RECOGNITION_SERVICE_RUNNING;
+            case COMMAND_STOP:
+                serviceToggle(COMMAND_STOP);
+                this.activityRecognitionPreferences.saveStateToSharedPreferences(ACTIVITY_RECOGNITION_SERVICE_STOPPED);
 
-                return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
+                return ACTIVITY_RECOGNITION_SERVICE_STOPPED;
         }
-        return PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
+        return ACTIVITY_RECOGNITION_SERVICE_UNKNOWN;
     }
 
     private void serviceToggle(String command) {
-        if (command.equals(PredefinedValues.COMMAND_START)) {
-            registerReceiver(receiver, new IntentFilter(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND));
+        if (command.equals(COMMAND_START)) {
+            registerReceiver(receiver, new IntentFilter(ACTIVITY_RECOGNITION_COMMAND));
             this.activityRecognitionHandler.startTracking();
             updateCurrentSession();
             startTicking();
@@ -182,7 +202,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                 }
             }
             Crashlytics.log(Log.DEBUG, TAG, "Sensing service started");
-        } else if (command.equals(PredefinedValues.COMMAND_STOP)) {
+        } else if (command.equals(COMMAND_STOP)) {
             this.activityRecognitionHandler.stopTracking();
             stopTicking();
             this.significantMotionDetector.stop();

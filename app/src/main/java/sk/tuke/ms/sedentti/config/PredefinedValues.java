@@ -9,9 +9,10 @@ public abstract class PredefinedValues {
     //
     public static final String ACTIVITY_RECOGNITION_COMMAND =
             "sk.tuke.ms.sedentti.activity.recognition.ACTION_PROCESS_ACTIVITY_TRANSITION";
-    public static final String COMMAND_START = "sk.tuke.ms.sedentti.activity.recognition.ACTION_START";
-    public static final String COMMAND_STOP = "sk.tuke.ms.sedentti.activity.recognition.ACTION_STOP";
-    public static final String COMMAND_INIT = "sk.tuke.ms.sedentti.activity.recognition.ACTION_INIT";
+    public static final String COMMAND_START = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_START";
+    public static final String COMMAND_STOP = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_STOP";
+    public static final String COMMAND_INIT = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_INIT";
+    public static final String COMMAND_TURN_ON_SIGMOV = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_TURN_ON_SIGMOV";
 
     //
     // Notification
