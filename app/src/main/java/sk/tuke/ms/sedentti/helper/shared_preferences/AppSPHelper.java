@@ -67,7 +67,7 @@ public class AppSPHelper {
      */
     public boolean getFirstNotifState() {
         return appSharedPreferences.getBoolean(
-                PredefinedValues.APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE,
+                PredefinedValues.APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE,
                 Configuration.APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE_DEFAULT
         );
     }
@@ -91,7 +91,7 @@ public class AppSPHelper {
      */
     public boolean getSecondNotifState() {
         return appSharedPreferences.getBoolean(
-                PredefinedValues.APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE,
+                PredefinedValues.APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE,
                 Configuration.APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE_DEFAULT
         );
     }
