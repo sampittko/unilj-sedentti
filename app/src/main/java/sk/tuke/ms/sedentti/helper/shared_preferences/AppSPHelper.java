@@ -20,55 +20,6 @@ public class AppSPHelper {
     /**
      * @param value
      */
-    public void setSedentaryLimit(int value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT, value);
-    }
-
-    /**
-     * @param value
-     */
-    public void setActiveLimit(int value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_LIMIT, value);
-    }
-
-    /**
-     * @param value
-     */
-    public void setSigMovNotifState(boolean value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE, value);
-    }
-
-    /**
-     * @param value
-     */
-    public void setFirstNotifState(boolean value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE, value);
-    }
-
-    /**
-     * @param value
-     */
-    public void setFirstNotifTime(int value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME, value);
-    }
-
-    /**
-     * @param value
-     */
-    public void setSecondNotifState(boolean value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE, value);
-    }
-
-    /**
-     * @param value
-     */
-    public void setSyncInterval(int value) {
-        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_SYNC_INTERVAL, value);
-    }
-
-    /**
-     * @param value
-     */
     public void setFirstTimeStartupPerformed(boolean value) {
         updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED, value);
     }
