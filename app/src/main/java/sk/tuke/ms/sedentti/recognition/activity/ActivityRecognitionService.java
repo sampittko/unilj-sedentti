@@ -43,6 +43,7 @@ import static sk.tuke.ms.sedentti.config.PredefinedValues.ACTIVITY_RECOGNITION_S
 import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_INIT;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_START;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_STOP;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_STOP_AND_SAVE;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_TURN_ON_SIGMOV;
 
 public class ActivityRecognitionService extends Service implements SignificantMotionListener {
@@ -134,6 +135,10 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) {
+            return super.onStartCommand(intent, flags, startId);
+        }
+
         if (intent.getAction() == null) {
             return super.onStartCommand(intent, flags, startId);
         }
@@ -145,6 +150,16 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                 updateCurrentSession();
             }
         } else {
+            if (intent.getAction().equals(COMMAND_STOP_AND_SAVE)) {
+                if (this.sessionHelper != null) {
+                    try {
+                        this.sessionHelper.endPending();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    intent.setAction(COMMAND_STOP);
+                }
+            }
             this.commandResult = processCommand(intent);
         }
         startForeground(SERVICE_NOTIFICATION_ID, new ServiceNotification().createNotification(getApplicationContext(), this.commandResult, SERVICE_NOTIFICATION_ID));
@@ -346,7 +361,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                                 pendingSession = createNewSession(newActivityType);
                             }
 
-                            if (lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
+                            if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
 //                                SIGMOV produces UNKNOWN activity type
 //                                if following acitivity is active, change it
                                 Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");

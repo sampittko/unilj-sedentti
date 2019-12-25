@@ -85,6 +85,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".recognition.activity.ActivityRecognitionStopReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="sk.tuke.ms.sedentti.alarm.receiver.ACTION_STOP_AND_SAVE" />
+            </intent-filter>
+        </receiver>
+
         <service android:name=".recognition.activity.ActivityRecognitionService" />
     </application>
 
