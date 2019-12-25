@@ -59,7 +59,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     private ActivityRecognitionSPHelper activityRecognitionSettings;
     private AppSPHelper appSettings;
     private int state;
-    private Session previousSession;
 
     private boolean startUp;
     private Handler refreshHandler;

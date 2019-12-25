@@ -86,6 +86,10 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         if (this.currentSession != null) {
             int activeLimit = this.appPreferences.getActiveLimit();
 
+            if (this.time < activeLimit) {
+                this.isActiveTimePassed = false;
+            }
+
             if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
                 Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
                 this.isActiveTimePassed = true;
@@ -138,6 +142,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         if (intent.getAction().equals(COMMAND_TURN_ON_SIGMOV)) {
             if (significantMotionDetector != null) {
                 this.significantMotionDetector.start();
+                updateCurrentSession();
             }
         } else {
             this.commandResult = processCommand(intent);
@@ -256,21 +261,9 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         super.onDestroy();
     }
 
-    @Contract(pure = true)
-    private SessionHelper getSessionHelper() {
-        return sessionHelper;
-    }
-
-    @Contract(pure = true)
-    private ActivityHelper getActivityHelper() {
-        return activityHelper;
-    }
-
     private void setCurrentSession(Session session) {
         this.currentSession = session;
         this.time = this.sessionHelper.getDuration(session);
-
-        this.isActiveTimePassed = false;
     }
 
     @Nullable

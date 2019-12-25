@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
+import java.lang.ref.WeakReference;
 import java.sql.SQLException;
 
 import sk.tuke.ms.sedentti.model.Profile;
@@ -30,21 +31,26 @@ public class MovementReceiverNo extends BroadcastReceiver {
         }
     }
 
-    private static class Task extends AsyncTask<Void, Void, Void> {
+    private class Task extends AsyncTask<Void, Void, Void> {
 
         private final PendingResult pendingResult;
         private final Intent intent;
-        private final Context context;
+        private final WeakReference<Context> contextWeakReference;
 
         private Task(PendingResult pendingResult, Intent intent, Context context) {
             this.pendingResult = pendingResult;
             this.intent = intent;
-            this.context = context;
+            this.contextWeakReference = new WeakReference<>(context);
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             if (intent.getAction() == null) {
+                return null;
+            }
+
+            Context context = contextWeakReference.get();
+            if (context == null) {
                 return null;
             }
 

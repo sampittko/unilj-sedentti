@@ -13,6 +13,7 @@ public abstract class PredefinedValues {
     public static final String COMMAND_STOP = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_STOP";
     public static final String COMMAND_INIT = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_INIT";
     public static final String COMMAND_TURN_ON_SIGMOV = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_TURN_ON_SIGMOV";
+    public static final String BROADCAST_SESSION_CHANGED = "sk.tuke.ms.sedentti.service.receiver.ACTION_SESSION_CHANGED";
 
     //
     // Notification
