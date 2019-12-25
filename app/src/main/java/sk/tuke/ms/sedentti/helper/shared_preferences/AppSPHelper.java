@@ -25,6 +25,20 @@ public class AppSPHelper {
     }
 
     /**
+     * @param value
+     */
+    public void setFirstNotifState(boolean value) {
+        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE, value);
+    }
+
+    /**
+     * @param value
+     */
+    public void setSecondNotifState(boolean value) {
+        updateAppSetting(PredefinedValues.APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE, value);
+    }
+
+    /**
      * @return
      */
     public int getSedentaryLimit() {

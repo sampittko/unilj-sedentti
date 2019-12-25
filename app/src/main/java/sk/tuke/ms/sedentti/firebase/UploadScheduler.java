@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.firebase.uploader;
+package sk.tuke.ms.sedentti.firebase;
 
 import android.content.Context;
 import android.util.Log;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.SQLException;
 import java.util.Calendar;
 
-import sk.tuke.ms.sedentti.config.Configuration;
+import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.UploadTask;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
@@ -21,10 +21,12 @@ public class UploadScheduler {
 
     private SessionHelper sessionHelper;
     private UploadTaskHelper uploadTaskHelper;
+    private AppSPHelper appSPHelper;
 
     public UploadScheduler(Context context, Profile profile) {
         sessionHelper = new SessionHelper(context, profile);
         uploadTaskHelper = new UploadTaskHelper(context, profile);
+        appSPHelper = new AppSPHelper(context);
     }
 
     public long getInitialMillisecondsDelay() throws SQLException {
@@ -40,7 +42,7 @@ public class UploadScheduler {
             }
             else {
                 Crashlytics.log(Log.DEBUG, TAG, "Perform upload work in UPLOAD_WORK_WAITING_MILLIS");
-                return Configuration.UPLOAD_WORK_WAITING_MILLIS;
+                return appSPHelper.getSyncInterval();
             }
         }
 
@@ -60,8 +62,10 @@ public class UploadScheduler {
         Calendar dueDate = Calendar.getInstance();
         dueDate.setTimeInMillis(latestUploadTask.getStartTimestamp());
 
+        int syncInterval = appSPHelper.getSyncInterval();
+
         while (dueDate.before(currentDate)) {
-            dueDate.add(Calendar.MILLISECOND, Configuration.UPLOAD_WORK_WAITING_MILLIS);
+            dueDate.add(Calendar.MILLISECOND, syncInterval);
         }
 
         return dueDate.getTimeInMillis() - currentDate.getTimeInMillis();

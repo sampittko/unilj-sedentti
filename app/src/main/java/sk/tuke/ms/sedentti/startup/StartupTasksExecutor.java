@@ -5,24 +5,15 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.work.Constraints;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-
 import com.crashlytics.android.Crashlytics;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 
-import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
-import sk.tuke.ms.sedentti.firebase.uploader.UploadScheduler;
-import sk.tuke.ms.sedentti.firebase.uploader.UploadWorker;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.recognition.activity.ActivityRecognitionService;
+import sk.tuke.ms.sedentti.work.upload.UploadWorkManager;
 
 public class StartupTasksExecutor {
     private static final String TAG = "StartupTasksExecutor";
@@ -30,11 +21,13 @@ public class StartupTasksExecutor {
     private Context context;
     private ProfileHelper profileHelper;
     private Profile activeProfile;
+    private UploadWorkManager uploadWorkerManager;
 
     public StartupTasksExecutor(Context context) throws SQLException {
         this.context = context;
         this.profileHelper = new ProfileHelper(context);
         this.activeProfile = profileHelper.getActive();
+        uploadWorkerManager = new UploadWorkManager(context);
     }
 
     public void execute(boolean crashlyticsSetup) {
@@ -43,7 +36,7 @@ public class StartupTasksExecutor {
             Crashlytics.log(Log.DEBUG, TAG, "Crashlytics user details set");
         }
         startForegroundService();
-        activateUploadWorker();
+        uploadWorkerManager.activateUploadWorker();
     }
 
     private void startForegroundService() {
@@ -55,44 +48,5 @@ public class StartupTasksExecutor {
             context.startService(intent);
         }
         Crashlytics.log(Log.DEBUG, TAG, "Activity recognition foreground service started");
-    }
-
-    private void activateUploadWorker() {
-        WorkManager.getInstance(context)
-                .enqueueUniquePeriodicWork(
-                        Configuration.UPLOAD_WORK_NAME,
-                        Configuration.UPLOAD_WORK_POLICY,
-                        getUploadWorkerRequest()
-                );
-        Crashlytics.log(Log.DEBUG, TAG, "Upload work scheduled");
-    }
-
-    @NotNull
-    private PeriodicWorkRequest getUploadWorkerRequest() {
-        Crashlytics.log(Log.DEBUG, TAG, "Building upload work request");
-        return new PeriodicWorkRequest.Builder(UploadWorker.class, Configuration.UPLOAD_WORK_WAITING_MILLIS, TimeUnit.MILLISECONDS)
-                .setConstraints(getUploadWorkerConstraints())
-                .setInitialDelay(getUploadWorkerInitialMillisDelay(), TimeUnit.MILLISECONDS)
-                .build();
-    }
-
-    private long getUploadWorkerInitialMillisDelay() {
-        try {
-            long initialMillisDelay = new UploadScheduler(context, activeProfile).getInitialMillisecondsDelay();
-            Crashlytics.log(Log.DEBUG, TAG, "Initial milliseconds delay for upload work is " + initialMillisDelay);
-            return initialMillisDelay;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Crashlytics.log(Log.DEBUG, TAG, "Unable to get initial milliseconds delay for upload work, setting UPLOAD_WORK_WAITING_MILLIS");
-            return Configuration.UPLOAD_WORK_WAITING_MILLIS;
-        }
-    }
-
-    @NotNull
-    private Constraints getUploadWorkerConstraints() {
-        Crashlytics.log(Log.DEBUG, TAG, "Getting upload work constraints");
-        return new Constraints.Builder()
-                .setRequiredNetworkType(Configuration.UPLOAD_WORK_NETWORK_TYPE)
-                .build();
     }
 }
