@@ -36,6 +36,7 @@ public abstract class PredefinedValues {
     public static final String APP_SHARED_PREFERENCES_SYNC_INTERVAL = "sync_interval";
     public static final String APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED = "first_time_startup_performed";
     public static final String APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_VALUE = "stop_sensing_relative_value";
+    public static final String APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_TIME = "stop_sensing_relative_time";
 
 
     //

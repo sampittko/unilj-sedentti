@@ -14,7 +14,7 @@ public class StopSensingDialog extends DialogFragment {
 
     private StopSensingDialogListener listener;
 
-    public void setCallback(StopSensingDialogListener listener) {
+    public void setListener(StopSensingDialogListener listener) {
         this.listener = listener;
     }
 
@@ -30,7 +30,7 @@ public class StopSensingDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked OK button
                 if (listener != null) {
-                    listener.onDialogPositiveClick(StopSensingDialog.this);
+                    listener.onDialogPositiveClick();
                 }
             }
         });
@@ -46,7 +46,7 @@ public class StopSensingDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
                 if (listener != null) {
-                    listener.onDialogNegativeClick(StopSensingDialog.this);
+                    listener.onDialogNegativeClick();
                 }
             }
         });
@@ -55,8 +55,8 @@ public class StopSensingDialog extends DialogFragment {
     }
 
     public interface StopSensingDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
+        public void onDialogPositiveClick();
 
-        public void onDialogNegativeClick(DialogFragment dialog);
+        public void onDialogNegativeClick();
     }
 }

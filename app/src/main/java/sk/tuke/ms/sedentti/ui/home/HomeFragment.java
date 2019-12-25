@@ -26,6 +26,8 @@ import com.hookedonplay.decoviewlib.DecoView;
 import com.hookedonplay.decoviewlib.charts.SeriesItem;
 import com.hookedonplay.decoviewlib.events.DecoEvent;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,13 +36,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import de.hdodenhof.circleimageview.CircleImageView;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.dialog.StopSensingDialog;
+import sk.tuke.ms.sedentti.dialog.StopSensingTimerRelativeDialog;
 import sk.tuke.ms.sedentti.helper.TimeHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
@@ -48,9 +51,10 @@ import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.recognition.activity.ActivityRecognitionService;
 
-public class HomeFragment extends Fragment implements StopSensingDialog.StopSensingDialogListener {
+public class HomeFragment extends Fragment implements StopSensingDialog.StopSensingDialogListener, StopSensingTimerRelativeDialog.StopSensingTimerRelativeDialogListener {
 
-    private static final String STOP_SENSING_DIALOG = "StopSensigDialog";
+    private static final String STOP_SENSING_DIALOG = "StopSensingDialog";
+    private static final String STOP_SENSING_TIMER_RELATIVE_DIALOG = "StopSensingTimerRelativeDialog";
     private final String TAG = this.getClass().getSimpleName();
 
     private HomeViewModel homeViewModel;
@@ -252,7 +256,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         TextView sedentaryTimeValue = root.findViewById(R.id.tw_f_home_value_sedentary);
         this.homeViewModel.getDailySedentaryDuration().observe(this, value -> {
             sedentaryTimeValue.setText(TimeHelper.formatTimeString(value));
-            // TODO: 11/10/19 set sedentary time goal
             int normalizedValue = getNormalizedValue(value, 8L * 3600L * 1000L);
             sedentaryTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(activeTimeIndex).setDelay(4000).build());
         });
@@ -260,7 +263,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         TextView activeTimeValue = root.findViewById(R.id.tw_f_home_value_active);
         this.homeViewModel.getDailyActiveDuration().observe(this, value -> {
             activeTimeValue.setText(TimeHelper.formatTimeString(value));
-            // TODO: 11/10/19 set activity time goal
             int normalizedValue = getNormalizedValue(value, 8 * 3600 * 1000);
             activeTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(sedentaryTimeIndex).setDelay(4000).build());
         });
@@ -268,7 +270,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         TextView vehicleTimeValue = root.findViewById(R.id.tw_f_home_value_vehicle);
         this.homeViewModel.getDailyVehicleDuration().observe(this, value -> {
             vehicleTimeValue.setText(TimeHelper.formatTimeString(value));
-            // TODO: 11/10/19 set vehicle time goal
             int normalizedValue = getNormalizedValue(value, 8 * 3600 * 1000);
             vehicleTime.addEvent(new DecoEvent.Builder(normalizedValue).setIndex(vehicleTimeIndex).setDelay(4000).build());
         });
@@ -326,20 +327,46 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     private void updateSensingStateUI(int state) {
         Button button = getActivity().findViewById(R.id.btn_home_button_sensing);
         TextView settingsIcon = getActivity().findViewById(R.id.f_home_sensing_settings);
-        TextView sensingStatus = getActivity().findViewById(R.id.tw_home_text_sensing_state);
         if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
             button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
             settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorAccent)));
 
-            sensingStatus.setText("Tracking is turned off");
             button.setText("Start");
         } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
             button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
             settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorPrimary)));
 
-            sensingStatus.setText("Tracking is active");
             button.setText("Stop");
         }
+
+        updateSensingTextUI(state);
+    }
+
+    private void updateSensingTextUI(int state) {
+        long time = appSettings.getStopSensingRelativeTime();
+        TextView sensingStatus = getActivity().findViewById(R.id.tw_home_text_sensing_state);
+
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        String formattedDate = dateFormat.format(new Date(time));
+
+        long currentTime = new Date().getTime();
+        time = time - currentTime;
+        if (time <= 0) {
+            time = Configuration.APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_TIME_DEFAULT;
+            appSettings.setStopSensingRelativeTime(time);
+        }
+
+        String text = "";
+        if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
+            text = "Tracking is turned off";
+        } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
+            if (time == Configuration.APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_TIME_DEFAULT) {
+                text = "Tracking is active, no timer set";
+            } else {
+                text = "Tracking is active. Stop timer set for " + formattedDate;
+            }
+        }
+        sensingStatus.setText(text);
     }
 
     private void toggleButton() {
@@ -353,12 +380,10 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         } else {
 //            turn it off
             StopSensingDialog dialog = new StopSensingDialog();
-            dialog.setCallback(this);
+            dialog.setListener(this);
             dialog.show(getFragmentManager(), STOP_SENSING_DIALOG);
         }
     }
-
-    ;
 
     private void startForegroundService(String command) {
         Intent intent = new Intent(getActivity().getApplicationContext(), ActivityRecognitionService.class);
@@ -371,7 +396,6 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
 
         Crashlytics.log(Log.DEBUG, TAG, "Activity recognition foreground service started");
     }
-
 
     private void setOnClickOnViews(View root) {
         this.timelineLayout = root.findViewById(R.id.f_home_layout_timeline);
@@ -391,6 +415,14 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         });
 
         root.findViewById(R.id.btn_home_button_sensing).setOnClickListener((View view) -> toggleButton());
+        root.findViewById(R.id.f_home_sensing_settings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StopSensingTimerRelativeDialog dialog = new StopSensingTimerRelativeDialog();
+                dialog.setListener(HomeFragment.this::onStopSensingTimerRelativeUpdated);
+                dialog.show(getFragmentManager(), STOP_SENSING_DIALOG);
+            }
+        });
     }
 
     private void makeTimeline(ArrayList<Session> sessions) {
@@ -455,18 +487,21 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        // TODO: 12/13/19 save pending activity to database
+    public void onDialogPositiveClick() {
         stopSensing();
         this.homeViewModel.savePendingSession();
         refreshHandler.postDelayed(refresh, 100);
     }
 
     @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        // TODO: 12/13/19 discard pending activity
+    public void onDialogNegativeClick() {
         stopSensing();
         this.homeViewModel.discardPendingSession();
         refreshHandler.postDelayed(refresh, 100);
+    }
+
+    @Override
+    public void onStopSensingTimerRelativeUpdated(long time) {
+        updateSensingTextUI(this.state);
     }
 }

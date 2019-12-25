@@ -82,6 +82,8 @@ public abstract class Configuration {
     //
     public static final String APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT = "60000";
     public static final String APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT = "1800000";
+    public static final int APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_VALUE_DEFAULT = 8;
+    public static final long APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_TIME_DEFAULT = -1;
     public static final boolean APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE_DEFAULT = true;
     public static final String APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME_DEFAULT = "600000";              //
     public static final String APP_SHARED_PREFERENCES_SYNC_INTERVAL_DEFAULT = "21600000";               //  If any of these changes, change also the appropriate values in the resource file (strings.xml)

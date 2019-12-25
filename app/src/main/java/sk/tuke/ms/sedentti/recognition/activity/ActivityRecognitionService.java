@@ -326,9 +326,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                     Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " and transition " +
                             newActivityTransitionType + " received");
 
-//                    SessionHelper sessionHelper = getSessionHelper();
-//                    ActivityHelper activityHelper = getActivityHelper();
-
                     try {
 //                        getting last activity, if no, reamins null
                         Activity lastActivity = null;
