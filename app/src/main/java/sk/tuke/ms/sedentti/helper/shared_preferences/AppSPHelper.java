@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 
@@ -13,52 +15,6 @@ public class AppSPHelper {
 
     public AppSPHelper(@NotNull Context context) {
         appSharedPreferences = context.getSharedPreferences(PredefinedValues.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-    }
-
-    /**
-     * Sets default settings for the app
-     */
-    public void setAppDefaultSettings() {
-        setDefaultActiveLimit();
-        setDefaultSedentaryLimit();
-        setDefaultSigMovNotifState();
-        setDefaultFirstNotifState();
-        setDefaultFirstNotifTime();
-        setDefaultSecondNotifState();
-        setDefaultSyncInterval();
-        setDefaultFirstTimeStartupPerformed();
-    }
-
-    private void setDefaultActiveLimit() {
-        setActiveLimit(Configuration.APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT);
-    }
-
-    private void setDefaultSedentaryLimit() {
-        setSedentaryLimit(Configuration.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT);
-    }
-
-    private void setDefaultSigMovNotifState() {
-        setSigMovNotifState(Configuration.APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE_DEFAULT);
-    }
-
-    private void setDefaultFirstNotifState() {
-        setFirstNotifState(Configuration.APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE_DEFAULT);
-    }
-
-    private void setDefaultFirstNotifTime() {
-        setFirstNotifTime(Configuration.APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME_DEFAULT);
-    }
-
-    private void setDefaultSecondNotifState() {
-        setSecondNotifState(Configuration.APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE_DEFAULT);
-    }
-
-    private void setDefaultSyncInterval() {
-        setSyncInterval(Configuration.APP_SHARED_PREFERENCES_SYNC_INTERVAL_DEFAULT);
-    }
-
-    private void setDefaultFirstTimeStartupPerformed() {
-        setFirstTimeStartupPerformed(Configuration.APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT);
     }
 
     /**
@@ -121,9 +77,13 @@ public class AppSPHelper {
      * @return
      */
     public int getSedentaryLimit() {
-        return appSharedPreferences.getInt(
-                PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT,
-                Configuration.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT
+        return Integer.valueOf(
+                    Objects.requireNonNull(
+                            appSharedPreferences.getString(
+                            PredefinedValues.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT,
+                            Configuration.APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT
+                    )
+                )
         );
     }
 
@@ -131,9 +91,13 @@ public class AppSPHelper {
      * @return
      */
     public int getActiveLimit() {
-        return appSharedPreferences.getInt(
-                PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_LIMIT,
-                Configuration.APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT
+        return Integer.valueOf(
+                Objects.requireNonNull(
+                        appSharedPreferences.getString(
+                            PredefinedValues.APP_SHARED_PREFERENCES_ACTIVE_LIMIT,
+                            Configuration.APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT
+                        )
+                )
         );
     }
 
@@ -153,7 +117,7 @@ public class AppSPHelper {
     public boolean getFirstNotifState() {
         return appSharedPreferences.getBoolean(
                 PredefinedValues.APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE,
-                Configuration.APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE_DEFAULT
+                Configuration.APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE_DEFAULT
         );
     }
 
@@ -161,9 +125,13 @@ public class AppSPHelper {
      * @return
      */
     public int getFirstNotifTime() {
-        return appSharedPreferences.getInt(
-                PredefinedValues.APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME,
-                Configuration.APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME_DEFAULT
+        return Integer.valueOf(
+                Objects.requireNonNull(
+                        appSharedPreferences.getString(
+                            PredefinedValues.APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME,
+                            Configuration.APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME_DEFAULT
+                        )
+                )
         );
     }
 
@@ -173,7 +141,7 @@ public class AppSPHelper {
     public boolean getSecondNotifState() {
         return appSharedPreferences.getBoolean(
                 PredefinedValues.APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE,
-                Configuration.APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE_DEFAULT
+                Configuration.APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE_DEFAULT
         );
     }
 
@@ -181,9 +149,13 @@ public class AppSPHelper {
      * @return
      */
     public int getSyncInterval() {
-        return appSharedPreferences.getInt(
-                PredefinedValues.APP_SHARED_PREFERENCES_SYNC_INTERVAL,
-                Configuration.APP_SHARED_PREFERENCES_SYNC_INTERVAL_DEFAULT
+        return Integer.valueOf(
+                Objects.requireNonNull(
+                        appSharedPreferences.getString(
+                            PredefinedValues.APP_SHARED_PREFERENCES_SYNC_INTERVAL,
+                            Configuration.APP_SHARED_PREFERENCES_SYNC_INTERVAL_DEFAULT
+                        )
+                )
         );
     }
 
@@ -199,7 +171,7 @@ public class AppSPHelper {
 
     private void updateAppSetting(String setting, int value) {
         SharedPreferences.Editor appShPrEditor = appSharedPreferences.edit();
-        appShPrEditor.putInt(setting, value);
+        appShPrEditor.putString(setting, String.valueOf(value));
         appShPrEditor.apply();
     }
 

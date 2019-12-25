@@ -20,7 +20,6 @@ import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.firebase.uploader.UploadScheduler;
 import sk.tuke.ms.sedentti.firebase.uploader.UploadWorker;
-import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.recognition.activity.ActivityRecognitionService;
@@ -43,15 +42,8 @@ public class StartupTasksExecutor {
             profileHelper.setCrashlyticsUser(activeProfile);
             Crashlytics.log(Log.DEBUG, TAG, "Crashlytics user details set");
         }
-        setAppDefaultSettings();
         startForegroundService();
         activateUploadWorker();
-    }
-
-    private void setAppDefaultSettings() {
-        AppSPHelper appSPHelper = new AppSPHelper(context);
-        appSPHelper.setAppDefaultSettings();
-        Crashlytics.log(Log.DEBUG, TAG, "App settings were set to defaults");
     }
 
     private void startForegroundService() {

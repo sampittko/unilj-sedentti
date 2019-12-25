@@ -84,7 +84,6 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
 
     private void decideNextStep() {
         AppSPHelper appSPHelper = new AppSPHelper(this);
-        appSPHelper.setAppDefaultSettings();
 
         if (appSPHelper.getFirstTimeStartupPerformed()) {
             Crashlytics.log(Log.DEBUG, TAG, "First time startup had already been performed before");

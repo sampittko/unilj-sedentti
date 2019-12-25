@@ -18,11 +18,11 @@
         <item>24 hours</item>
     </string-array>
 
-    <integer-array name="sync_intervals_values">
+    <string-array name="sync_intervals_values">
         <item>21600000</item>
         <item>43200000</item>
         <item>86400000</item>
-    </integer-array>
+    </string-array>
 
     <string-array name="first_notif_time">
         <item>5 minutes</item>
@@ -30,11 +30,11 @@
         <item>15 minutes</item>
     </string-array>
 
-    <integer-array name="first_notif_time_values">
+    <string-array name="first_notif_time_values">
         <item>300000</item>
         <item>600000</item>
         <item>900000</item>
-    </integer-array>
+    </string-array>
 
     <string-array name="active_limits">
         <item>1 minute</item>
@@ -44,13 +44,13 @@
         <item>5 minutes</item>
     </string-array>
 
-    <integer-array name="active_limits_values">
+    <string-array name="active_limits_values">
         <item>60000</item>
         <item>120000</item>
         <item>180000</item>
         <item>240000</item>
         <item>300000</item>
-    </integer-array>
+    </string-array>
 
     <string-array name="sedentary_limits">
         <item>30 minutes</item>
@@ -62,7 +62,7 @@
         <item>60 minutes</item>
     </string-array>
 
-    <integer-array name="sedentary_limits_values">
+    <string-array name="sedentary_limits_values">
         <item>1800000</item>
         <item>2100000</item>
         <item>2400000</item>
@@ -70,12 +70,12 @@
         <item>3000000</item>
         <item>3300000</item>
         <item>3600000</item>
-    </integer-array>
+    </string-array>
 
-    <integer name="active_limit_default_value">60000</integer> <!-- 1 minute -->
-    <integer name="sedentary_limit_default_value">1800000</integer> <!-- 30 minutes -->
-    <integer name="sync_intervals_default_value">21600000</integer> <!-- 6 hours -->
-    <integer name="first_notif_time_default_value">600000</integer> <!-- 10 minutes -->
+    <string name="active_limit_default_value">60000</string> <!-- 1 minute -->
+    <string name="sedentary_limit_default_value">1800000</string> <!-- 30 minutes -->
+    <string name="sync_intervals_default_value">21600000</string> <!-- 6 hours -->
+    <string name="first_notif_time_default_value">600000</string> <!-- 10 minutes -->
 
     <bool name="sig_mov_notif_state_default_value">true</bool>
     <bool name="first_time_startup_performed_default_value">false</bool>

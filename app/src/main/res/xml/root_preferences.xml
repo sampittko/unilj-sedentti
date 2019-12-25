@@ -15,7 +15,7 @@
             android:title="Active limit"
             android:entries="@array/active_limits"
             android:entryValues="@array/active_limits_values"
-            android:defaultValue="@integer/active_limit_default_value"
+            android:defaultValue="@string/active_limit_default_value"
         />
         <ListPreference
             android:dialogTitle="Sedentary limit"
@@ -24,7 +24,7 @@
             android:title="Sedentary limit"
             android:entries="@array/sedentary_limits"
             android:entryValues="@array/sedentary_limits_values"
-            android:defaultValue="@integer/sedentary_limit_default_value"
+            android:defaultValue="@string/sedentary_limit_default_value"
         />
     </PreferenceCategory>
 
@@ -51,7 +51,7 @@
             android:title="First notification time"
             android:entries="@array/first_notif_time"
             android:entryValues="@array/first_notif_time_values"
-            android:defaultValue="@integer/first_notif_time_default_value"
+            android:defaultValue="@string/first_notif_time_default_value"
         />
         <SwitchPreferenceCompat
             app:key="second_notif_state"
@@ -59,7 +59,6 @@
             android:summary="2nd interruption of sedentary session"
             android:defaultValue="@bool/second_notif_state_default_value"
         />
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -73,7 +72,7 @@
             android:title="Sync interval"
             android:entries="@array/sync_intervals"
             android:entryValues="@array/sync_intervals_values"
-            android:defaultValue="@integer/sync_intervals_default_value"
+            android:defaultValue="@string/sync_intervals_default_value"
         />
     </PreferenceCategory>
 </PreferenceScreen>

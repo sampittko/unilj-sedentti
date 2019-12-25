@@ -80,11 +80,11 @@ public abstract class Configuration {
     //
     // Shared Preferences - App settings
     //
-    public static final int APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT = 60000;
-    public static final int APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT = 1800000;
+    public static final String APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT = "60000";
+    public static final String APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT = "1800000";
     public static final boolean APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE_DEFAULT = true;
-    public static final int APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME_DEFAULT = 600000;                   //
-    public static final int APP_SHARED_PREFERENCES_SYNC_INTERVAL_DEFAULT = 21600000;                    //  If any of these changes, change also the appropriate values in the resource file (strings.xml)
+    public static final String APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME_DEFAULT = "600000";              //
+    public static final String APP_SHARED_PREFERENCES_SYNC_INTERVAL_DEFAULT = "21600000";               //  If any of these changes, change also the appropriate values in the resource file (strings.xml)
     public static final boolean APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT = false;    //
     public static final boolean APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE_DEFAULT = true;
     public static final boolean APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE_DEFAULT = true;
