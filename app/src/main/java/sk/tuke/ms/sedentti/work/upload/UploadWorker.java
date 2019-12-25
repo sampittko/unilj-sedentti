@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.firebase.uploader;
+package sk.tuke.ms.sedentti.work.upload;
 
 import android.content.Context;
 import android.net.Uri;

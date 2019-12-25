@@ -23,7 +23,6 @@ import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 
 public class FirstTimeStartupActivity extends AppCompatActivity {
-
     private static final String TAG = "FTStartupActivity";
 
     @Override
