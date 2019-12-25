@@ -24,21 +24,28 @@ public abstract class PredefinedValues {
 
     //
     // Shared Preferences - App settings
-    public static final String APP_SHARED_PREFERENCES = "app_settings";
+    //
+    public static final String APP_SHARED_PREFERENCES = Configuration.APP_PACKAGE + "_preferences";
     public static final String APP_SHARED_PREFERENCES_ACTIVE_LIMIT = "active_limit";
-    public static final int APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT = Settings.ACTIVE_MILLISECONDS_LIMIT;
     public static final String APP_SHARED_PREFERENCES_SEDENTARY_LIMIT = "sedentary_limit";
-    public static final int APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT = Settings.SEDENTARY_MILLISECONDS_LIMIT;
+    public static final String APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE = "sig_mov_notif_state";
+    public static final String APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE = "first_notif_state";
+    public static final String APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME = "first_notif_time";
+    public static final String APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE = "second_notif_state";
+    public static final String APP_SHARED_PREFERENCES_SYNC_INTERVAL = "sync_interval";
     public static final String APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED = "first_time_startup_performed";
-    public static final boolean APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT = Configuration.FIRST_TIME_STARTUP_PERFORMED;
 
+    //
     // Shared Preferences - Profile
-    public static final String PROFILE_SHARED_PREFERENCES = "profile";
+    //
+    public static final String PROFILE_SHARED_PREFERENCES= Configuration.APP_PACKAGE + "_preferences.profile";
     public static final String PROFILE_SHARED_PREFERENCES_ACTIVE_ID = "active_id";
     public static final long PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT = 0L;
 
+    //
     // Shared Preferences - Activity Recognition
-    public static final String ACTIVITY_RECOGNITION_SHARED_PREFERENCES = "activity_recognition_settings";
+    //
+    public static final String ACTIVITY_RECOGNITION_SHARED_PREFERENCES= Configuration.APP_PACKAGE + "_preferences.activity_recognition_settings";
     public static final String ACTIVITY_RECOGNITION_SERVICE_STATE = "activity_recognition_service_state";
     public static final int ACTIVITY_RECOGNITION_SERVICE_RUNNING = 1;
     public static final int ACTIVITY_RECOGNITION_SERVICE_STOPPED = 0;

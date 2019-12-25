@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +21,6 @@ import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
-import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class FirstTimeStartupActivity extends AppCompatActivity {
 
@@ -88,7 +86,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
         AppSPHelper appSPHelper = new AppSPHelper(this);
         appSPHelper.setAppDefaultSettings();
 
-        if (appSPHelper.firstTimeStartupPerformed()) {
+        if (appSPHelper.getFirstTimeStartupPerformed()) {
             Crashlytics.log(Log.DEBUG, TAG, "First time startup had already been performed before");
 
             Intent intent = new Intent(this, LoginActivity.class);
@@ -100,7 +98,7 @@ public class FirstTimeStartupActivity extends AppCompatActivity {
             setContentView(R.layout.activity_first_time_startup);
 
             // TODO implement
-            appSPHelper.updateFirstTimeStartupPerformed(true);
+            appSPHelper.setFirstTimeStartupPerformed(true);
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();

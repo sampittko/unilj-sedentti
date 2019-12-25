@@ -2,49 +2,78 @@
 <PreferenceScreen
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="app_settings_preference_screen"
+>
+    <PreferenceCategory
+        app:key="sessions_category"
+        app:title="Sessions"
     >
+        <ListPreference
+            android:dialogTitle="Active limit"
+            android:key="active_limit"
+            android:summary="How long the active session is"
+            android:title="Active limit"
+            android:entries="@array/active_limits"
+            android:entryValues="@array/active_limits_values"
+            android:defaultValue="@integer/active_limit_default_value"
+        />
+        <ListPreference
+            android:dialogTitle="Sedentary limit"
+            android:key="sedentary_limit"
+            android:summary="How long the sedentary session is"
+            android:title="Sedentary limit"
+            android:entries="@array/sedentary_limits"
+            android:entryValues="@array/sedentary_limits_values"
+            android:defaultValue="@integer/sedentary_limit_default_value"
+        />
+    </PreferenceCategory>
+
     <PreferenceCategory
         app:key="notifications_category"
         app:title="Notifications"
-        >
+    >
         <SwitchPreferenceCompat
             app:key="sig_mov_notif_state"
             app:title="Show significant motion notification"
             android:summary="Notification with undo functionality"
+            android:defaultValue="@bool/sig_mov_notif_state_default_value"
         />
         <SwitchPreferenceCompat
             app:key="first_notif_state"
             app:title="First notification"
             android:summary="1st interruption of sedentary session"
+            android:defaultValue="@bool/first_notif_state_default_value"
         />
-        <MultiSelectListPreference
+        <ListPreference
             android:dialogTitle="First notification time"
             android:key="first_notif_time"
             android:summary="How much in advance you wish to be notified"
             android:title="First notification time"
             android:entries="@array/first_notif_time"
             android:entryValues="@array/first_notif_time_values"
-            android:defaultValue="10"
+            android:defaultValue="@integer/first_notif_time_default_value"
         />
         <SwitchPreferenceCompat
             app:key="second_notif_state"
             app:title="Second notification"
             android:summary="2nd interruption of sedentary session"
+            android:defaultValue="@bool/second_notif_state_default_value"
         />
+
     </PreferenceCategory>
 
     <PreferenceCategory
         app:key="data_synchronization_category"
         app:title="Data Sync"
-        >
-        <MultiSelectListPreference
+    >
+        <ListPreference
             android:dialogTitle="Sync interval"
             android:key="sync_interval"
             android:summary="How often you will send us the data"
             android:title="Sync interval"
             android:entries="@array/sync_intervals"
             android:entryValues="@array/sync_intervals_values"
-            android:defaultValue="6"
+            android:defaultValue="@integer/sync_intervals_default_value"
         />
     </PreferenceCategory>
-    </PreferenceScreen>
+</PreferenceScreen>
