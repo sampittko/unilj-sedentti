@@ -11,9 +11,10 @@ public abstract class PredefinedValues {
             "sk.tuke.ms.sedentti.activity.recognition.ACTION_PROCESS_ACTIVITY_TRANSITION";
     public static final String COMMAND_START = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_START";
     public static final String COMMAND_STOP = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_STOP";
+    public static final String COMMAND_STOP_AND_SAVE = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_STOP_AND_SAVE";
     public static final String COMMAND_INIT = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_INIT";
     public static final String COMMAND_TURN_ON_SIGMOV = "sk.tuke.ms.sedentti.service.activity.recognition.ACTION_TURN_ON_SIGMOV";
-    public static final String BROADCAST_SESSION_CHANGED = "sk.tuke.ms.sedentti.service.receiver.ACTION_SESSION_CHANGED";
+    public static final String ALARM_STOP_SERVICE = "sk.tuke.ms.sedentti.alarm.receiver.ACTION_STOP_AND_SAVE";
 
     //
     // Notification
@@ -34,6 +35,8 @@ public abstract class PredefinedValues {
     public static final String APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE = "second_notif_state";
     public static final String APP_SHARED_PREFERENCES_SYNC_INTERVAL = "sync_interval";
     public static final String APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED = "first_time_startup_performed";
+    public static final String APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_VALUE = "stop_sensing_relative_value";
+
 
     //
     // Shared Preferences - Profile
