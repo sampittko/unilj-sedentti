@@ -26,7 +26,7 @@ public class ServiceNotification {
                 NotificationChannel notificationChannel = notificationManager.getNotificationChannel(CHANNEL_ID);
 
                 if (notificationChannel == null) {
-                    notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_LOW);
+                    notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_MIN);
                     notificationManager.createNotificationChannel(notificationChannel);
                 }
             }
