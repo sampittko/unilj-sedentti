@@ -14,7 +14,6 @@ public abstract class Configuration {
     //
     // General app config
     //
-    public static final boolean FIRST_TIME_STARTUP_PERFORMED = false;
     public static final boolean USING_ARTIFICIAL_PROFILE = false;
     public static final String APP_NAME = "Sedentti";
     public static final String APP_PACKAGE = "sk.tuke.ms.sedentti";
@@ -77,4 +76,16 @@ public abstract class Configuration {
     //
     public final static int SIG_MOV_TIMEOUT_TIME = 15000;
     public final static int SIG_MOV_COUNTDOWN_UNIT = 300;
+
+    //
+    // Shared Preferences - App settings
+    //
+    public static final int APP_SHARED_PREFERENCES_ACTIVE_LIMIT_DEFAULT = 60000;
+    public static final int APP_SHARED_PREFERENCES_SEDENTARY_LIMIT_DEFAULT = 1800000;
+    public static final boolean APP_SHARED_PREFERENCES_SIG_MOV_NOTIF_STATE_DEFAULT = true;
+    public static final int APP_SHARED_PREFERENCES_FIRST_NOTIF_TIME_DEFAULT = 600000;                   //
+    public static final int APP_SHARED_PREFERENCES_SYNC_INTERVAL_DEFAULT = 21600000;                    //  If any of these changes, change also the appropriate values in the resource file (strings.xml)
+    public static final boolean APP_SHARED_PREFERENCES_FIRST_TIME_STARTUP_PERFORMED_DEFAULT = false;    //
+    public static final boolean APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE_DEFAULT = true;
+    public static final boolean APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE_DEFAULT = true;
 }

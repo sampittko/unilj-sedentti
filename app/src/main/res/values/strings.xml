@@ -10,6 +10,7 @@
 
     <string name="default_web_client_id" translatable="false">137652915710-hnu3118va0bhsgeuvg7q77fvk294el02.apps.googleusercontent.com</string>
     <string name="home_timeline_name_invehicle">In vehicle</string>
+    <string name="app_settings_preference_screen">app_settings_preference_screen</string>
 
     <string-array name="sync_intervals">
         <item>6 hours</item>
@@ -18,9 +19,9 @@
     </string-array>
 
     <integer-array name="sync_intervals_values">
-        <item>6</item>
-        <item>12</item>
-        <item>24</item>
+        <item>21600000</item>
+        <item>43200000</item>
+        <item>86400000</item>
     </integer-array>
 
     <string-array name="first_notif_time">
@@ -30,9 +31,54 @@
     </string-array>
 
     <integer-array name="first_notif_time_values">
-        <item>5</item>
-        <item>10</item>
-        <item>15</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>900000</item>
     </integer-array>
-</resources>
 
+    <string-array name="active_limits">
+        <item>1 minute</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>4 minutes</item>
+        <item>5 minutes</item>
+    </string-array>
+
+    <integer-array name="active_limits_values">
+        <item>60000</item>
+        <item>120000</item>
+        <item>180000</item>
+        <item>240000</item>
+        <item>300000</item>
+    </integer-array>
+
+    <string-array name="sedentary_limits">
+        <item>30 minutes</item>
+        <item>35 minutes</item>
+        <item>40 minutes</item>
+        <item>45 minutes</item>
+        <item>50 minutes</item>
+        <item>55 minutes</item>
+        <item>60 minutes</item>
+    </string-array>
+
+    <integer-array name="sedentary_limits_values">
+        <item>1800000</item>
+        <item>2100000</item>
+        <item>2400000</item>
+        <item>2700000</item>
+        <item>3000000</item>
+        <item>3300000</item>
+        <item>3600000</item>
+    </integer-array>
+
+    <integer name="active_limit_default_value">60000</integer> <!-- 1 minute -->
+    <integer name="sedentary_limit_default_value">1800000</integer> <!-- 30 minutes -->
+    <integer name="sync_intervals_default_value">21600000</integer> <!-- 6 hours -->
+    <integer name="first_notif_time_default_value">600000</integer> <!-- 10 minutes -->
+
+    <bool name="sig_mov_notif_state_default_value">true</bool>
+    <bool name="first_time_startup_performed_default_value">false</bool>
+    <bool name="first_notif_state_default_value">true</bool>
+    <bool name="second_notif_state_default_value">true</bool>
+</resources>
