@@ -31,6 +31,7 @@ import static com.google.android.gms.location.DetectedActivity.ON_BICYCLE;
 import static com.google.android.gms.location.DetectedActivity.ON_FOOT;
 import static com.google.android.gms.location.DetectedActivity.RUNNING;
 import static com.google.android.gms.location.DetectedActivity.STILL;
+import static com.google.android.gms.location.DetectedActivity.TILTING;
 import static com.google.android.gms.location.DetectedActivity.UNKNOWN;
 import static com.google.android.gms.location.DetectedActivity.WALKING;
 
@@ -344,6 +345,7 @@ public class SessionHelper {
             case WALKING:
             case RUNNING:
             case UNKNOWN:
+            case TILTING:
                 return SessionType.ACTIVE;
             case STILL:
             default:
