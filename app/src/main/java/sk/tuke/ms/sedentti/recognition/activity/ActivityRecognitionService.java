@@ -11,15 +11,12 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.location.ActivityTransition;
-import com.google.android.gms.location.ActivityTransitionEvent;
-import com.google.android.gms.location.ActivityTransitionResult;
+import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
 import org.jetbrains.annotations.Contract;
 
 import java.sql.SQLException;
-import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
@@ -315,89 +312,147 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (ActivityTransitionResult.hasResult(intent)) {
-                ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
+            if (ActivityRecognitionResult.hasResult(intent)) {
+                ActivityRecognitionResult intentResult = ActivityRecognitionResult.extractResult(intent);
 
-                for (ActivityTransitionEvent event : Objects.requireNonNull(intentResult).getTransitionEvents()) {
+                DetectedActivity mostProbableActivity = intentResult.getMostProbableActivity();
+                int newActivityType = mostProbableActivity.getType();
 
-                    int newActivityType = event.getActivityType();
-                    int newActivityTransitionType = event.getTransitionType();
+                Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " received");
 
-                    Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " and transition " +
-                            newActivityTransitionType + " received");
-
-                    try {
+                try {
 //                        getting last activity, if no, reamins null
-                        Activity lastActivity = null;
-                        try {
-                            lastActivity = activityHelper.getLast();
-                        } catch (NullPointerException e) {
-                            Crashlytics.log(Log.DEBUG, TAG, "There is no last activity");
-                        }
+                    Activity lastActivity = null;
+                    try {
+                        lastActivity = activityHelper.getLast();
+                    } catch (NullPointerException e) {
+                        Crashlytics.log(Log.DEBUG, TAG, "There is no last activity");
+                    }
 
 //                        getting last session, if no, remains null
-                        Session pendingSession = null;
-                        try {
-                            pendingSession = sessionHelper.getPending();
-                        } catch (NullPointerException e) {
-                            Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
-                        }
+                    Session pendingSession = null;
+                    try {
+                        pendingSession = sessionHelper.getPending();
+                    } catch (NullPointerException e) {
+                        Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
+                    }
 
-                        if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
-                            Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
 
-                            if (pendingSession == null) {
+                    if (pendingSession == null) {
 //                                no session yet, creating first one
-                                pendingSession = createNewSession(newActivityType);
-                            } else if (isNewSessionRequired(newActivityType, lastActivity)) {
+                        pendingSession = createNewSession(newActivityType);
+                    } else if (isNewSessionRequired(newActivityType, lastActivity)) {
 //                                session types do not match, new session created
-                                Crashlytics.log(Log.DEBUG, TAG, "New session is required");
-                                handleSignificantMotion(newActivityType);
-                                sessionHelper.end(pendingSession);
-                                Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
-                                pendingSession = createNewSession(newActivityType);
-                            }
+                        Crashlytics.log(Log.DEBUG, TAG, "New session is required");
+                        handleSignificantMotion(newActivityType);
+                        sessionHelper.end(pendingSession);
+                        Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
+                        pendingSession = createNewSession(newActivityType);
+                    }
 
-                            if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
+                    if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
 //                                SIGMOV produces UNKNOWN activity type
 //                                if following acitivity is active, change it
-                                Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
-                                lastActivity.setType(newActivityType);
-                                activityHelper.update(lastActivity);
-                                // dismiss notification for sensing if the activity is real
-                                notificationManager.cancel(MOTION_NOTIFICATION_ID);
-                            }
-
-//                            if (isNewSessionRequired(newActivityType, lastActivity)) {
-//                                Crashlytics.log(Log.DEBUG, TAG, "New session is required");
-//
-//                                handleSignificantMotion(newActivityType);
-//                                if (pendingSession != null) {
-//                                    sessionHelper.end(pendingSession);
-//                                    Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
-//                                }
-//                                pendingSession = createNewSession(newActivityType);
-//                            } else {
-//                                Crashlytics.log(Log.DEBUG, TAG, "New session is not required");
-//
-//                                if (pendingSession == null) {
-//                                    pendingSession = createNewSession(newActivityType);
-//                                } else if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
-//                                    Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
-//                                    lastActivity.setType(newActivityType);
-//                                    activityHelper.update(lastActivity);
-//                                }
-//                            }
+                        Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
+                        lastActivity.setType(newActivityType);
+                        activityHelper.update(lastActivity);
+                        // dismiss notification for sensing if the activity is real
+                        notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                    }
 
 //                            add new activity to database with coresponding session
-                            activityHelper.create(newActivityType, pendingSession);
-                            Crashlytics.log(Log.DEBUG, TAG, "New activity created");
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    activityHelper.create(newActivityType, pendingSession);
+                    Crashlytics.log(Log.DEBUG, TAG, "New activity created");
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
+
+
+//
+//            if (ActivityTransitionResult.hasResult(intent)) {
+//                ActivityTransitionResult intentResult = ActivityTransitionResult.extractResult(intent);
+//
+//                for (ActivityTransitionEvent event : Objects.requireNonNull(intentResult).getTransitionEvents()) {
+//
+//                    int newActivityType = event.getActivityType();
+//                    int newActivityTransitionType = event.getTransitionType();
+//
+//                    Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " and transition " +
+//                            newActivityTransitionType + " received");
+//
+//                    try {
+////                        getting last activity, if no, reamins null
+//                        Activity lastActivity = null;
+//                        try {
+//                            lastActivity = activityHelper.getLast();
+//                        } catch (NullPointerException e) {
+//                            Crashlytics.log(Log.DEBUG, TAG, "There is no last activity");
+//                        }
+//
+////                        getting last session, if no, remains null
+//                        Session pendingSession = null;
+//                        try {
+//                            pendingSession = sessionHelper.getPending();
+//                        } catch (NullPointerException e) {
+//                            Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
+//                        }
+//
+//                        if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
+//                            Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
+//
+//                            if (pendingSession == null) {
+////                                no session yet, creating first one
+//                                pendingSession = createNewSession(newActivityType);
+//                            } else if (isNewSessionRequired(newActivityType, lastActivity)) {
+////                                session types do not match, new session created
+//                                Crashlytics.log(Log.DEBUG, TAG, "New session is required");
+//                                handleSignificantMotion(newActivityType);
+//                                sessionHelper.end(pendingSession);
+//                                Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
+//                                pendingSession = createNewSession(newActivityType);
+//                            }
+//
+//                            if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
+////                                SIGMOV produces UNKNOWN activity type
+////                                if following acitivity is active, change it
+//                                Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
+//                                lastActivity.setType(newActivityType);
+//                                activityHelper.update(lastActivity);
+//                                // dismiss notification for sensing if the activity is real
+//                                notificationManager.cancel(MOTION_NOTIFICATION_ID);
+//                            }
+//
+////                            if (isNewSessionRequired(newActivityType, lastActivity)) {
+////                                Crashlytics.log(Log.DEBUG, TAG, "New session is required");
+////
+////                                handleSignificantMotion(newActivityType);
+////                                if (pendingSession != null) {
+////                                    sessionHelper.end(pendingSession);
+////                                    Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
+////                                }
+////                                pendingSession = createNewSession(newActivityType);
+////                            } else {
+////                                Crashlytics.log(Log.DEBUG, TAG, "New session is not required");
+////
+////                                if (pendingSession == null) {
+////                                    pendingSession = createNewSession(newActivityType);
+////                                } else if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
+////                                    Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
+////                                    lastActivity.setType(newActivityType);
+////                                    activityHelper.update(lastActivity);
+////                                }
+////                            }
+//
+////                            add new activity to database with coresponding session
+//                            activityHelper.create(newActivityType, pendingSession);
+//                            Crashlytics.log(Log.DEBUG, TAG, "New activity created");
+//                        }
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
         }
 
         private Session createNewSession(int detectedActivity) throws SQLException {
