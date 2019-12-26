@@ -1,5 +1,6 @@
 package sk.tuke.ms.sedentti.ui.statistics;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.activity.SettingsActivity;
 
 public class StatisticsFragment extends Fragment {
 
@@ -41,7 +43,8 @@ public class StatisticsFragment extends Fragment {
                 this.statisticsViewModel.updateModel();
                 return true;
             case R.id.action_settings:
-                return false;
+                startActivity(new Intent(getContext(), SettingsActivity.class));
+                return true;
         }
         return false;
     }

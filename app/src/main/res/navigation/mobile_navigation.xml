@@ -21,5 +21,6 @@
         android:id="@+id/navigation_profile"
         android:name="sk.tuke.ms.sedentti.ui.profile.ProfileFragment"
         android:label="@string/menu_title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile"
+    />
 </navigation>

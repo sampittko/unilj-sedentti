@@ -40,6 +40,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import de.hdodenhof.circleimageview.CircleImageView;
 import sk.tuke.ms.sedentti.R;
+import sk.tuke.ms.sedentti.activity.SettingsActivity;
 import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.dialog.StopSensingDialog;
@@ -99,7 +100,8 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
                 this.homeViewModel.updateModel();
                 return true;
             case R.id.action_settings:
-                return false;
+                startActivity(new Intent(getContext(), SettingsActivity.class));
+                return true;
         }
         return false;
     }
