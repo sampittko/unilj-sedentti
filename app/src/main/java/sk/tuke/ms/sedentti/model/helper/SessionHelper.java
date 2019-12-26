@@ -375,8 +375,16 @@ public class SessionHelper {
      */
     public void endPending() throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing endPending");
-        Session pendingSession = getPending();
-        end(pendingSession);
+        Session pendingSession = null;
+        try {
+            pendingSession = getPending();
+        } catch (NullPointerException e) {
+            Crashlytics.log(Log.DEBUG, TAG, "No pending session to be ended");
+            e.printStackTrace();
+        }
+        if (pendingSession != null) {
+            end(pendingSession);
+        }
     }
 
     private long getDuration(long startTimestamp, long endTimestamp) {
@@ -817,9 +825,17 @@ public class SessionHelper {
      */
     public void discardPending() throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing discard");
-        Session pendingSession = getPending();
-        activityHelper.discardCorresponding(pendingSession);
-        sessionDao.delete(pendingSession);
+        Session pendingSession = null;
+        try {
+            pendingSession = getPending();
+        } catch (NullPointerException e) {
+            Crashlytics.log(Log.DEBUG, TAG, "No pending session to be ended");
+            e.printStackTrace();
+        }
+        if (pendingSession != null) {
+            activityHelper.discardCorresponding(pendingSession);
+            sessionDao.delete(pendingSession);
+        }
     }
 
     /**
@@ -829,8 +845,10 @@ public class SessionHelper {
         Crashlytics.log(Log.DEBUG, TAG, "Executing discard");
         discardPending();
         Session latestSession = getLatest(1, false).get(0);
-        latestSession.setEndTimestamp(0L);
-        update(latestSession);
+        if (latestSession != null) {
+            latestSession.setEndTimestamp(0L);
+            update(latestSession);
+        }
     }
 
     /**
