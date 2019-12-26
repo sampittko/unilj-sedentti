@@ -299,29 +299,37 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
             LinearLayout sessionTextLayout = getActivity().findViewById(R.id.f_home_layout_session_text);
             DecoView sessionGraph = getActivity().findViewById(R.id.graph_f_home_session);
 
-            if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED || state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN) {
-                if (startUp) {
-                    // first time text visible and nothing else
-                    firstTimeText.setVisibility(View.VISIBLE);
+            switch (this.state) {
+                case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED:
+                case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN:
+                    if (startUp) {
+                        // first time text visible and nothing else
+                        firstTimeText.setVisibility(View.VISIBLE);
+
+                        nonActiveTextLayout.setVisibility(View.INVISIBLE);
+                        sessionTextLayout.setVisibility(View.INVISIBLE);
+                        sessionGraph.setVisibility(View.INVISIBLE);
+                    } else {
+                        // non active, sensing turned off
+                        nonActiveTextLayout.setVisibility(View.VISIBLE);
+
+                        firstTimeText.setVisibility(View.INVISIBLE);
+                        sessionTextLayout.setVisibility(View.INVISIBLE);
+                        sessionGraph.setVisibility(View.INVISIBLE);
+                    }
+                    break;
+
+                case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING:
+                    // sensing active, turned on
+                    sessionGraph.setVisibility(View.VISIBLE);
+                    sessionTextLayout.setVisibility(View.VISIBLE);
 
                     nonActiveTextLayout.setVisibility(View.INVISIBLE);
-                    sessionTextLayout.setVisibility(View.INVISIBLE);
-                    sessionGraph.setVisibility(View.INVISIBLE);
-                } else {
-                    // non active, sensing turned off
-                    nonActiveTextLayout.setVisibility(View.VISIBLE);
-
                     firstTimeText.setVisibility(View.INVISIBLE);
-                    sessionTextLayout.setVisibility(View.INVISIBLE);
-                    sessionGraph.setVisibility(View.INVISIBLE);
-                }
-            } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
-                // sensing active, turned on
-                sessionGraph.setVisibility(View.VISIBLE);
-                sessionTextLayout.setVisibility(View.VISIBLE);
+                    break;
 
-                nonActiveTextLayout.setVisibility(View.INVISIBLE);
-                firstTimeText.setVisibility(View.INVISIBLE);
+                default:
+                    break;
             }
         }
     }
@@ -329,16 +337,23 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
     private void updateSensingStateUI(int state) {
         Button button = getActivity().findViewById(R.id.btn_home_button_sensing);
         TextView settingsIcon = getActivity().findViewById(R.id.f_home_sensing_settings);
-        if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
-            button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
-            settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorAccent)));
 
-            button.setText("Start");
-        } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
-            button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
-            settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorPrimary)));
+        switch (this.state) {
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED:
+                button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
+                settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorAccent)));
+                button.setText("Start");
+                break;
 
-            button.setText("Stop");
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING:
+                button.getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+                settingsIcon.setBackgroundTintList(ColorStateList.valueOf(getActivity().getColor(R.color.colorPrimary)));
+                button.setText("Stop");
+                break;
+
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN:
+            default:
+                break;
         }
 
         updateSensingTextUI(state);
@@ -359,31 +374,47 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         }
 
         String text = "";
-        if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
-            text = "Tracking is turned off";
-        } else if (state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
-            if (time == Configuration.APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_TIME_DEFAULT) {
-                text = "Tracking is active, no timer set";
-            } else {
-                text = "Tracking is active. Stop timer set for " + formattedDate;
-            }
+        switch (this.state) {
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED:
+                text = "Tracking is turned off";
+                break;
+
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING:
+                if (time == Configuration.APP_SHARED_PREFERENCES_STOP_SENSING_RELATIVE_TIME_DEFAULT) {
+                    text = "Tracking is active, no timer set";
+                } else {
+                    text = "Tracking is active. Stop timer set for " + formattedDate;
+                }
+                break;
+
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN:
+            default:
+                text = "Unknown sensing service state";
+                break;
         }
         sensingStatus.setText(text);
     }
 
     private void toggleButton() {
-        if (this.state == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
-//            turn it on
-            this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
-            startForegroundService(PredefinedValues.COMMAND_START);
-            updateSensingStateUI(this.state);
-            updateSessionGraphStateUI(this.state);
-            refreshHandler.postDelayed(refresh, 100);
-        } else {
-//            turn it off
-            StopSensingDialog dialog = new StopSensingDialog();
-            dialog.setListener(this);
-            dialog.show(getFragmentManager(), STOP_SENSING_DIALOG);
+        switch (this.state) {
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED:
+                this.state = PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
+                startForegroundService(PredefinedValues.COMMAND_START);
+                updateSensingStateUI(this.state);
+                updateSessionGraphStateUI(this.state);
+                refreshHandler.postDelayed(refresh, 100);
+                break;
+
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING:
+                StopSensingDialog dialog = new StopSensingDialog();
+                dialog.setListener(this);
+                dialog.show(getFragmentManager(), STOP_SENSING_DIALOG);
+//                dialog will end sensing once clicked
+                break;
+
+            case PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN:
+            default:
+                break;
         }
     }
 

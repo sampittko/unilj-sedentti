@@ -14,7 +14,7 @@ public class ActivityRecognitionSPHelper {
     }
 
     public int getActivityRecognitionState() {
-        return preferences.getInt(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STATE, PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_UNKNOWN);
+        return preferences.getInt(PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STATE, PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED);
     }
 
     public void saveStateToSharedPreferences(int value) {
