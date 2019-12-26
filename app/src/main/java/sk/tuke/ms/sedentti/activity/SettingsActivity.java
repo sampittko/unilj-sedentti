@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -72,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity {
                 case PredefinedValues.APP_SHARED_PREFERENCES_SYNC_INTERVAL:
                     Crashlytics.log(Log.DEBUG, TAG, "Sync interval changed");
                     try {
-                        new UploadWorkManager(context).restartUploadWork();
+                        new UploadWorkManager(context).replaceUploadWork();
                         Crashlytics.log(Log.DEBUG, TAG, "Upload work will be restarted");
                         Toast.makeText(context, "Sync interval updated", Toast.LENGTH_SHORT).show();
                     } catch (SQLException e) {
