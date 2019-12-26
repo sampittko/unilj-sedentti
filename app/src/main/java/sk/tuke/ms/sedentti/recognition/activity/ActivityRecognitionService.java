@@ -329,6 +329,16 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                         Crashlytics.log(Log.DEBUG, TAG, "There is no last activity");
                     }
 
+//                    discard activity if is it the first one and TILTING
+                    if (lastActivity == null && newActivityType == DetectedActivity.TILTING) {
+                        return;
+                    }
+
+//                    discard activity if TILITING, so tilting does not break sedentary session
+                    if (lastActivity != null && sessionHelper.getSessionType(lastActivity) == SessionType.SEDENTARY && newActivityType == DetectedActivity.TILTING) {
+                        return;
+                    }
+
 //                        getting last session, if no, remains null
                     Session pendingSession = null;
                     try {
