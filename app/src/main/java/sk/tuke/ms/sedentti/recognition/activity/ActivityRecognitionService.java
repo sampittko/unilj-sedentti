@@ -66,6 +66,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private ActivityHelper activityHelper;
 
     private boolean isActiveTimePassed;
+    private boolean isActivatedBySIGMOV;
 
     private long time;
     private Handler timeHandler;
@@ -91,6 +92,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
                 Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
                 this.isActiveTimePassed = true;
+                this.isActivatedBySIGMOV = false;
                 try {
                     if (!this.sessionHelper.isPendingReal()) {
                         Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
@@ -300,6 +302,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             Session newSession = sessionHelper.createAndReplacePending(false);
             // TODO do not change the meaning of DetectedActivity.UNKNOWN (temporal solution for handling sessions without activities)
             activityHelper.create(DetectedActivity.UNKNOWN, newSession);
+            isActivatedBySIGMOV = true;
             setCurrentSession(newSession);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -341,7 +344,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
 //                    if last activity is from SIGMOV, new activity is sedentary, wait for timer to finish it
 //                    does not apply if SIGMOV is confirmed by Google
-                    if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.SEDENTARY) {
+                    if (isActivatedBySIGMOV && sessionHelper.getSessionType(newActivityType) == SessionType.SEDENTARY) {
                         return;
                     }
 
@@ -369,11 +372,12 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                     if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
 //                                SIGMOV produces UNKNOWN activity type
 //                                if following acitivity is active, change it
-                        Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
                         lastActivity.setType(newActivityType);
                         activityHelper.update(lastActivity);
                         // dismiss notification for sensing if the activity is real
                         notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                        isActivatedBySIGMOV = false;
+                        Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
                     }
 
 //                            add new activity to database with coresponding session
