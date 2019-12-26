@@ -26,7 +26,7 @@ public class ServiceNotification {
                 NotificationChannel notificationChannel = notificationManager.getNotificationChannel(CHANNEL_ID);
 
                 if (notificationChannel == null) {
-                    notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_MIN);
+                    notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
                     notificationManager.createNotificationChannel(notificationChannel);
                 }
             }
@@ -38,7 +38,7 @@ public class ServiceNotification {
         checkNotificationChannel(notificationManager);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setSmallIcon(R.drawable.ic_person_outline_black_24dp)
                 .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 .setShowWhen(false);

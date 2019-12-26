@@ -339,6 +339,12 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                         return;
                     }
 
+//                    if last activity is from SIGMOV, new activity is sedentary, wait for timer to finish it
+//                    does not apply if SIGMOV is confirmed by Google
+                    if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.SEDENTARY) {
+                        return;
+                    }
+
 //                        getting last session, if no, remains null
                     Session pendingSession = null;
                     try {
