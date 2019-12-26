@@ -1,0 +1,13 @@
+<svg viewBox="0 0 587.77 417.27" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>.cls-1{fill:#fff;stroke:#fff;stroke-miterlimit:10;stroke-width:0.77px;}</style>
+    </defs>
+    <title>Asset 1</title>
+    <g data-name="Layer 2" id="Layer_2">
+        <g data-name="Layer 1" id="Layer_1-2">
+            <ellipse class="cls-1" cx="293.88" cy="208.63" rx="293.5" ry="54.25" />
+            <ellipse class="cls-1" cx="293.88" cy="362.63" rx="293.5" ry="54.25" />
+            <ellipse class="cls-1" cx="293.88" cy="54.63" rx="293.5" ry="54.25" />
+        </g>
+    </g>
+</svg>
