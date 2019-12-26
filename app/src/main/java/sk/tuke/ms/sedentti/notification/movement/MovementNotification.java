@@ -53,7 +53,7 @@ public class MovementNotification {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.ic_person_outline_black_24dp)
+                .setSmallIcon(R.drawable.ic_logo_shape_white_24dx)
                 .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                 .setWhen(System.currentTimeMillis());
 

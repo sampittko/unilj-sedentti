@@ -39,7 +39,7 @@ public class ServiceNotification {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setSmallIcon(R.drawable.ic_person_outline_black_24dp)
+                .setSmallIcon(R.drawable.ic_logo_shape_white_24dx)
                 .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 .setShowWhen(false);
 
