@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -36,17 +37,21 @@ public class UploadWorkManager {
     }
 
     public void activateUploadWorker() {
+        enqueueUniquePeriodicWork(ExistingPeriodicWorkPolicy.KEEP);
+    }
+
+    public void replaceUploadWork() {
+        enqueueUniquePeriodicWork(ExistingPeriodicWorkPolicy.REPLACE);
+    }
+
+    private void enqueueUniquePeriodicWork(ExistingPeriodicWorkPolicy existingPeriodicWorkPolicy) {
         workManager
                 .enqueueUniquePeriodicWork(
                         Configuration.UPLOAD_WORK_NAME,
-                        Configuration.UPLOAD_WORK_POLICY,
+                        existingPeriodicWorkPolicy,
                         getUploadWorkerRequest()
                 );
-        Crashlytics.log(Log.DEBUG, TAG, "Upload work scheduled");
-    }
-
-    public void restartUploadWork() {
-        workManager.cancelUniqueWork(Configuration.UPLOAD_WORK_NAME).getResult().addListener(this::activateUploadWorker, runnable -> {});
+        Crashlytics.log(Log.DEBUG, TAG, "Upload work scheduled with policy " + existingPeriodicWorkPolicy.toString());
     }
 
     @NotNull
