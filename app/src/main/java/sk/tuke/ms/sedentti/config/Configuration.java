@@ -17,7 +17,7 @@ public abstract class Configuration {
     public static final String APP_NAME = "Sedentti";
     public static final String APP_PACKAGE = "sk.tuke.ms.sedentti";
     public static final String DEBUG_EVALUATION_SESSION_NUMBER = String.valueOf(0); // use this evaluation session number in the case of debugging, higher numbers according to the current evaluation session number (in each app release)
-    public static final String EVALUATION_SESSION_NUMBER = DEBUG_EVALUATION_SESSION_NUMBER; // change just in case of the start of new evaluation so all of the CSV files on Cloud are separated according to it
+    public static final String EVALUATION_SESSION_NUMBER = "1"; // change just in case of the start of new evaluation so all of the CSV files on Cloud are separated according to it
 
     //
     // Firebase Authentication
