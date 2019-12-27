@@ -50,7 +50,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private int commandResult;
     private static final int SERVICE_NOTIFICATION_ID = 1;
     private static final int MOTION_NOTIFICATION_ID = 2;
-    private static final String CHANNEL_ID = "sk.tuke.ms.sedentti";
     private static final String TAG = "ARService";
 
     private final int TIME_STEP = 300;
