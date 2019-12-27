@@ -42,14 +42,14 @@ public abstract class PredefinedValues {
     //
     // Shared Preferences - Profile
     //
-    public static final String PROFILE_SHARED_PREFERENCES= Configuration.APP_PACKAGE + "_preferences.profile";
+    public static final String PROFILE_SHARED_PREFERENCES = Configuration.APP_PACKAGE + "_preferences.profile";
     public static final String PROFILE_SHARED_PREFERENCES_ACTIVE_ID = "active_id";
     public static final long PROFILE_SHARED_PREFERENCES_ACTIVE_ID_DEFAULT = 0L;
 
     //
     // Shared Preferences - Activity Recognition
     //
-    public static final String ACTIVITY_RECOGNITION_SHARED_PREFERENCES= Configuration.APP_PACKAGE + "_preferences.activity_recognition_settings";
+    public static final String ACTIVITY_RECOGNITION_SHARED_PREFERENCES = Configuration.APP_PACKAGE + "_preferences.activity_recognition_settings";
     public static final String ACTIVITY_RECOGNITION_SERVICE_STATE = "activity_recognition_service_state";
     public static final int ACTIVITY_RECOGNITION_SERVICE_RUNNING = 1;
     public static final int ACTIVITY_RECOGNITION_SERVICE_STOPPED = 0;
@@ -71,4 +71,7 @@ public abstract class PredefinedValues {
     //
     public static final String DB_EXPORTER_CSV_DATA_SEPARATOR = ",";
     public static final String DB_EXPORTER_CSV_INNER_DATA_SEPARATOR = "-";
+
+
+    public static final int DETECTED_ACTIVITY_SIG_MOV = 11;
 }

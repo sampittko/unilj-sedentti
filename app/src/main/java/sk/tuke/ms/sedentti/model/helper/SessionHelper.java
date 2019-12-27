@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.location.DetectedActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
@@ -34,6 +33,7 @@ import static com.google.android.gms.location.DetectedActivity.STILL;
 import static com.google.android.gms.location.DetectedActivity.TILTING;
 import static com.google.android.gms.location.DetectedActivity.UNKNOWN;
 import static com.google.android.gms.location.DetectedActivity.WALKING;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.DETECTED_ACTIVITY_SIG_MOV;
 
 public class SessionHelper {
     private final Long HOME_TIMELINE_SESSIONS_LIMIT = 3L;
@@ -319,18 +319,18 @@ public class SessionHelper {
         }
     }
 
-    /**
-     * @param activityType Google Activity Recognition value determining the activity
-     * @return Whether the user is sedentary or not
-     */
-    // TODO context-involved determination
-    @Contract(pure = true)
-    private boolean isSedentary(int activityType) {
-        Crashlytics.log(Log.DEBUG, TAG, "Executing isSedentary");
-        Crashlytics.log(Log.DEBUG, TAG, "@activityType: " + activityType);
-
-        return activityType == DetectedActivity.STILL;
-    }
+//    /**
+//     * @param activityType Google Activity Recognition value determining the activity
+//     * @return Whether the user is sedentary or not
+//     */
+//    // TODO context-involved determination
+//    @Contract(pure = true)
+//    private boolean isSedentary(int activityType) {
+//        Crashlytics.log(Log.DEBUG, TAG, "Executing isSedentary");
+//        Crashlytics.log(Log.DEBUG, TAG, "@activityType: " + activityType);
+//
+//        return activityType == DetectedActivity.STILL;
+//    }
 
     public SessionType getSessionType(@NotNull Activity activity) {
         return getSessionType(activity.getType());
@@ -346,6 +346,7 @@ public class SessionHelper {
             case RUNNING:
             case UNKNOWN:
             case TILTING:
+            case DETECTED_ACTIVITY_SIG_MOV:
                 return SessionType.ACTIVE;
             case STILL:
             default:
@@ -486,9 +487,14 @@ public class SessionHelper {
     public Session create(int activityType) throws SQLException {
         Crashlytics.log(Log.DEBUG, TAG, "Executing create");
 
+        SessionType newSessionType = getSessionType(activityType);
+
+        boolean sedentary = newSessionType == SessionType.SEDENTARY;
+        boolean inVehicle = newSessionType == SessionType.IN_VEHICLE;
+
         Session newSession = new Session(
-                isSedentary(activityType),
-                activityType == IN_VEHICLE,
+                sedentary,
+                inVehicle,
                 new Date().getTime(),
                 profile
         );
@@ -894,7 +900,7 @@ public class SessionHelper {
         Crashlytics.log(Log.DEBUG, TAG, "@session ID: " + session.getId());
 
         ArrayList<Activity> activities = activityHelper.getCorresponding(session);
-        return activities.size() != 1 || activities.get(0).getType() != DetectedActivity.UNKNOWN;
+        return activities.size() != 1 || activities.get(0).getType() != DETECTED_ACTIVITY_SIG_MOV;
     }
 
     /**

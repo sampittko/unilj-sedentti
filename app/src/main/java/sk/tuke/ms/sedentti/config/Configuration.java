@@ -88,5 +88,5 @@ public abstract class Configuration {
     public static final boolean APP_SHARED_PREFERENCES_FIRST_NOTIF_STATE_DEFAULT = true;
     public static final boolean APP_SHARED_PREFERENCES_SECOND_NOTIF_STATE_DEFAULT = true;
 
-    public static final long ACTIVITY_RECOGNITION_API_STEP_DELAY_MILLIS = 300000;
+    public static final long ACTIVITY_RECOGNITION_API_STEP_DELAY_MILLIS = 30000;
 }

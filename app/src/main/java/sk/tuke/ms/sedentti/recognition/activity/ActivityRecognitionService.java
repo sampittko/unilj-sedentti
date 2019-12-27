@@ -33,6 +33,9 @@ import sk.tuke.ms.sedentti.notification.movement.MovementNotification;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionDetector;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionListener;
 
+import static com.google.android.gms.location.DetectedActivity.STILL;
+import static com.google.android.gms.location.DetectedActivity.TILTING;
+import static com.google.android.gms.location.DetectedActivity.UNKNOWN;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.ACTIVITY_RECOGNITION_COMMAND;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED;
@@ -42,6 +45,7 @@ import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_START;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_STOP;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_STOP_AND_SAVE;
 import static sk.tuke.ms.sedentti.config.PredefinedValues.COMMAND_TURN_ON_SIGMOV;
+import static sk.tuke.ms.sedentti.config.PredefinedValues.DETECTED_ACTIVITY_SIG_MOV;
 
 public class ActivityRecognitionService extends Service implements SignificantMotionListener {
 
@@ -66,7 +70,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private ActivityHelper activityHelper;
 
     private boolean isActiveTimePassed;
-    private boolean isActivatedBySIGMOV;
 
     private long time;
     private Handler timeHandler;
@@ -81,7 +84,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     };
 
     private void processTimeDependency() {
-        // TODO: 12/18/19 handle notification, sigmov etc
         if (this.currentSession != null) {
             int activeLimit = this.appPreferences.getActiveLimit();
 
@@ -92,15 +94,15 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
                 Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
                 this.isActiveTimePassed = true;
-                this.isActivatedBySIGMOV = false;
                 try {
                     if (!this.sessionHelper.isPendingReal()) {
+                        // check if session is still artificial - SIGMOV, if so, end it and start artificial sedentary session
+                        // artificial SIGMOV session may be updated by Google API, and SIGMOV is replaced by active activity
                         Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
 
-                        Session newSession = sessionHelper.createAndReplacePending(true);
-                        activityHelper.create(DetectedActivity.STILL, newSession);
-                        handleSignificantMotion(DetectedActivity.STILL);
-                        setCurrentSession(newSession);
+                        sessionHelper.endPending();
+                        Session newSession = createNewSessionInService(STILL);
+                        activityHelper.create(STILL, newSession);
                         notificationManager.cancel(MOTION_NOTIFICATION_ID);
                     }
                 } catch (SQLException e) {
@@ -299,15 +301,34 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     public void onSignificantMotionDetected() {
         Crashlytics.log(Log.DEBUG, TAG, "Significant motion detected");
         try {
-            Session newSession = sessionHelper.createAndReplacePending(false);
-            // TODO do not change the meaning of DetectedActivity.UNKNOWN (temporal solution for handling sessions without activities)
-            activityHelper.create(DetectedActivity.UNKNOWN, newSession);
-            isActivatedBySIGMOV = true;
-            setCurrentSession(newSession);
+            Activity lastActivity = activityHelper.getLast();
+            if (lastActivity != null) {
+                if (sessionHelper.getSessionType(lastActivity) == SessionType.SEDENTARY) {
+                    // check if last session is sedentary, if so, create new artificial active one
+                    sessionHelper.endPending();
+                    Session newSession = createNewSessionInService(DETECTED_ACTIVITY_SIG_MOV);
+                    activityHelper.create(DETECTED_ACTIVITY_SIG_MOV, newSession);
+                }
+            } else {
+                // check if there is a pending session, if no, create new artificial active one
+                Session lastSession = sessionHelper.getPending();
+                if (lastSession == null) {
+                    Session newSession = createNewSessionInService(DETECTED_ACTIVITY_SIG_MOV);
+                    activityHelper.create(DETECTED_ACTIVITY_SIG_MOV, newSession);
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         new MovementNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
+    }
+
+    private Session createNewSessionInService(int detectedActivity) throws SQLException {
+        Session newSession = sessionHelper.create(detectedActivity);
+        setCurrentSession(newSession);
+        handleSignificantMotion(detectedActivity);
+        Crashlytics.log(Log.DEBUG, TAG, "New session created");
+        return newSession;
     }
 
     private class ActivityRecognitionBroadcastReceiver extends BroadcastReceiver {
@@ -323,8 +344,11 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
                 Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " received");
 
+                // throw away UNKNOWN activities
+                if (newActivityType == UNKNOWN) return;
+
                 try {
-//                        getting last activity, if no, reamins null
+                    // getting last activity, if no, reamins null
                     Activity lastActivity = null;
                     try {
                         lastActivity = activityHelper.getLast();
@@ -332,23 +356,31 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                         Crashlytics.log(Log.DEBUG, TAG, "There is no last activity");
                     }
 
-//                    discard activity if is it the first one and TILTING
-                    if (lastActivity == null && newActivityType == DetectedActivity.TILTING) {
-                        return;
+                    if (lastActivity != null) {
+                        int lastActivityType = lastActivity.getType();
+                        SessionType lastActivitySessionType = sessionHelper.getSessionType(lastActivityType);
+                        SessionType newActivitySessionType = sessionHelper.getSessionType(newActivityType);
+
+                        // TILTING does not break SEDENTRY SESSION
+                        if (lastActivitySessionType == SessionType.SEDENTARY && newActivityType == TILTING)
+                            return;
+
+                        // if last activity SIGMOV, do not end it unless timer has passed
+                        if (lastActivityType == DETECTED_ACTIVITY_SIG_MOV && newActivitySessionType == SessionType.SEDENTARY)
+                            return;
+
+                        //  if last activity is SIGMOV, and new one one belogns to active session type, make it real
+                        if (lastActivityType == DETECTED_ACTIVITY_SIG_MOV && lastActivitySessionType == SessionType.ACTIVE) {
+                            lastActivity.setType(newActivityType);
+                            activityHelper.update(lastActivity);
+                            // dismiss notification for sensing if the activity is real
+                            notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                            ;
+                            Crashlytics.log(Log.DEBUG, TAG, "Updating SIGMOV activity to new active activity");
+                        }
                     }
 
-//                    discard activity if TILITING, so tilting does not break sedentary session
-                    if (lastActivity != null && sessionHelper.getSessionType(lastActivity) == SessionType.SEDENTARY && newActivityType == DetectedActivity.TILTING) {
-                        return;
-                    }
 
-//                    if last activity is from SIGMOV, new activity is sedentary, wait for timer to finish it
-//                    does not apply if SIGMOV is confirmed by Google
-                    if (isActivatedBySIGMOV && sessionHelper.getSessionType(newActivityType) == SessionType.SEDENTARY) {
-                        return;
-                    }
-
-//                        getting last session, if no, remains null
                     Session pendingSession = null;
                     try {
                         pendingSession = sessionHelper.getPending();
@@ -356,33 +388,74 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                         Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
                     }
 
-
                     if (pendingSession == null) {
-//                                no session yet, creating first one
-                        pendingSession = createNewSession(newActivityType);
+                        // create new session if no session has been created yet
+                        pendingSession = createNewSessionInService(newActivityType);
+                        Crashlytics.log(Log.DEBUG, TAG, "No session yet, creating new one");
+
                     } else if (isNewSessionRequired(newActivityType, lastActivity)) {
-//                                session types do not match, new session created
-                        Crashlytics.log(Log.DEBUG, TAG, "New session is required");
-                        handleSignificantMotion(newActivityType);
+                        // session types do not match, new session created
                         sessionHelper.end(pendingSession);
-                        Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
-                        pendingSession = createNewSession(newActivityType);
+                        pendingSession = createNewSessionInService(newActivityType);
+                        Crashlytics.log(Log.DEBUG, TAG, "Session type does not match, last one ended, creating new one");
                     }
 
-                    if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
-//                                SIGMOV produces UNKNOWN activity type
-//                                if following acitivity is active, change it
-                        lastActivity.setType(newActivityType);
-                        activityHelper.update(lastActivity);
-                        // dismiss notification for sensing if the activity is real
-                        notificationManager.cancel(MOTION_NOTIFICATION_ID);
-                        isActivatedBySIGMOV = false;
-                        Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
-                    }
-
-//                            add new activity to database with coresponding session
+                    // save activity to DB with corresponding session
                     activityHelper.create(newActivityType, pendingSession);
-                    Crashlytics.log(Log.DEBUG, TAG, "New activity created");
+                    Crashlytics.log(Log.DEBUG, TAG, "Creating new activity to corresponding session");
+
+
+////                    discard activity if is it the first one and TILTING
+//                    if (lastActivity == null && newActivityType == TILTING) {
+//                        return;
+//                    }
+//
+////                    discard activity if TILITING, so tilting does not break sedentary session
+//                    if (lastActivity != null && sessionHelper.getSessionType(lastActivity) == SessionType.SEDENTARY && newActivityType == TILTING) {
+//                        return;
+//                    }
+//
+////                    if last activity is from SIGMOV, new activity is sedentary, wait for timer to finish it
+////                    does not apply if SIGMOV is confirmed by Google
+//                    if (isActivatedBySIGMOV && sessionHelper.getSessionType(newActivityType) == SessionType.SEDENTARY) {
+//                        return;
+//                    }
+//
+////                        getting last session, if no, remains null
+//                    Session pendingSession = null;
+//                    try {
+//                        pendingSession = sessionHelper.getPending();
+//                    } catch (NullPointerException e) {
+//                        Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
+//                    }
+//
+//
+//                    if (pendingSession == null) {
+////                                no session yet, creating first one
+//                        pendingSession = createNewSessionInService(newActivityType);
+//                    } else if (isNewSessionRequired(newActivityType, lastActivity)) {
+////                                session types do not match, new session created
+//                        Crashlytics.log(Log.DEBUG, TAG, "New session is required");
+//                        handleSignificantMotion(newActivityType);
+//                        sessionHelper.end(pendingSession);
+//                        Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
+//                        pendingSession = createNewSessionInService(newActivityType);
+//                    }
+//
+//                    if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
+////                                SIGMOV produces UNKNOWN activity type
+////                                if following acitivity is active, change it
+//                        lastActivity.setType(newActivityType);
+//                        activityHelper.update(lastActivity);
+//                        // dismiss notification for sensing if the activity is real
+//                        notificationManager.cancel(MOTION_NOTIFICATION_ID);
+//                        isActivatedBySIGMOV = false;
+//                        Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
+//                    }
+//
+////                            add new activity to database with coresponding session
+//                    activityHelper.create(newActivityType, pendingSession);
+//                    Crashlytics.log(Log.DEBUG, TAG, "New activity created");
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -423,14 +496,14 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 //
 //                            if (pendingSession == null) {
 ////                                no session yet, creating first one
-//                                pendingSession = createNewSession(newActivityType);
+//                                pendingSession = createNewSessionInService(newActivityType);
 //                            } else if (isNewSessionRequired(newActivityType, lastActivity)) {
 ////                                session types do not match, new session created
 //                                Crashlytics.log(Log.DEBUG, TAG, "New session is required");
 //                                handleSignificantMotion(newActivityType);
 //                                sessionHelper.end(pendingSession);
 //                                Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
-//                                pendingSession = createNewSession(newActivityType);
+//                                pendingSession = createNewSessionInService(newActivityType);
 //                            }
 //
 //                            if (lastActivity != null && lastActivity.getType() == DetectedActivity.UNKNOWN && sessionHelper.getSessionType(newActivityType) == SessionType.ACTIVE) {
@@ -451,12 +524,12 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 ////                                    sessionHelper.end(pendingSession);
 ////                                    Crashlytics.log(Log.DEBUG, TAG, "Pending session closed");
 ////                                }
-////                                pendingSession = createNewSession(newActivityType);
+////                                pendingSession = createNewSessionInService(newActivityType);
 ////                            } else {
 ////                                Crashlytics.log(Log.DEBUG, TAG, "New session is not required");
 ////
 ////                                if (pendingSession == null) {
-////                                    pendingSession = createNewSession(newActivityType);
+////                                    pendingSession = createNewSessionInService(newActivityType);
 ////                                } else if (lastActivity.getType() == DetectedActivity.UNKNOWN) {
 ////                                    Crashlytics.log(Log.DEBUG, TAG, "Updating last unknown activity");
 ////                                    lastActivity.setType(newActivityType);
@@ -475,13 +548,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 //            }
         }
 
-        private Session createNewSession(int detectedActivity) throws SQLException {
-            Session pendingSession = sessionHelper.create(detectedActivity);
-            setCurrentSession(pendingSession);
-            Crashlytics.log(Log.DEBUG, TAG, "New session created");
-            return pendingSession;
-        }
-
         @Contract("_, null -> true")
         /**
          * returns true, if activity does NOT match or is null
@@ -492,18 +558,6 @@ public class ActivityRecognitionService extends Service implements SignificantMo
             }
 
             return sessionHelper.getSessionType(detectedActivityType) != sessionHelper.getSessionType(lastActivity);
-
-//            // IN_VEHICLE handling
-//            if ((detectedActivityType == DetectedActivity.IN_VEHICLE &&
-//                    lastActivity.getType() != DetectedActivity.IN_VEHICLE) || (
-//                    detectedActivityType != DetectedActivity.IN_VEHICLE &&
-//                            lastActivity.getType() == DetectedActivity.IN_VEHICLE
-//            )) {
-//                return true;
-//            }
-//
-//            return (detectedActivityType == DetectedActivity.STILL && lastActivity.getType() != DetectedActivity.STILL)
-//                    || (lastActivity.getType() == DetectedActivity.STILL && detectedActivityType != DetectedActivity.STILL);
         }
     }
 }
