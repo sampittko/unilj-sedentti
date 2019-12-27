@@ -19,8 +19,6 @@ import java.util.List;
 
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 
-import static sk.tuke.ms.sedentti.config.Configuration.ACTIVITY_RECOGNITION_API_STEP_DELAY_MILLIS;
-
 public class ActivityRecognitionHandler {
 
     private final String TAG = ActivityRecognitionHandler.class.getSimpleName();
@@ -43,10 +41,10 @@ public class ActivityRecognitionHandler {
         Intent intent = new Intent(PredefinedValues.ACTIVITY_RECOGNITION_COMMAND);
         pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-//        Task<Void> task = ActivityRecognition.getClient(this.context)
-//                .requestActivityTransitionUpdates(request, pendingIntent);
         Task<Void> task = ActivityRecognition.getClient(this.context)
-                .requestActivityUpdates(ACTIVITY_RECOGNITION_API_STEP_DELAY_MILLIS, pendingIntent);
+                .requestActivityTransitionUpdates(request, pendingIntent);
+//        Task<Void> task = ActivityRecognition.getClient(this.context)
+//                .requestActivityUpdates(ACTIVITY_RECOGNITION_API_STEP_DELAY_MILLIS, pendingIntent);
 
         task.addOnSuccessListener(
                 result -> Crashlytics.log(Log.DEBUG, TAG, "Activity tracking started")
@@ -59,10 +57,10 @@ public class ActivityRecognitionHandler {
     }
 
     public void stopTracking() {
-//        Task<Void> task = ActivityRecognition.getClient(this.context)
-//                .removeActivityTransitionUpdates(pendingIntent);
         Task<Void> task = ActivityRecognition.getClient(this.context)
-                .removeActivityUpdates(pendingIntent);
+                .removeActivityTransitionUpdates(pendingIntent);
+//        Task<Void> task = ActivityRecognition.getClient(this.context)
+//                .removeActivityUpdates(pendingIntent);
 
         task.addOnSuccessListener(
                 result -> {
