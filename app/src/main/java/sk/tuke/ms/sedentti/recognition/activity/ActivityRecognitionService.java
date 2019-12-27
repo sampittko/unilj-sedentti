@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 
@@ -349,59 +350,63 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                     Crashlytics.log(Log.DEBUG, TAG, "New activity with type " + newActivityType + " and transition " +
                             newActivityTransitionType + " received");
 
-                    try {
-                        // getting last activity, if no, reamins null
-                        Activity lastActivity = null;
+                    if (newActivityTransitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
+                        Crashlytics.log(Log.DEBUG, TAG, "New activity has started");
+
                         try {
-                            lastActivity = activityHelper.getLast();
-                        } catch (NullPointerException e) {
-                            Crashlytics.log(Log.DEBUG, TAG, "There is no last activity");
-                        }
-
-                        if (lastActivity != null) {
-                            int lastActivityType = lastActivity.getType();
-                            SessionType lastActivitySessionType = sessionHelper.getSessionType(lastActivityType);
-                            SessionType newActivitySessionType = sessionHelper.getSessionType(newActivityType);
-
-                            // if last activity SIGMOV, do not end it unless timer has passed
-                            if (lastActivityType == DETECTED_ACTIVITY_SIG_MOV && newActivitySessionType == SessionType.SEDENTARY)
-                                return;
-
-                            //  if last activity is SIGMOV, and new one one belogns to active session type, make it real
-                            if (lastActivityType == DETECTED_ACTIVITY_SIG_MOV && newActivitySessionType == SessionType.ACTIVE) {
-                                lastActivity.setType(newActivityType);
-                                activityHelper.update(lastActivity);
-                                // dismiss notification for sensing if the activity is real
-                                notificationManager.cancel(MOTION_NOTIFICATION_ID);
-                                Crashlytics.log(Log.DEBUG, TAG, "Updating SIGMOV activity to new active activity");
+                            // getting last activity, if no, reamins null
+                            Activity lastActivity = null;
+                            try {
+                                lastActivity = activityHelper.getLast();
+                            } catch (NullPointerException e) {
+                                Crashlytics.log(Log.DEBUG, TAG, "There is no last activity");
                             }
+
+                            if (lastActivity != null) {
+                                int lastActivityType = lastActivity.getType();
+                                SessionType lastActivitySessionType = sessionHelper.getSessionType(lastActivityType);
+                                SessionType newActivitySessionType = sessionHelper.getSessionType(newActivityType);
+
+                                // if last activity SIGMOV, do not end it unless timer has passed
+                                if (lastActivityType == DETECTED_ACTIVITY_SIG_MOV && newActivitySessionType == SessionType.SEDENTARY)
+                                    return;
+
+                                //  if last activity is SIGMOV, and new one one belogns to active session type, make it real
+                                if (lastActivityType == DETECTED_ACTIVITY_SIG_MOV && newActivitySessionType == SessionType.ACTIVE) {
+                                    lastActivity.setType(newActivityType);
+                                    activityHelper.update(lastActivity);
+                                    // dismiss notification for sensing if the activity is real
+                                    notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                                    Crashlytics.log(Log.DEBUG, TAG, "Updating SIGMOV activity to new active activity");
+                                }
+                            }
+
+
+                            Session pendingSession = null;
+                            try {
+                                pendingSession = sessionHelper.getPending();
+                            } catch (NullPointerException e) {
+                                Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
+                            }
+
+                            if (pendingSession == null) {
+                                // create new session if no session has been created yet
+                                pendingSession = createNewSessionInService(newActivityType);
+                                Crashlytics.log(Log.DEBUG, TAG, "No session yet, creating new one");
+
+                            } else if (isNewSessionRequired(newActivityType, lastActivity)) {
+                                // session types do not match, new session created
+                                sessionHelper.end(pendingSession);
+                                pendingSession = createNewSessionInService(newActivityType);
+                                Crashlytics.log(Log.DEBUG, TAG, "Session type does not match, last one ended, creating new one");
+                            }
+
+                            // save activity to DB with corresponding session
+                            activityHelper.create(newActivityType, pendingSession);
+                            Crashlytics.log(Log.DEBUG, TAG, "Creating new activity to corresponding session");
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
-
-
-                        Session pendingSession = null;
-                        try {
-                            pendingSession = sessionHelper.getPending();
-                        } catch (NullPointerException e) {
-                            Crashlytics.log(Log.DEBUG, TAG, "There is no pending session");
-                        }
-
-                        if (pendingSession == null) {
-                            // create new session if no session has been created yet
-                            pendingSession = createNewSessionInService(newActivityType);
-                            Crashlytics.log(Log.DEBUG, TAG, "No session yet, creating new one");
-
-                        } else if (isNewSessionRequired(newActivityType, lastActivity)) {
-                            // session types do not match, new session created
-                            sessionHelper.end(pendingSession);
-                            pendingSession = createNewSessionInService(newActivityType);
-                            Crashlytics.log(Log.DEBUG, TAG, "Session type does not match, last one ended, creating new one");
-                        }
-
-                        // save activity to DB with corresponding session
-                        activityHelper.create(newActivityType, pendingSession);
-                        Crashlytics.log(Log.DEBUG, TAG, "Creating new activity to corresponding session");
-                    } catch (SQLException e) {
-                        e.printStackTrace();
                     }
                 }
             }
