@@ -29,6 +29,8 @@ public class ServiceNotification {
                     notificationChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
                     notificationManager.createNotificationChannel(notificationChannel);
                 }
+                notificationChannel.enableVibration(false);
+                notificationChannel.setSound(null, null);
             }
         }
     }
@@ -43,6 +45,7 @@ public class ServiceNotification {
                 .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 .setShowWhen(false);
 
+        builder.setGroupSummary(false);
 
         Intent openingIntent = new Intent(context, MainActivity.class);
         openingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -50,12 +53,14 @@ public class ServiceNotification {
         builder.setContentIntent(openingPendingIntent);
 
         builder.setContentTitle("Sedentti");
+        builder.setSound(null);
+        builder.setVibrate(null);
 
         String state = null;
         if (commandResult == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_RUNNING) {
-            state = "Sedentti is tracking your sitting";
+            state = "Tracking is active";
         } else if (commandResult == PredefinedValues.ACTIVITY_RECOGNITION_SERVICE_STOPPED) {
-            state = "Sedentti is not active";
+            state = "Tracking is disabled";
         }
         if (state != null) {
             builder.setContentText(state);
