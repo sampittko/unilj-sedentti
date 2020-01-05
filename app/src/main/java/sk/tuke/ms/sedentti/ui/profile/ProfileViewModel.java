@@ -23,7 +23,7 @@ public class ProfileViewModel extends AndroidViewModel {
     private SessionHelper sessionHelper;
     private ProfileStatsHelper profileStatsHelper;
 
-    private MutableLiveData<Integer> success;
+    private MutableLiveData<Integer> overallSuccess;
     private MutableLiveData<Integer> streak;
     private MutableLiveData<Integer> highestStreak;
     private MutableLiveData<Integer> finishedCount;
@@ -66,16 +66,16 @@ public class ProfileViewModel extends AndroidViewModel {
         new loadStreakAsyncTask().execute();
     }
 
-    public LiveData<Integer> getSuccess() {
-        if (this.success == null) {
-            this.success = new MutableLiveData<Integer>();
+    public LiveData<Integer> getOverallSuccess() {
+        if (this.overallSuccess == null) {
+            this.overallSuccess = new MutableLiveData<Integer>();
             loadSuccess();
         }
-        return this.success;
+        return this.overallSuccess;
     }
 
     private void loadSuccess() {
-        new loadSuccessAsyncTask().execute();
+        new loadOverallSuccessAsyncTask().execute();
     }
 
     public MutableLiveData<Integer> getFinishedCount() {
@@ -120,11 +120,11 @@ public class ProfileViewModel extends AndroidViewModel {
         }
     }
 
-    private class loadSuccessAsyncTask extends AsyncTask<Void, Void, Integer> {
+    private class loadOverallSuccessAsyncTask extends AsyncTask<Void, Void, Integer> {
         @Override
         protected Integer doInBackground(Void... voids) {
             try {
-                return sessionHelper.getSuccessRate(false);
+                return sessionHelper.getOverallSuccessRate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -133,7 +133,7 @@ public class ProfileViewModel extends AndroidViewModel {
 
         @Override
         protected void onPostExecute(Integer result) {
-            success.postValue(result);
+            overallSuccess.postValue(result);
         }
     }
 

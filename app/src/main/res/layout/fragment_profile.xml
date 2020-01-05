@@ -88,13 +88,13 @@
                         style="@android:style/TextAppearance.Material.Subhead"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:maxLines="2"
+                        android:lines="2"
                         android:text="Sessions\nComleted"
                         android:textAlignment="center" />
 
                     <TextView
                         android:id="@+id/tw_f_profile_value_session_completed"
-                        style="@android:style/TextAppearance.Material.Large"
+                        style="@android:style/TextAppearance.Material.Headline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0" />
@@ -114,13 +114,13 @@
                         style="@android:style/TextAppearance.Material.Subhead"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:maxLines="2"
+                        android:lines="2"
                         android:text="Highest\nStreak"
                         android:textAlignment="center" />
 
                     <TextView
                         android:id="@+id/tw_f_profile_value_highest_streak"
-                        style="@android:style/TextAppearance.Material.Large"
+                        style="@android:style/TextAppearance.Material.Headline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0" />
@@ -138,11 +138,13 @@
                         style="@android:style/TextAppearance.Material.Subhead"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Success" />
+                        android:lines="2"
+                        android:text="Overall\nSuccess"
+                        android:textAlignment="center" />
 
                     <TextView
                         android:id="@+id/tw_f_home_profile_success"
-                        style="@android:style/TextAppearance.Material.Large"
+                        style="@android:style/TextAppearance.Material.Headline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="100%" />

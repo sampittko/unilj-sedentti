@@ -37,7 +37,7 @@ public class ProfileFragment extends Fragment {
 
     private void updateValues(View root) {
         TextView successValue = root.findViewById(R.id.tw_f_home_profile_success);
-        this.profileViewModel.getSuccess().observe(this, value -> {
+        this.profileViewModel.getOverallSuccess().observe(this, value -> {
             if (value != null) {
                 successValue.setText(value.toString() + " %");
             }
