@@ -26,7 +26,7 @@
 
     <string-array name="first_notif_time">
         <item>5 minutes</item>
-        <item>10 minutes</item>
+        <item>10 minutes (recommended)</item>
         <item>15 minutes</item>
     </string-array>
 
@@ -53,7 +53,7 @@
     </string-array>
 
     <string-array name="sedentary_limits">
-        <item>30 minutes</item>
+        <item>30 minutes (recommended)</item>
         <item>35 minutes</item>
         <item>40 minutes</item>
         <item>45 minutes</item>
