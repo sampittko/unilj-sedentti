@@ -15,6 +15,7 @@ import sk.tuke.ms.sedentti.config.Configuration;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.PersonalityTest;
 import sk.tuke.ms.sedentti.model.Profile;
+import sk.tuke.ms.sedentti.model.ProfileStats;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.UploadTask;
 
@@ -24,6 +25,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<Session, Long> sessionDao;
     private Dao<Activity, Long> activityDao;
     private Dao<UploadTask, Long> uploadTaskDao;
+    private Dao<ProfileStats, Long> profileStatsDao;
 
     public DatabaseHelper(Context context) {
         super(context, Configuration.LOCAL_DATABASE_NAME, null, Configuration.LOCAL_DATABASE_VERSION,
@@ -38,6 +40,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, Session.class);
             TableUtils.createTable(connectionSource, Activity.class);
             TableUtils.createTable(connectionSource, UploadTask.class);
+            TableUtils.createTable(connectionSource, ProfileStats.class);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,6 +56,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, Session.class, true);
             TableUtils.dropTable(connectionSource, Activity.class, true);
             TableUtils.dropTable(connectionSource, UploadTask.class, true);
+            TableUtils.dropTable(connectionSource, ProfileStats.class, true);
             onCreate(database, connectionSource);
 
         } catch (SQLException e) {
@@ -120,5 +124,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             uploadTaskDao = getDao(UploadTask.class);
         }
         return uploadTaskDao;
+    }
+
+    /**
+     * Returns an instance of the data access object
+     *
+     * @return
+     * @throws SQLException
+     */
+    public Dao<ProfileStats, Long> profileStatsDao() throws SQLException {
+        if (profileStatsDao == null) {
+            profileStatsDao = getDao(ProfileStats.class);
+        }
+        return profileStatsDao;
     }
 }

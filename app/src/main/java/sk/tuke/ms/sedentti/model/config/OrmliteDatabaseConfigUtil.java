@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import sk.tuke.ms.sedentti.model.Activity;
 import sk.tuke.ms.sedentti.model.PersonalityTest;
 import sk.tuke.ms.sedentti.model.Profile;
+import sk.tuke.ms.sedentti.model.ProfileStats;
 import sk.tuke.ms.sedentti.model.Session;
 import sk.tuke.ms.sedentti.model.UploadTask;
 
@@ -23,7 +24,7 @@ public class OrmliteDatabaseConfigUtil extends OrmLiteConfigUtil {
     /**
      * classes represents the models to use for generating the ormlite_config.txt file
      */
-    private static final Class<?>[] classes = new Class[]{PersonalityTest.class, Profile.class, Session.class, Activity.class, UploadTask.class};
+    private static final Class<?>[] classes = new Class[]{PersonalityTest.class, Profile.class, Session.class, Activity.class, UploadTask.class, ProfileStats.class};
 
     /**
      * Given that this is a separate program from the android app, we have to use

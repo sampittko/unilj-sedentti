@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -21,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.config.PredefinedValues;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
+import sk.tuke.ms.sedentti.model.config.DatabaseHelper;
 
 public class FirstTimeStartupActivity extends AppCompatActivity {
     private static final String TAG = "FTStartupActivity";
