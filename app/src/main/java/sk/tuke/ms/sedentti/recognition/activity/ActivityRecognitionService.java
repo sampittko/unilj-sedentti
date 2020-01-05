@@ -93,14 +93,16 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                 this.isActiveTimePassed = true;
                 try {
                     if (!this.sessionHelper.isPendingReal()) {
-                        // check if session is still artificial - SIGMOV, if so, end it and start artificial sedentary session
-                        // artificial SIGMOV session may be updated by Google API, and SIGMOV is replaced by active activity
-                        Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
+                        if (this.sessionHelper.getPending() != null) {
+                            // check if session is still artificial - SIGMOV, if so, end it and start artificial sedentary session
+                            // artificial SIGMOV session may be updated by Google API, and SIGMOV is replaced by active activity
+                            Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
 
-                        sessionHelper.endPending();
-                        Session newSession = createNewSessionInService(STILL);
-                        activityHelper.create(STILL, newSession);
-                        notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                            sessionHelper.endPending();
+                            Session newSession = createNewSessionInService(STILL);
+                            activityHelper.create(STILL, newSession);
+                            notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                        }
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
