@@ -31,8 +31,32 @@ public class ProfileFragment extends Fragment {
         this.profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        this.profileViewModel.getProfile().observe(this, profile -> updateProfile(root, profile));
+        fillSummary(root);
+
         return root;
+    }
+
+    private void fillSummary(View root) {
+        TextView successValue = root.findViewById(R.id.tw_f_home_profile_success);
+        this.profileViewModel.getSuccess().observe(this, value -> {
+            if (value != null) {
+                successValue.setText(value.toString() + " %");
+            }
+        });
+
+        TextView streakValue = root.findViewById(R.id.tw_f_profile_value_streaks);
+        this.profileViewModel.getStreak().observe(this, value -> {
+            if (value != null) {
+                streakValue.setText(value.toString());
+            }
+        });
+
+        TextView completedValue = root.findViewById(R.id.tw_f_profile_value_session_completed);
+        this.profileViewModel.getFinishedCount().observe(this, value -> {
+            if (value != null) {
+                completedValue.setText(value.toString());
+            }
+        });
     }
 
     @Override
@@ -52,6 +76,8 @@ public class ProfileFragment extends Fragment {
 //                startActivity(new Intent(getContext(), StatusActivity.class));
 //            }
 //        });
+
+        updateProfile(this.profileViewModel.getProfile());
     }
 
     @Override
@@ -72,15 +98,17 @@ public class ProfileFragment extends Fragment {
         return false;
     }
 
-    private void updateProfile(View root, Profile profile) {
-        TextView username = root.findViewById(R.id.tw_f_profile_profile_name);
-        username.setText(profile.getName());
+    private void updateProfile(Profile profile) {
+        if (getActivity() != null && profile != null) {
+            TextView username = getActivity().findViewById(R.id.tw_f_profile_profile_name);
+            username.setText(profile.getName());
 
-        CircleImageView profilePhoto = root.findViewById(R.id.iw_f_profile_profile_image);
-        String imageUrl = profile.getPhotoUrl();
-        if (imageUrl != null && imageUrl.length() > 0) {
-            Glide.with(this).load(imageUrl).into(profilePhoto);
-            profilePhoto.setBorderWidth(0);
+            CircleImageView profilePhoto = getActivity().findViewById(R.id.iw_f_profile_profile_image);
+            String imageUrl = profile.getPhotoUrl();
+            if (imageUrl != null && imageUrl.length() > 0) {
+                Glide.with(this).load(imageUrl).into(profilePhoto);
+                profilePhoto.setBorderWidth(0);
+            }
         }
     }
 }
