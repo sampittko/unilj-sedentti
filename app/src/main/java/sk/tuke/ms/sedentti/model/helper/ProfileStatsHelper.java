@@ -54,6 +54,15 @@ public class ProfileStatsHelper {
         }
     }
 
+    /**
+     * @throws SQLException
+     * @return
+     */
+    public int getHighestStreak() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getHighestStreak");
+        return profileStats.getHighestStreak();
+    }
+
     private void update(ProfileStats profileStats) throws SQLException {
         profileStatsDao.update(profileStats);
     }

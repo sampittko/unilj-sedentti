@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
+
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Activity;
@@ -30,6 +31,8 @@ import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.notification.ServiceNotification;
 import sk.tuke.ms.sedentti.notification.movement.MovementNotification;
+import sk.tuke.ms.sedentti.notification.sedentary_interruption.FirstNotification;
+import sk.tuke.ms.sedentti.notification.sedentary_interruption.SecondNotification;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionDetector;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionListener;
 
@@ -50,6 +53,8 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private int commandResult;
     private static final int SERVICE_NOTIFICATION_ID = 1;
     private static final int MOTION_NOTIFICATION_ID = 2;
+    private static final int FIRST_NOTIFICATION_ID = 3;
+    private static final int SECOND_NOTIFICATION_ID = 4;
     private static final String TAG = "ARService";
 
     private final int TIME_STEP = 300;
@@ -67,6 +72,8 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private ActivityHelper activityHelper;
 
     private boolean isActiveTimePassed;
+    private boolean firstNotificationFired;
+    private boolean secondNotificationFired;
 
     private long time;
     private Handler timeHandler;
@@ -84,31 +91,51 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         if (this.currentSession != null) {
             int activeLimit = this.appPreferences.getActiveLimit();
 
-            if (this.time < activeLimit) {
+            if (this.time < activeLimit && this.isActiveTimePassed) {
                 this.isActiveTimePassed = false;
+                firstNotificationFired = false;
+                secondNotificationFired = false;
             }
 
-            if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
-                Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
-                this.isActiveTimePassed = true;
-                try {
-                    if (!this.sessionHelper.isPendingReal()) {
-                        // check if session is still artificial - SIGMOV, if so, end it and start artificial sedentary session
-                        // artificial SIGMOV session may be updated by Google API, and SIGMOV is replaced by active activity
-                        Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
-
-                        sessionHelper.endPending();
-                        Session newSession = createNewSessionInService(STILL);
-                        activityHelper.create(STILL, newSession);
-                        notificationManager.cancel(MOTION_NOTIFICATION_ID);
+            if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle()) {
+                if (appPreferences.getFirstNotifState()) {
+                    if (time > activeLimit - appPreferences.getFirstNotifTime()) {
+                        if (!firstNotificationFired) {
+                            new FirstNotification().createNotification(getApplicationContext(), FIRST_NOTIFICATION_ID);
+                            firstNotificationFired = true;
+                        }
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                }
+
+                if (appPreferences.getSecondNotifState()) {
+                    if (time > activeLimit - (appPreferences.getFirstNotifTime() / 2)) {
+                        if (!secondNotificationFired) {
+                            new SecondNotification().createNotification(getApplicationContext(), SECOND_NOTIFICATION_ID);
+                            secondNotificationFired = true;
+                        }
+                    }
+                }
+
+                if (!this.isActiveTimePassed && this.time > activeLimit) {
+                    Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
+                    this.isActiveTimePassed = true;
+                    try {
+                        if (!this.sessionHelper.isPendingReal()) {
+                            // check if session is still artificial - SIGMOV, if so, end it and start artificial sedentary session
+                            // artificial SIGMOV session may be updated by Google API, and SIGMOV is replaced by active activity
+                            Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
+
+                            sessionHelper.endPending();
+                            Session newSession = createNewSessionInService(STILL);
+                            activityHelper.create(STILL, newSession);
+                            notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
-
-        // TODO: 12/23/19 add more notification
     }
 
     private void startTicking() {
@@ -316,7 +343,9 @@ public class ActivityRecognitionService extends Service implements SignificantMo
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        new MovementNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
+        if (appPreferences.getSigMovNotifState()) {
+            new MovementNotification().createNotification(getApplicationContext(), MOTION_NOTIFICATION_ID);
+        }
     }
 
     private Session createNewSessionInService(int detectedActivity) throws SQLException {
@@ -374,7 +403,7 @@ public class ActivityRecognitionService extends Service implements SignificantMo
                                 if (lastActivityType == DETECTED_ACTIVITY_SIG_MOV && newActivitySessionType == SessionType.ACTIVE) {
                                     lastActivity.setType(newActivityType);
                                     activityHelper.update(lastActivity);
-                                    // dismiss notification for sensing if the activity is real
+                                    // dismiss notification for sensing if the activity is real/
                                     notificationManager.cancel(MOTION_NOTIFICATION_ID);
                                     Crashlytics.log(Log.DEBUG, TAG, "Updating SIGMOV activity to new active activity");
                                 }

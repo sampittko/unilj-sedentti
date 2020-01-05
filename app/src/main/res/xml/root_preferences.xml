@@ -39,14 +39,12 @@
             android:defaultValue="@bool/sig_mov_notif_state_default_value"
         />
         <SwitchPreferenceCompat
-            app:isPreferenceVisible="false"
             app:key="first_notif_state"
             app:title="First notification"
             android:summary="1st interruption of sedentary session"
             android:defaultValue="@bool/first_notif_state_default_value"
         />
         <ListPreference
-            app:isPreferenceVisible="false"
             android:dialogTitle="First notification time"
             android:key="first_notif_time"
             android:summary="How much in advance you wish to be notified"
@@ -56,7 +54,6 @@
             android:defaultValue="@string/first_notif_time_default_value"
         />
         <SwitchPreferenceCompat
-            app:isPreferenceVisible="false"
             app:key="second_notif_state"
             app:title="Second notification"
             android:summary="2nd interruption of sedentary session"
