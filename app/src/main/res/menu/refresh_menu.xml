@@ -10,5 +10,5 @@
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings_white_24dp"
         android:title="Settings"
-        app:showAsAction="never"></item>
+        app:showAsAction="always"></item>
 </menu>

@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import sk.tuke.ms.sedentti.model.Profile;
 import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
+import sk.tuke.ms.sedentti.model.helper.ProfileStatsHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 
 public class ProfileViewModel extends AndroidViewModel {
@@ -20,9 +21,11 @@ public class ProfileViewModel extends AndroidViewModel {
     private Profile activeProfile;
     private ProfileHelper profileHelper;
     private SessionHelper sessionHelper;
+    private ProfileStatsHelper profileStatsHelper;
 
     private MutableLiveData<Integer> success;
     private MutableLiveData<Integer> streak;
+    private MutableLiveData<Integer> highestStreak;
     private MutableLiveData<Integer> finishedCount;
 
     public ProfileViewModel(@NonNull Application application) {
@@ -37,6 +40,14 @@ public class ProfileViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
         this.sessionHelper = new SessionHelper(this.getApplication(), activeProfile);
+        this.profileStatsHelper = new ProfileStatsHelper(this.getApplication(), activeProfile);
+    }
+
+    public void updateModel() {
+        loadFinishedCount();
+        loadHighestStreak();
+        loadStreak();
+        loadSuccess();
     }
 
     public Profile getProfile() {
@@ -77,6 +88,19 @@ public class ProfileViewModel extends AndroidViewModel {
 
     private void loadFinishedCount() {
         new loadFinishedCountAsyncTask().execute();
+    }
+
+    public MutableLiveData<Integer> getHighestStreak() {
+        if (this.highestStreak == null) {
+            this.highestStreak = new MutableLiveData<Integer>();
+            loadHighestStreak();
+        }
+
+        return highestStreak;
+    }
+
+    private void loadHighestStreak() {
+        new loadHighestStreakAsyncTask().execute();
     }
 
     private class loadStreakAsyncTask extends AsyncTask<Void, Void, Integer> {
@@ -127,6 +151,23 @@ public class ProfileViewModel extends AndroidViewModel {
         @Override
         protected void onPostExecute(Integer result) {
             finishedCount.postValue(result);
+        }
+    }
+
+    private class loadHighestStreakAsyncTask extends AsyncTask<Void, Void, Integer> {
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            try {
+                return profileStatsHelper.getHighestStreak();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            highestStreak.postValue(result);
         }
     }
 

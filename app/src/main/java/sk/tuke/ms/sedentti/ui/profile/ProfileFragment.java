@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import de.hdodenhof.circleimageview.CircleImageView;
 import sk.tuke.ms.sedentti.R;
-import sk.tuke.ms.sedentti.activity.MotivateMeActivity;
 import sk.tuke.ms.sedentti.activity.SettingsActivity;
 import sk.tuke.ms.sedentti.model.Profile;
 
@@ -32,6 +31,12 @@ public class ProfileFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
         fillSummary(root);
+
+        this.profileViewModel.getHighestStreak().observe(this, value -> {
+            if (value != null) {
+                updateBadges(value);
+            }
+        });
 
         return root;
     }
@@ -108,29 +113,19 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-//        View statusLayout = getActivity().findViewById(R.id.temp_strikes);
-//        statusLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startActivity(new Intent(getContext(), StatusActivity.class));
-//            }
-//        });
-
         updateProfile(this.profileViewModel.getProfile());
-        updateBadges(13);
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.profile_menu, menu);
+        inflater.inflate(R.menu.refresh_menu, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_motivate_me:
-                startActivity(new Intent(getContext(), MotivateMeActivity.class));
+            case R.id.action_refresh:
+                this.profileViewModel.updateModel();
                 return true;
             case R.id.action_settings:
                 startActivity(new Intent(getContext(), SettingsActivity.class));
