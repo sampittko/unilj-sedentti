@@ -200,13 +200,16 @@ public class SessionHelper {
             Crashlytics.log(Log.DEBUG, TAG, "Last unsuccessful session not found");
             int latestSessionsCount = getLatest(false).size();
 
+            int streak;
             if (pendingExists()) {
                 Crashlytics.log(Log.DEBUG, TAG, "Returning the amount of all sessions minus pending session");
-                return latestSessionsCount - 1;
+                streak = latestSessionsCount - 1;
             } else {
                 Crashlytics.log(Log.DEBUG, TAG, "Returning the amount of all sessions");
-                return latestSessionsCount;
+                streak = latestSessionsCount;
             }
+            profileStatsHelper.updateHighestStreak(streak);
+            return streak;
         }
 
         Crashlytics.log(Log.DEBUG, TAG, "Last unsuccessful session found successfully");
