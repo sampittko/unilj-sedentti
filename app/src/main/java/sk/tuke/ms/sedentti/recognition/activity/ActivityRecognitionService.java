@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
-
 import sk.tuke.ms.sedentti.helper.shared_preferences.ActivityRecognitionSPHelper;
 import sk.tuke.ms.sedentti.helper.shared_preferences.AppSPHelper;
 import sk.tuke.ms.sedentti.model.Activity;
@@ -31,8 +30,8 @@ import sk.tuke.ms.sedentti.model.helper.ProfileHelper;
 import sk.tuke.ms.sedentti.model.helper.SessionHelper;
 import sk.tuke.ms.sedentti.notification.ServiceNotification;
 import sk.tuke.ms.sedentti.notification.movement.MovementNotification;
-import sk.tuke.ms.sedentti.notification.sedentary_interruption.FirstNotification;
-import sk.tuke.ms.sedentti.notification.sedentary_interruption.SecondNotification;
+import sk.tuke.ms.sedentti.notification.reminders.FirstNotification;
+import sk.tuke.ms.sedentti.notification.reminders.SecondNotification;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionDetector;
 import sk.tuke.ms.sedentti.recognition.motion.SignificantMotionListener;
 

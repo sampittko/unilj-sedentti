@@ -30,18 +30,12 @@ public class ProfileFragment extends Fragment {
         this.profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        fillSummary(root);
-
-        this.profileViewModel.getHighestStreak().observe(this, value -> {
-            if (value != null) {
-                updateBadges(value);
-            }
-        });
+        updateValues(root);
 
         return root;
     }
 
-    private void fillSummary(View root) {
+    private void updateValues(View root) {
         TextView successValue = root.findViewById(R.id.tw_f_home_profile_success);
         this.profileViewModel.getSuccess().observe(this, value -> {
             if (value != null) {
@@ -49,10 +43,11 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        TextView streakValue = root.findViewById(R.id.tw_f_profile_value_streaks);
-        this.profileViewModel.getStreak().observe(this, value -> {
+        TextView HighestStreakValue = root.findViewById(R.id.tw_f_profile_value_highest_streak);
+        this.profileViewModel.getHighestStreak().observe(this, value -> {
             if (value != null) {
-                streakValue.setText(value.toString());
+                HighestStreakValue.setText(value.toString());
+                updateBadges(value);
             }
         });
 
