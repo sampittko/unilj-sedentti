@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.ui.statistics;
+package sk.tuke.ms.sedentti.ui.history;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,9 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.SettingsActivity;
 
-public class StatisticsFragment extends Fragment {
+public class HistoryFragment extends Fragment {
 
-    private StatisticsViewModel statisticsViewModel;
+    private HistoryViewModel historyViewModel;
 //    private BarChart chart;
 
 
@@ -40,7 +40,7 @@ public class StatisticsFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                this.statisticsViewModel.updateModel();
+                this.historyViewModel.updateModel();
                 return true;
             case R.id.action_settings:
                 startActivity(new Intent(getContext(), SettingsActivity.class));
@@ -50,8 +50,8 @@ public class StatisticsFragment extends Fragment {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        statisticsViewModel = ViewModelProviders.of(this).get(StatisticsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_statistics, container, false);
+        historyViewModel = ViewModelProviders.of(this).get(HistoryViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_history, container, false);
 
         RecyclerView recyclerViewTimeline = root.findViewById(R.id.f_statistics_layout_timeline);
         recyclerViewTimeline.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -62,7 +62,7 @@ public class StatisticsFragment extends Fragment {
 
 //        this.chart = root.findViewById(R.id.wc_f_statistics_graph);
 
-        statisticsViewModel.getDayModels().observe(this, dayModels -> {
+        historyViewModel.getDayModels().observe(this, dayModels -> {
             timelineAdapter.setDayModelsList(dayModels);
         });
 

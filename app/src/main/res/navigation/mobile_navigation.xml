@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_statistics"
-        android:name="sk.tuke.ms.sedentti.ui.statistics.StatisticsFragment"
-        android:label="@string/menu_title_statistics"
-        tools:layout="@layout/fragment_statistics" />
+        android:id="@+id/navigation_history"
+        android:name="sk.tuke.ms.sedentti.ui.history.HistoryFragment"
+        android:label="@string/menu_title_history"
+        tools:layout="@layout/fragment_history" />
 
     <fragment
         android:id="@+id/navigation_profile"

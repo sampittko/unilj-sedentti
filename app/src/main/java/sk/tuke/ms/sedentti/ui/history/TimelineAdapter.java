@@ -1,4 +1,4 @@
-package sk.tuke.ms.sedentti.ui.statistics;
+package sk.tuke.ms.sedentti.ui.history;
 
 import android.content.Context;
 import android.view.LayoutInflater;

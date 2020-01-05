@@ -436,7 +436,7 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         this.timelineLayout = root.findViewById(R.id.f_home_layout_timeline);
         this.timelineLayout.setOnClickListener(v -> {
             BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.nav_view);
-            View view = bottomNavigationView.findViewById(R.id.navigation_statistics);
+            View view = bottomNavigationView.findViewById(R.id.navigation_history);
             view.performClick();
         });
 

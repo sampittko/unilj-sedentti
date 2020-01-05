@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Sedentti</string>
     <string name="menu_title_home">Home</string>
-    <string name="menu_title_statistics">Statistics</string>
+    <string name="menu_title_history">History</string>
     <string name="menu_title_profile">Profile</string>
     <string name="title_activity_settings">Settings</string>
 
