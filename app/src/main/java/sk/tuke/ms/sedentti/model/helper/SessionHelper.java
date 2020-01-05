@@ -313,6 +313,44 @@ public class SessionHelper {
         return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
     }
 
+    /**
+     * @return Integer value representing the sessions success ratio in the spectified day
+     * @throws SQLException In case that communication with DB was not successful
+     */
+    public int getOverallSuccessRate() throws SQLException {
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getOverallSuccessRate");
+
+        sessionDaoQueryBuilder.reset();
+
+        Where<Session, Long> where = sessionDaoQueryBuilder
+                .where()
+                .gt(Session.COLUMN_END_TIMESTAMP, 0)
+                .and()
+                .eq(Session.COLUMN_SUCCESSFUL, true)
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId());
+
+        PreparedQuery<Session> preparedQuery = prepareQueryWithInVehicleConsidered(false, where);
+
+        List<Session> successfulSessions = sessionDao.query(preparedQuery);
+
+        sessionDaoQueryBuilder.reset();
+
+        Where<Session, Long> where2 = sessionDaoQueryBuilder
+                .where()
+                .gt(Session.COLUMN_END_TIMESTAMP, 0)
+                .and()
+                .eq(Session.COLUMN_SUCCESSFUL, false)
+                .and()
+                .eq(Session.COLUMN_PROFILE_ID, profile.getId());
+
+        PreparedQuery<Session> preparedQuery2 = prepareQueryWithInVehicleConsidered(false, where2);
+
+        List<Session> unsuccessfulSessions = sessionDao.query(preparedQuery2);
+
+        return getCalculatedSuccessRate(successfulSessions, unsuccessfulSessions);
+    }
+
     private int getCalculatedSuccessRate(@NotNull List<Session> successfulSessions, @NotNull List<Session> unsuccessfulSessions) {
         Crashlytics.log(Log.DEBUG, TAG, "Executing getCalculatedSuccessRate");
         Crashlytics.log(Log.DEBUG, TAG, "@successfulSessions SIZE: " + successfulSessions.size());
