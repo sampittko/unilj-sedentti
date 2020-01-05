@@ -54,7 +54,6 @@
         android:id="@+id/f_statistics_layout_timeline"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
         tools:listitem="@layout/item_timeline_statistics_session" />
 
 
