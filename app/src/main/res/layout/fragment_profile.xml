@@ -32,7 +32,7 @@
 
 
             <TextView
-                android:id="@+id/tw_f_profile_profilename"
+                android:id="@+id/tw_f_profile_profile_name"
                 style="@android:style/TextAppearance.Material.Headline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,161 +41,112 @@
                 app:layout_constraintStart_toEndOf="@+id/iw_f_profile_profile_image" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tw_f_profile_label_activity_status"
-            style="@android:style/TextAppearance.Material.Subhead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:text="Activity Status"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_f_profile_user" />
-
-        <View
-            android:id="@+id/view1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tw_f_profile_label_activity_status" />
-
-        <GridLayout
-            android:id="@+id/temp_strikes"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:color/holo_red_light"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view1" />
-
-
-        <TextView
-            android:id="@+id/tw_f_profile_label_session"
-            style="@android:style/TextAppearance.Material.Subhead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:text="Session"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/temp_strikes" />
-
-        <View
-            android:id="@+id/view2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tw_f_profile_label_session" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_f_profile_edittextholder_sessiontime"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="32dp"
-            android:hint="Session time"
-            app:layout_constraintTop_toBottomOf="@+id/view2">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_f_profile_input_sessiontime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/tw_f_profile_label_workhours"
-            style="@android:style/TextAppearance.Material.Subhead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:text="Working Hours"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_f_profile_edittextholder_sessiontime" />
-
-        <View
-            android:id="@+id/view3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tw_f_profile_label_workhours" />
-
         <LinearLayout
-            android:id="@+id/layout_f_profile_workinghours"
+            android:id="@+id/layout_f_profile_badge_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="32dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/view3">
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/layout_f_profile_user">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_f_profile_edittextholder_workhours_from"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="100dp"
+            <TextView
+                android:id="@+id/tw_f_profile_label_activity_summary"
+                style="@android:style/TextAppearance.Material.Subhead"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="From">
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:text="Activity Summary" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_f_profile_input_workhours_from"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="time" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_f_profile_edittextholder_workhours_to"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:hint="To">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_f_profile_input_workhours_to"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="time" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_f_profile_edittextholder_workingdays"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="32dp"
-            android:hint="Working days"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_f_profile_workinghours">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_f_profile_input_workingdays"
+            <View
+                android:id="@+id/break1"
                 android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/darker_gray" />
+
+            <LinearLayout
+                android:id="@+id/layout_f_profile_summary"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="time" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tw_home_text_sensing_state">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tw_f_profile_text_session_completed"
+                        style="@android:style/TextAppearance.Material.Body2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:text="Sessions\n Comleted"
+                        android:textAlignment="center" />
+
+                    <TextView
+                        android:id="@+id/tw_f_profile_value_session_completed"
+                        style="@android:style/TextAppearance.Material.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="48dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tw_f_profile_text_streaks"
+                        style="@android:style/TextAppearance.Material.Body2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Streak" />
+
+                    <TextView
+                        android:id="@+id/tw_f_profile_value_streaks"
+                        style="@android:style/TextAppearance.Material.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="48dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tw_f_profile_text_success"
+                        style="@android:style/TextAppearance.Material.Body2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Success" />
+
+                    <TextView
+                        android:id="@+id/tw_f_home_profile_success"
+                        style="@android:style/TextAppearance.Material.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="100%" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -8,26 +8,30 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
+import de.hdodenhof.circleimageview.CircleImageView;
 import sk.tuke.ms.sedentti.R;
 import sk.tuke.ms.sedentti.activity.MotivateMeActivity;
 import sk.tuke.ms.sedentti.activity.SettingsActivity;
-import sk.tuke.ms.sedentti.activity.StatusActivity;
+import sk.tuke.ms.sedentti.model.Profile;
 
 public class ProfileFragment extends Fragment {
 
-    private ViewModel profileViewModel;
+    private ProfileViewModel profileViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
+        this.profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        this.profileViewModel.getProfile().observe(this, profile -> updateProfile(root, profile));
         return root;
     }
 
@@ -41,13 +45,13 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        View statusLayout = getActivity().findViewById(R.id.temp_strikes);
-        statusLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getContext(), StatusActivity.class));
-            }
-        });
+//        View statusLayout = getActivity().findViewById(R.id.temp_strikes);
+//        statusLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startActivity(new Intent(getContext(), StatusActivity.class));
+//            }
+//        });
     }
 
     @Override
@@ -66,5 +70,17 @@ public class ProfileFragment extends Fragment {
                 return true;
         }
         return false;
+    }
+
+    private void updateProfile(View root, Profile profile) {
+        TextView username = root.findViewById(R.id.tw_f_profile_profile_name);
+        username.setText(profile.getName());
+
+        CircleImageView profilePhoto = root.findViewById(R.id.iw_f_profile_profile_image);
+        String imageUrl = profile.getPhotoUrl();
+        if (imageUrl != null && imageUrl.length() > 0) {
+            Glide.with(this).load(imageUrl).into(profilePhoto);
+            profilePhoto.setBorderWidth(0);
+        }
     }
 }
