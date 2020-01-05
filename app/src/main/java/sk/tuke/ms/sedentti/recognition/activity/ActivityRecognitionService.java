@@ -93,45 +93,48 @@ public class ActivityRecognitionService extends Service implements SignificantMo
 
             if (this.time < activeLimit && this.isActiveTimePassed) {
                 this.isActiveTimePassed = false;
-                firstNotificationFired = false;
-                secondNotificationFired = false;
             }
 
-            if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle()) {
-                if (appPreferences.getFirstNotifState()) {
-                    if (time > activeLimit - appPreferences.getFirstNotifTime()) {
-                        if (!firstNotificationFired) {
-                            new FirstNotification().createNotification(getApplicationContext(), FIRST_NOTIFICATION_ID);
-                            firstNotificationFired = true;
+            if (!this.currentSession.isSedentary() && !this.currentSession.isInVehicle() && !this.isActiveTimePassed && this.time > activeLimit) {
+                Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
+                this.isActiveTimePassed = true;
+                try {
+                    if (!this.sessionHelper.isPendingReal()) {
+                        // check if session is still artificial - SIGMOV, if so, end it and start artificial sedentary session
+                        // artificial SIGMOV session may be updated by Google API, and SIGMOV is replaced by active activity
+                        Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
+
+                        sessionHelper.endPending();
+                        Session newSession = createNewSessionInService(STILL);
+                        activityHelper.create(STILL, newSession);
+                        notificationManager.cancel(MOTION_NOTIFICATION_ID);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (currentSession.isSedentary()) {
+                int sedentaryLimit = appPreferences.getSedentaryLimit();
+                if (time < sedentaryLimit) {
+                    int firstNotifTime = appPreferences.getFirstNotifTime();
+                    if (appPreferences.getFirstNotifState()) {
+                        if (time > sedentaryLimit - firstNotifTime) {
+                            if (!firstNotificationFired) {
+                                new FirstNotification().createNotification(getApplicationContext(), FIRST_NOTIFICATION_ID);
+                                firstNotificationFired = true;
+                            }
                         }
                     }
-                }
 
-                if (appPreferences.getSecondNotifState()) {
-                    if (time > activeLimit - (appPreferences.getFirstNotifTime() / 2)) {
-                        if (!secondNotificationFired) {
-                            new SecondNotification().createNotification(getApplicationContext(), SECOND_NOTIFICATION_ID);
-                            secondNotificationFired = true;
+                    if (appPreferences.getSecondNotifState()) {
+                        if (time > (sedentaryLimit - (firstNotifTime / 2))) {
+                            notificationManager.cancel(FIRST_NOTIFICATION_ID);
+                            if (!secondNotificationFired) {
+                                new SecondNotification().createNotification(getApplicationContext(), SECOND_NOTIFICATION_ID);
+                                secondNotificationFired = true;
+                            }
                         }
-                    }
-                }
-
-                if (!this.isActiveTimePassed && this.time > activeLimit) {
-                    Crashlytics.log(Log.DEBUG, TAG, "Active time reached");
-                    this.isActiveTimePassed = true;
-                    try {
-                        if (!this.sessionHelper.isPendingReal()) {
-                            // check if session is still artificial - SIGMOV, if so, end it and start artificial sedentary session
-                            // artificial SIGMOV session may be updated by Google API, and SIGMOV is replaced by active activity
-                            Crashlytics.log(Log.DEBUG, TAG, "Active session is artificial, replacing by the new sedentary");
-
-                            sessionHelper.endPending();
-                            Session newSession = createNewSessionInService(STILL);
-                            activityHelper.create(STILL, newSession);
-                            notificationManager.cancel(MOTION_NOTIFICATION_ID);
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
                     }
                 }
             }
@@ -303,6 +306,10 @@ public class ActivityRecognitionService extends Service implements SignificantMo
     private void setCurrentSession(Session session) {
         this.currentSession = session;
         this.time = this.sessionHelper.getDuration(session);
+        firstNotificationFired = false;
+        notificationManager.cancel(FIRST_NOTIFICATION_ID);
+        secondNotificationFired = false;
+        notificationManager.cancel(SECOND_NOTIFICATION_ID);
     }
 
     @Nullable
