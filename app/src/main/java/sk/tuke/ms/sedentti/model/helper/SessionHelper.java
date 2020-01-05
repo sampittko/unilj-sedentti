@@ -49,6 +49,7 @@ public class SessionHelper {
 
     private Dao<Session, Long> sessionDao;
     private ActivityHelper activityHelper;
+    private ProfileStatsHelper profileStatsHelper;
     private QueryBuilder<Session, Long> sessionDaoQueryBuilder;
 
     private AppSPHelper appSPHelper;
@@ -62,6 +63,7 @@ public class SessionHelper {
             this.sessionDao = databaseHelper.sessionDao();
             this.sessionDaoQueryBuilder = sessionDao.queryBuilder();
             this.activityHelper = new ActivityHelper(context);
+            this.profileStatsHelper = new ProfileStatsHelper(context, profile);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -208,7 +210,12 @@ public class SessionHelper {
         }
 
         Crashlytics.log(Log.DEBUG, TAG, "Last unsuccessful session found successfully");
-        return getConsequentSuccessfulCount(lastUnsuccessful, false);
+
+        int consequentSuccessfulCount = getConsequentSuccessfulCount(lastUnsuccessful, false);
+
+        profileStatsHelper.updateHighestStreak(consequentSuccessfulCount);
+
+        return consequentSuccessfulCount;
     }
 
     private Session getLastUnsuccessful() throws SQLException {

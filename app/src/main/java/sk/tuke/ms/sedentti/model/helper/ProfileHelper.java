@@ -62,6 +62,10 @@ public class ProfileHelper {
 
         Profile profile = new Profile(name, email, photoUrl, firebaseAuthUid);
         profileDao.create(profile);
+
+        profile = getRealProfile();
+        new ProfileStatsHelper(context, profile).createNew();
+
         return profile;
     }
 
@@ -113,12 +117,22 @@ public class ProfileHelper {
     }
 
     private Profile getNewArtificialProfile() throws SQLException {
-        return createNew(
+        Crashlytics.log(Log.DEBUG, TAG, "Executing getNewArtificialProfile");
+
+        Profile profile = new Profile(
                 Configuration.PROFILE_ARTIFICIAL_NAME,
                 Configuration.PROFILE_ARTIFICIAL_EMAIL,
                 Configuration.PROFILE_ARTIFICIAL_PHOTO_URL,
                 Configuration.PROFILE_ARTIFICIAL_FIREBASE_AUTH_ID
         );
+
+        profileDao.create(profile);
+
+        profile = getArtificialProfile();
+
+        new ProfileStatsHelper(context, profile).createNew();
+
+        return profile;
     }
 
     /**
