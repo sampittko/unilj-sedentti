@@ -59,6 +59,46 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    private void updateBadges(int streak) {
+        if (getActivity() != null) {
+            TextView badge5 = getActivity().findViewById(R.id.b_f_profile_badge_gradient_5);
+            if (5 <= streak) {
+                badge5.setBackgroundResource(R.drawable.badge_badge1);
+            } else {
+                badge5.setBackgroundResource(R.drawable.badge_badge1_hidden);
+            }
+
+            TextView badge10 = getActivity().findViewById(R.id.b_f_profile_badge_gradient_10);
+            if (10 <= streak) {
+                badge10.setBackgroundResource(R.drawable.badge_badge2);
+            } else {
+                badge10.setBackgroundResource(R.drawable.badge_badge2_hidden);
+            }
+
+            TextView badge15 = getActivity().findViewById(R.id.b_f_profile_badge_gradient_15);
+            if (15 <= streak) {
+                badge15.setBackgroundResource(R.drawable.badge_badge3);
+            } else {
+                badge15.setBackgroundResource(R.drawable.badge_badge3_hidden);
+            }
+
+            TextView badge20 = getActivity().findViewById(R.id.b_f_profile_badge_gradient_20);
+            if (20 <= streak) {
+                badge20.setBackgroundResource(R.drawable.badge_badge4);
+            } else {
+                badge20.setBackgroundResource(R.drawable.badge_badge4_hidden);
+            }
+
+            TextView badge25 = getActivity().findViewById(R.id.b_f_profile_badge_gradient_25);
+            if (25 <= streak) {
+                badge25.setBackgroundResource(R.drawable.badge_badge5);
+            } else {
+                badge25.setBackgroundResource(R.drawable.badge_badge5_hidden);
+            }
+        }
+    }
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +118,7 @@ public class ProfileFragment extends Fragment {
 //        });
 
         updateProfile(this.profileViewModel.getProfile());
+        updateBadges(13);
     }
 
     @Override
