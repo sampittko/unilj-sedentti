@@ -159,18 +159,20 @@ public class HomeFragment extends Fragment implements StopSensingDialog.StopSens
         updateProfile(homeViewModel.getActiveProfile());
     }
 
-    private void updateProfile(Profile activeProfile) {
-        TextView username = getActivity().findViewById(R.id.tw_f_home_text_hello);
-        StringBuilder sb = new StringBuilder();
-        sb.append("Hello ");
-        sb.append(activeProfile.getName().split(" ")[0]);
-        username.setText(sb.toString());
+    private void updateProfile(Profile profile) {
+        if (profile != null) {
+            TextView username = getActivity().findViewById(R.id.tw_f_home_text_hello);
+            StringBuilder sb = new StringBuilder();
+            sb.append("Hello ");
+            sb.append(profile.getName().split(" ")[0]);
+            username.setText(sb.toString());
 
-        CircleImageView profilePhoto = getActivity().findViewById(R.id.iw_f_home_profile_image);
-        String imageUrl = activeProfile.getPhotoUrl();
-        if (imageUrl != null && imageUrl.length() > 0) {
-            Glide.with(this).load(imageUrl).into(profilePhoto);
-            profilePhoto.setBorderWidth(0);
+            CircleImageView profilePhoto = getActivity().findViewById(R.id.iw_f_home_profile_image);
+            String imageUrl = profile.getPhotoUrl();
+            if (imageUrl != null && imageUrl.length() > 0) {
+                Glide.with(this).load(imageUrl).into(profilePhoto);
+                profilePhoto.setBorderWidth(0);
+            }
         }
     }
 
