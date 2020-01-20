@@ -178,13 +178,15 @@ def plot_heatmap(df):
     axis.set_yticklabels(row_labels, minor=False)
     axis.set_xticklabels(column_labels, minor=False)
 
-    axis.set_title("Phase 1 - Most Active Hours")
+    axis.set_title("Phase 2 - Most Active Hours")
     axis.set_xlabel("Hour of day (0-23)")
     axis.set_ylabel("User")
 
     plt.colorbar(heatmap)
 
     fig.set_size_inches(11.03, 3.5)
+
+    plt.tight_layout()
 
     plt.show()
 
