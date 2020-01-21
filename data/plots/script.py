@@ -7,33 +7,50 @@ import numpy as np
 from os import path
 import time
 
-rootDataPath = "../Phase2/"
+firstPhasePath = "../Phase1/"
+secondPhasePath = "../Phase2/"
+
 behaviourEvaluation = True
 
 
 def main():
-    dfs = get_dfs()
-    df = pd.concat(dfs, ignore_index=True)
+    df = get_df()
+    # df = pd.concat(dfs, ignore_index=True)
     df = get_filter_and_conv_ids(df, behaviourEvaluation)
     df.columns = map(str.lower, df.columns)
     # plot_user_sessions_bars(df)
     # plot_succ_unsucc_pie(df)
     # get_mean_duration(df)
     plot_heatmap(df)
+    # get_sessions_count(df)
+    # get_time(df)
+    # get_avg_session_time(df)
 
 
-def get_path(i):
+def get_path(rootDataPath, i):
     return rootDataPath + str(i) + ".csv"
 
 
-def get_dfs():
-    dfs = []
+def get_df():
+    dfs1 = []
+    dfs2 = []
     i = 1
-    while path.exists(get_path(i)):
-        df = pd.read_csv(get_path(i))
-        dfs.append(df)
+    while path.exists(get_path(firstPhasePath, i)):
+        df = pd.read_csv(get_path(firstPhasePath, i))
+        dfs1.append(df)
         i += 1
-    return dfs
+    df1 = pd.concat(dfs1, ignore_index=True)
+    df1 = df1.drop_duplicates(subset='SESSION')
+    i = 1
+    # while path.exists(get_path(secondPhasePath, i)):
+    #     df = pd.read_csv(get_path(secondPhasePath, i))
+    #     dfs2.append(df)
+    #     i += 1
+    # df2 = pd.concat(dfs2, ignore_index=True)
+    # df2 = df2.drop_duplicates(subset='SESSION')
+    # df = pd.concat([df1, df2], ignore_index=True)
+    df = pd.concat([df1, df2], ignore_index=True)
+    return df
 
 
 def get_filter_and_conv_ids(df, behaviourEvaluation=False):
@@ -126,11 +143,9 @@ def plot_user_sessions_bars(df):
 
 
 def plot_succ_unsucc_pie(df):
-    successful = df[(df.session_successful == True) &
-                    (df.session_in_vehicle == False)]
+    successful = df[(df.session_successful == True) & (df.session_in_vehicle == False)]
     successful = successful.session_duration.sum()
-    unsuccessful = df[(df.session_successful == False) &
-                      (df.session_in_vehicle == False)]
+    unsuccessful = df[(df.session_successful == False) & (df.session_in_vehicle == False)]
     unsuccessful = unsuccessful.session_duration.sum()
     plt.pie(x=[successful, unsuccessful], labels=[
             'Successful', 'Unsuccessful'], autopct='%1.1f%%')
@@ -143,12 +158,10 @@ def plot_succ_unsucc_pie(df):
     df = df[mask]
     print(df.session_duration.sum())
 
-
 def get_mean_duration(df):
-    mask = (df.session_in_vehicle == True)
-    df = df[mask]
+    df = df.drop_duplicates(subset='session')
+    df = df[(df.session_in_vehicle == False) & (df.session_sedentary == False)]
     print(df.session_duration.mean())
-
 
 def plot_heatmap(df):
     # limited = df[df.session_duration == 0]
@@ -178,13 +191,19 @@ def plot_heatmap(df):
     axis.set_yticklabels(row_labels, minor=False)
     axis.set_xticklabels(column_labels, minor=False)
 
-    axis.set_title("Phase 2 - Most Active Hours")
+    # axis.set_title("Most active hours during data collection")
     axis.set_xlabel("Hour of day (0-23)")
-    axis.set_ylabel("User")
+    # axis.set_ylabel("User")
 
     plt.colorbar(heatmap)
 
     fig.set_size_inches(11.03, 3.5)
+
+    for i in range(len(row_labels)):
+        for j in range(len(column_labels)):
+            if data[i, j] != 0:
+                text = axis.text(j + 0.5, i + 0.5, data[i, j], ha="center",
+                                 va="center", color="white", bbox=dict(facecolor='black', edgecolor='none', boxstyle='round', alpha=0.05))
 
     plt.tight_layout()
 
@@ -194,7 +213,6 @@ def plot_heatmap(df):
 def get_hours_sessions(df, user):
     array = np.zeros((24,), dtype=int)
     newDf = df[df.user == user]
-    newDf = newDf.drop_duplicates(subset='session')
 
     for i, row in newDf.iterrows():
         start_timestamp = dt.fromtimestamp(row.session_start_timestamp / 1000)
@@ -212,5 +230,71 @@ def get_hours_sessions(df, user):
             array[start_timestamp.hour] += 1
 
     return array
+
+def get_sessions_count(df):
+    newDf = df.drop_duplicates(subset='session')
+    print(newDf.shape)
+
+# pomer sedavy a aktivny cas za prvy a druhy tyzden
+def get_time(df):
+    df = df.drop_duplicates(subset='session')
+
+    activeMask = (df.session_sedentary == False) & (
+        df.session_in_vehicle == False)
+    sedentaryMask = (df.session_sedentary == True) & (
+        df.session_in_vehicle == False)
+
+    print(df[sedentaryMask].session_duration.sum())
+    print(df[activeMask].session_duration.sum())
+
+    plt.pie(x=[df[sedentaryMask].session_duration.sum(), df[activeMask].session_duration.sum()], labels=[
+            'Sedentary', 'Active'], autopct='%1.1f%%')
+    plt.legend()
+    plt.tight_layout()  # to make sure everything fits inside the figures boundaries
+    plt.show()
+
+# priemerny cas vsetkych sessions za den
+def get_avg_session_time(df):
+    df = df.drop_duplicates(subset='session')
+    durations = []
+    df = df.sort_values(by='session_start_timestamp', ascending=True)
+    # print(df.session_start_timestamp)
+    prev_start_timestamp = dt.fromtimestamp(df.session_start_timestamp.iloc[0] / 1000);
+    dayUsers = []
+    idx = 0
+    durations.append(df.session_duration.iloc[0])
+
+    # print(df.session_duration)
+
+    # return
+
+    for i, row in df.iterrows():
+        # if i == 0:
+        #     dayUsers.append(row.user);
+        #     continue
+
+        start_timestamp = dt.fromtimestamp(row.session_start_timestamp / 1000)
+
+        if prev_start_timestamp.day != start_timestamp.day:
+            # vypocitat avg na dany den
+            # print(durations[idx])
+            # print(len(dayUsers))
+            avgDayDuration = durations[idx] / len(dayUsers)
+            # print(avgDayDuration)
+            durations[idx] = avgDayDuration
+
+            dayUsers = []
+            dayUsers.append(row.user)
+            idx += 1
+            durations.append(row.session_duration)
+        else:
+            if row.user not in dayUsers:
+                dayUsers.append(row.user)
+            if i != 0:
+                durations[idx] += row.session_duration
+        prev_start_timestamp = start_timestamp
+
+    print(durations)
+    print(sum(durations) / len(durations))
 
 main()
